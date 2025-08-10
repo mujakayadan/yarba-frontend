@@ -7,10 +7,8 @@ import MainLayout from './components/layout/MainLayout';
 import { Analytics } from "@vercel/analytics/react";
 import { 
   LoginPage, 
-  RegisterPage, 
   DashboardPage, 
   ResumesPage, 
-  PortfolioPage, 
   TemplatesPage,
   ProfilePage,
   ViewResumePage,
@@ -36,6 +34,7 @@ import {
   UploadPortfolioPage,
   MainPage,
   WebsitePage,
+  EditResumePage,
 } from './pages';
 import PersonalInfoSetupPage from './pages/user/setup/PersonalInfoSetupPage';
 import PromptPreferencesSetupPage from './pages/user/setup/PromptPreferencesSetupPage';
@@ -45,7 +44,6 @@ import PortfolioUploadPage from './pages/user/setup/PortfolioUploadPage';
 import PortfolioReviewPage from './pages/user/setup/PortfolioReviewPage';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { Typography } from '@mui/material';
 import theme from './theme';
 import { Box, CircularProgress } from '@mui/material';
 
@@ -276,7 +274,7 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <div>Edit Resume Page Placeholder</div>
+                      <EditResumePage />
                     </MainLayout>
                   </ProtectedRoute>
                 }

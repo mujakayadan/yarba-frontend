@@ -12,7 +12,6 @@ import {
   Card,
   CardMedia,
   CardContent,
-  CardActions,
   Link,
   Chip,
   Stepper,
@@ -29,7 +28,7 @@ import {
   deletePortfolioWebsite,
   getDeploymentStatus
 } from '../services/websiteService';
-import { PortfolioWebsiteResponse, PortfolioWebsiteConfig, SubdomainAvailabilityResponse, DeploymentStatus } from '../types/models';
+import { PortfolioWebsiteResponse, PortfolioWebsiteConfig, DeploymentStatus } from '../types/models';
 import debounce from 'lodash/debounce';
 
 const THEMES = [

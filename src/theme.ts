@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material/styles';
-import React from 'react';
 
 // Modern blue-focused color palette
 const palette = {

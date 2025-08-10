@@ -17,7 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { createResume, extractJobDetails, JobExtractionDetails } from '../../services/resumeService';
 import { getUserProfile } from '../../services/profileService';
-import { Resume, ResumeCreateRequest, Profile } from '../../types/models';
+import { ResumeCreateRequest, Profile } from '../../types/models';
 import { Toast } from '../../components/common';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
