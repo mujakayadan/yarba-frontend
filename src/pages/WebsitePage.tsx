@@ -36,8 +36,14 @@ const THEMES = [
   { 
     name: 'Modern', 
     value: 'modern', 
-    previewImage: '/assets/website_template_1.png', 
+    previewImage: '/assets/modern_preview.png', 
     description: 'A clean and professional look for your portfolio.'
+  },
+  { 
+    name: 'Three.js', 
+    value: 'threejs', 
+    previewImage: '/assets/threejs_preview.png', 
+    description: 'An interactive 3D experience for your portfolio.'
   },
   // Add more themes here as they become available
 ];
@@ -63,7 +69,12 @@ const WebsitePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [website, setWebsite] = useState<PortfolioWebsiteResponse | null>(null);
-  const [deploymentPollInterval, setDeploymentPollInterval] = useState<NodeJS.Timeout | null>(null);
+  const [deploymentPollTimeout, setDeploymentPollTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [pollRetryCount, setPollRetryCount] = useState<number>(0);
+
+  const MAX_POLL_RETRIES = 120; // 10 minutes at 5s intervals max
+  const MIN_POLL_INTERVAL = 2000; // Never poll faster than 2 seconds
+  const DEFAULT_POLL_INTERVAL = 5000; // Default 5 seconds for building status
 
   const fetchUserWebsite = useCallback(async () => {
     setIsLoading(true);
@@ -88,9 +99,9 @@ const WebsitePage: React.FC = () => {
   useEffect(() => {
     fetchUserWebsite();
     return () => {
-      if (deploymentPollInterval) clearInterval(deploymentPollInterval);
+      if (deploymentPollTimeout) clearTimeout(deploymentPollTimeout);
     };
-  }, [fetchUserWebsite, deploymentPollInterval]);
+  }, [fetchUserWebsite, deploymentPollTimeout]);
 
   const debouncedCheckSubdomain = useCallback(
     debounce(async (name: string) => {
@@ -129,6 +140,14 @@ const WebsitePage: React.FC = () => {
       debouncedCheckSubdomain(newSubdomain);
     }
   };
+
+  const stopPolling = useCallback(() => {
+    if (deploymentPollTimeout) {
+      clearTimeout(deploymentPollTimeout);
+      setDeploymentPollTimeout(null);
+    }
+    setPollRetryCount(0);
+  }, [deploymentPollTimeout]);
 
   const handleCreateAndDeploy = async () => {
     if (!subdomain || !subdomainAvailable) {
@@ -182,7 +201,7 @@ const WebsitePage: React.FC = () => {
       setSelectedTheme(THEMES[0].value);
       setSubdomainAvailable(null);
       setSubdomainError(null);
-      if (deploymentPollInterval) clearInterval(deploymentPollInterval);
+      stopPolling();
     } catch (err: any) {
       setError(err.response?.data?.detail || err.message || 'Failed to delete website.');
     } finally {
@@ -191,23 +210,84 @@ const WebsitePage: React.FC = () => {
   }
 
   const pollDeploymentStatus = useCallback(() => {
-    if (deploymentPollInterval) clearInterval(deploymentPollInterval);
-    const interval = setInterval(async () => {
-      try {
-        const statusData = await getDeploymentStatus();
-        setWebsite(prev => prev ? { ...prev, deployment_status: statusData } : null);
-        if (!isDeploymentInProgress(statusData)) {
-          clearInterval(interval);
-          setDeploymentPollInterval(null);
-          fetchUserWebsite(); // Re-fetch to get final state
-        }
-      } catch (err) {
-        console.error('Failed to poll deployment status:', err);
-        // Optionally stop polling on error or notify user
+    if (deploymentPollTimeout) clearTimeout(deploymentPollTimeout);
+    
+    const performPoll = async () => {
+      // Check if we've exceeded maximum retries
+      if (pollRetryCount >= MAX_POLL_RETRIES) {
+        console.warn('Deployment polling timeout after 10 minutes');
+        stopPolling();
+        return;
       }
-    }, 10000); // Poll every 10 seconds
-    setDeploymentPollInterval(interval);
-  }, [deploymentPollInterval, fetchUserWebsite]);
+
+      try {
+        // Use the existing service function
+        const statusData = await getDeploymentStatus();
+        
+        // Update website state
+        setWebsite(prev => prev ? { ...prev, deployment_status: statusData } : null);
+        
+        // Check if deployment is complete
+        if (!isDeploymentInProgress(statusData)) {
+          console.log('Deployment completed:', statusData.status);
+          stopPolling();
+          fetchUserWebsite(); // Re-fetch to get final state
+          return;
+        }
+
+        // Use adaptive polling intervals based on status
+        let nextInterval = DEFAULT_POLL_INTERVAL;
+        
+        // For building status, use shorter intervals, but respect minimum
+        if (statusData.status === 'building') {
+          nextInterval = Math.max(MIN_POLL_INTERVAL, 3000); // 3 seconds for building
+        } else if (statusData.status === 'pending') {
+          nextInterval = Math.max(MIN_POLL_INTERVAL, 5000); // 5 seconds for pending
+        }
+
+        // Schedule next poll
+        setPollRetryCount(prev => prev + 1);
+        const timeout = setTimeout(performPoll, nextInterval);
+        setDeploymentPollTimeout(timeout);
+        
+      } catch (err: any) {
+        console.error('Failed to poll deployment status:', err);
+        
+        // Handle rate limiting specifically
+        if (err.response?.status === 429) {
+          console.warn('Rate limited - increasing poll interval');
+          const backoffInterval = Math.max(10000, MIN_POLL_INTERVAL * 5); // 10 seconds minimum
+          setPollRetryCount(prev => prev + 1);
+          
+          if (pollRetryCount < MAX_POLL_RETRIES) {
+            const timeout = setTimeout(performPoll, backoffInterval);
+            setDeploymentPollTimeout(timeout);
+          } else {
+            console.error('Max polling retries exceeded due to rate limiting');
+            stopPolling();
+          }
+          return;
+        }
+        
+        // Exponential backoff for other errors
+        const backoffInterval = Math.min(30000, DEFAULT_POLL_INTERVAL * Math.pow(2, Math.min(pollRetryCount, 5)));
+        setPollRetryCount(prev => prev + 1);
+        
+        // Retry with exponential backoff, but respect max retries
+        if (pollRetryCount < MAX_POLL_RETRIES) {
+          const timeout = setTimeout(performPoll, backoffInterval);
+          setDeploymentPollTimeout(timeout);
+        } else {
+          console.error('Max polling retries exceeded due to errors');
+          stopPolling();
+        }
+      }
+    };
+
+    // Start polling with reset retry count
+    setPollRetryCount(0);
+    performPoll();
+  }, [deploymentPollTimeout, fetchUserWebsite, pollRetryCount, stopPolling]);
 
   const isDeploymentInProgress = (status: DeploymentStatus | undefined): boolean => {
     return !!status && (status.status === 'pending' || status.status === 'building');
@@ -280,7 +360,7 @@ const WebsitePage: React.FC = () => {
             disabled={isLoading || !subdomain || subdomainAvailable !== true}
             startIcon={isLoading ? <CircularProgress size={20} /> : <Language />}
           >
-            Create & Deploy Website
+            {isLoading ? 'Creating Website...' : 'Create & Deploy Website'}
           </Button>
         </Box>
       ),
@@ -289,7 +369,12 @@ const WebsitePage: React.FC = () => {
       label: 'Manage Website',
       content: (
         <Box sx={{ mt: 2 }}>
-          {website && (
+          {isLoading && !website ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <CircularProgress />
+              <Typography sx={{ mt: 2 }}>Setting up your website...</Typography>
+            </Box>
+          ) : website ? (
             <Paper elevation={3} sx={{ p: 3 }}>
               <Typography variant="h5" gutterBottom>Your Portfolio Website is Live!</Typography>
               <Typography variant="body1" gutterBottom>
@@ -312,9 +397,9 @@ const WebsitePage: React.FC = () => {
                     variant="contained" 
                     onClick={handleRedeploy} 
                     disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                    startIcon={isLoading && isDeploymentInProgress(website.deployment_status) ? <CircularProgress size={20} /> : <Language />}
+                    startIcon={isLoading ? <CircularProgress size={20} /> : <Language />}
                 >
-                    Redeploy
+                    {isLoading ? 'Redeploying...' : 'Redeploy'}
                 </Button>
                 <Button 
                     variant="outlined" 
@@ -326,6 +411,10 @@ const WebsitePage: React.FC = () => {
                 </Button>
                </Box>
             </Paper>
+          ) : (
+            <Alert severity="info">
+              No website found. Please go back to create one.
+            </Alert>
           )}
         </Box>
       ),
@@ -351,7 +440,7 @@ const WebsitePage: React.FC = () => {
 
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((step, index) => (
-            <Step key={step.label}>
+            <Step key={step.label} expanded={index === activeStep}>
               <StepLabel 
                 onClick={() => !website || index < activeStep ? setActiveStep(index) : null}
                 sx={{ cursor: (!website || index < activeStep) ? 'pointer' : 'default'}}
@@ -359,20 +448,22 @@ const WebsitePage: React.FC = () => {
                 {step.label}
               </StepLabel>
               <StepContent>
-                {step.content}
-                <Box sx={{ mb: 2, mt:2 }}>
-                  <div>
-                    {index > 0 && activeStep !== 2 && (
-                        <Button
-                            disabled={index === 0}
-                            onClick={() => setActiveStep(prev => prev -1)}
-                            sx={{ mt: 1, mr: 1 }}
-                        >
-                            Back
-                        </Button>
-                    )}
-                  </div>
-                </Box>
+                {index === activeStep && step.content}
+                {index === activeStep && (
+                  <Box sx={{ mb: 2, mt:2 }}>
+                    <div>
+                      {index > 0 && activeStep !== 2 && (
+                          <Button
+                              disabled={index === 0 || isLoading}
+                              onClick={() => setActiveStep(prev => prev -1)}
+                              sx={{ mt: 1, mr: 1 }}
+                          >
+                              Back
+                          </Button>
+                      )}
+                    </div>
+                  </Box>
+                )}
               </StepContent>
             </Step>
           ))}
