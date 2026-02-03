@@ -1,0 +1,305 @@
+# Yarba Frontend System Prompt
+
+This is the frontend application for **Yarba**, an AI-powered resume, cover letter, and portfolio building platform. It is built with **React**, **TypeScript**, and **Material-UI (MUI)**, communicating with a FastAPI backend via REST APIs and Firebase for authentication.
+
+---
+
+## Goal
+
+Build a clean, maintainable, and idiomatic React application that provides users with an intuitive interface for creating AI-tailored resumes, cover letters, and portfolio websites.
+**Your goal:** Implement features that adhere to backend API contracts, maintain type safety, and follow MUI design patterns.
+
+---
+
+## Tech Stack
+
+- React 18
+- TypeScript 4.9+
+- Material-UI (MUI) v5 for components and theming
+- React Router v6 (page routing)
+- Formik + Yup (form handling and validation)
+- Firebase 10.x (authentication via Google, email/password)
+- Axios (backend API requests)
+- React Testing Library + Jest
+- ESLint
+- Create React App with react-app-rewired
+- Vercel (deployment)
+- react-pdf (PDF preview)
+- react-markdown (markdown rendering)
+
+---
+
+## Code Quality Standards
+
+- **KISS:** Keep code simple and explicit
+- No hacky fallback chains, redundant abstractions, or workarounds
+- All code fully typed with TypeScript—avoid `any` type
+- Write reusable components only when truly needed
+- Components should be pure where possible
+- Use React hooks idiomatically (`useState`, `useEffect`, `useCallback`, `useMemo`)
+- Avoid "prop drilling"; use Context API sparingly for truly global state
+- Error handling must be explicit, visible, and consistent
+- Do not edit linter-skipped files
+- No console logs unless explicitly requested or in development debug mode
+- Write docstrings/comments only for non-obvious logic
+- Prefer functional components over class components
+
+---
+
+## UI/UX Guidelines
+
+- Use **MUI components** consistently—do not mix with other UI libraries
+- Follow MUI theming conventions defined in `src/theme.ts`
+- Components must be responsive and mobile-friendly
+- Accessibility (a11y) is mandatory:
+  - Buttons, inputs, links have correct roles and labels
+  - Form validation errors must be visible and announced
+  - Keyboard navigation is supported
+- Loading states must be shown during async operations (use MUI `CircularProgress`, `Skeleton`, etc.)
+- Toast notifications via MUI `Snackbar` for success/error messages
+- Confirm destructive actions (delete resume, delete cover letter)
+- No hardcoded strings for user-facing text; prefer constants or localization-ready structures
+
+---
+
+## Architecture
+
+### Directory Structure
+
+```
+src/
+  components/
+    auth/         # Authentication-related components
+    common/       # Shared/reusable components
+    layout/       # Layout components (Header, Sidebar, etc.)
+    portfolio/    # Portfolio-specific components
+  contexts/
+    AuthContext.tsx     # Firebase auth + backend JWT state
+    ProfileContext.tsx  # User profile state
+  hooks/          # Custom React hooks
+  pages/
+    resume/       # Resume pages (list, edit, create)
+    cover-letter/ # Cover letter pages
+    portfolio/    # Portfolio pages
+    profile/      # Profile/settings pages
+    user/         # User onboarding/setup pages
+  services/
+    api.ts              # Axios instance with interceptors
+    authService.ts      # Authentication API calls
+    resumeService.ts    # Resume CRUD operations
+    coverLetterService.ts
+    portfolioService.ts
+    profileService.ts
+    templateService.ts
+    websiteService.ts
+  types/
+    models.ts     # TypeScript interfaces matching backend schemas
+    portfolio.ts  # Portfolio-specific types
+  utils/
+    auth.ts       # Token storage/retrieval helpers
+    debug.ts      # Debug logging utility
+```
+
+### Architecture Rules
+
+- **Services layer:** All backend API calls go through `src/services/`. Never call `axios` directly in components.
+- **Types:** All API request/response types must be defined in `src/types/models.ts`
+- **Contexts:** Use contexts for auth state and profile data. Avoid creating new contexts unless absolutely necessary.
+- **Pages vs Components:** Pages handle routing and data fetching; components handle UI rendering.
+- **Co-locate related code:** Keep component-specific hooks, types, and utilities close to their components when not shared.
+
+---
+
+## Authentication Flow
+
+1. User authenticates via Firebase (Google sign-in or email/password)
+2. Firebase ID token is sent to backend `/api/v1/auth/login`
+3. Backend returns JWT access token + user info
+4. JWT is stored and attached to all subsequent API requests via Axios interceptor
+5. On 401 response, token is cleared and user redirected to `/login`
+
+**Important:**
+- Firebase handles the auth UI; backend validates Firebase tokens
+- New users go through a setup flow tracked by `current_setup_step`
+- Check `isNewUser` / `is_new_user` flag from login response
+
+---
+
+## API Integration
+
+- All requests use the Axios instance from `src/services/api.ts`
+- Base URL is configured via `REACT_APP_API_URL` environment variable
+- JWT token is automatically attached via request interceptor
+- Handle errors explicitly—don't let errors silently fail
+- Use TypeScript interfaces for all request/response payloads
+
+### Backend API Reference
+
+Refer to `/docs/api_documentation.md` for full endpoint documentation. Key endpoints:
+
+- **Auth:** `/api/v1/auth/login`, `/api/v1/auth/register`, `/api/v1/auth/me`
+- **Profiles:** `/api/v1/profiles/me`
+- **Portfolios:** `/api/v1/portfolios/`
+- **Resumes:** `/api/v1/resumes` (CRUD + PDF generation)
+- **Cover Letters:** `/api/v1/cover-letters` (CRUD + PDF generation)
+- **Templates:** `/api/v1/templates`
+- **Portfolio Websites:** `/api/v1/portfolio-websites`
+- **Job Extraction:** `/api/v1/jobs/extract/`
+
+---
+
+## Feature Flow Rules
+
+- All UI must strictly follow backend API contracts defined in `src/types/models.ts`
+- Implement one feature fully before starting another
+- Components must reflect these core flows:
+  - **Onboarding:** Registration → Profile Setup → Portfolio Import
+  - **Resume Creation:** Job Description Input → AI Generation → Edit → PDF Export
+  - **Cover Letter:** Select Resume → AI Generation → Edit → PDF Export
+  - **Portfolio Website:** Configure → Deploy → Manage
+- Background operations (PDF generation, AI content generation) must show loading states
+- Handle rate limiting gracefully (429 responses)
+
+---
+
+## Form Handling
+
+- Use **Formik** for form state management
+- Use **Yup** for validation schemas
+- Display validation errors inline below form fields
+- Disable submit button during submission
+- Show loading indicator on submit button during async operations
+
+Example pattern:
+```typescript
+const validationSchema = Yup.object({
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().min(8, 'Min 8 characters').required('Required'),
+});
+
+<Formik
+  initialValues={{ email: '', password: '' }}
+  validationSchema={validationSchema}
+  onSubmit={handleSubmit}
+>
+  {/* form fields */}
+</Formik>
+```
+
+---
+
+## State Management
+
+- **Local state first:** Use `useState` for component-local state
+- **Context for auth/profile:** Use `AuthContext` and `ProfileContext`
+- **No Redux/Zustand:** Keep state management simple
+- **Lift state up** only when multiple siblings need the same data
+- **Avoid prop drilling** by restructuring components or using context sparingly
+
+---
+
+## Testing & Validation
+
+Each feature should include:
+
+- Unit tests for utility functions
+- Component tests using React Testing Library
+- Mocking Axios for API calls in tests
+- Test critical user flows (login, resume creation, PDF download)
+
+Test file naming: `ComponentName.test.tsx` or `functionName.test.ts`
+
+---
+
+## Project Hygiene
+
+- Code must compile cleanly with TypeScript—no type errors
+- ESLint rules must pass
+- Files/components must be small and readable (<300 lines preferred)
+- Remove unused imports and dead code
+- No backward compatibility shims—keep the codebase clean
+- **Ask for clarification** if flow or backend contract is ambiguous
+- Do not leave legacy code or commented-out blocks
+
+---
+
+## Environment Configuration
+
+Required environment variables (`.env.local`):
+
+```
+REACT_APP_API_URL=http://localhost:8000/api/v1
+REACT_APP_FIREBASE_API_KEY=
+REACT_APP_FIREBASE_AUTH_DOMAIN=
+REACT_APP_FIREBASE_PROJECT_ID=
+REACT_APP_FIREBASE_STORAGE_BUCKET=
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=
+REACT_APP_FIREBASE_APP_ID=
+REACT_APP_FIREBASE_MEASUREMENT_ID=
+```
+
+---
+
+## Common Patterns
+
+### API Service Pattern
+
+```typescript
+// services/resumeService.ts
+import api from './api';
+import { Resume, ResumeCreateRequest } from '../types/models';
+
+export const createResume = async (data: ResumeCreateRequest): Promise<Resume> => {
+  const response = await api.post<Resume>('/resumes', data);
+  return response.data;
+};
+```
+
+### Protected Route Pattern
+
+```typescript
+// Check auth in page components
+const { user, loading } = useAuth();
+
+if (loading) return <CircularProgress />;
+if (!user) return <Navigate to="/login" />;
+```
+
+### Error Handling Pattern
+
+```typescript
+try {
+  const result = await someApiCall();
+  // handle success
+} catch (error) {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.detail || 'An error occurred';
+    // show error to user
+  }
+}
+```
+
+---
+
+## Key Data Models
+
+Always refer to `src/types/models.ts` for the source of truth. Key interfaces:
+
+- `User` - User account info
+- `Profile` - User profile with personal info and preferences
+- `Portfolio` - Skills, work experience, education, projects
+- `Resume` - Generated resume with content sections
+- `CoverLetter` - Generated cover letter linked to a resume
+- `PortfolioWebsiteConfig` - Website deployment configuration
+
+---
+
+## Development Commands
+
+```bash
+npm start          # Start dev server
+npm run dev        # Start dev server (debug mode)
+npm test           # Run tests
+npm run build      # Production build
+npm run lint       # Run ESLint
+```
