@@ -19,7 +19,7 @@ import {
   StepLabel,
   StepContent
 } from '@mui/material';
-import { CheckCircleOutline, ErrorOutline, Language } from '@mui/icons-material';
+import { CheckCircleOutline, ErrorOutline, Language, Refresh, DeleteSweep } from '@mui/icons-material';
 import { 
   createPortfolioWebsite, 
   getPortfolioWebsite, 
@@ -170,12 +170,19 @@ const WebsitePage: React.FC = () => {
     }
   };
 
-  const handleRedeploy = async () => {
+  const handleRedeploy = async (cleanDeploy: boolean = false) => {
     if (!website) return;
+    
+    if (cleanDeploy) {
+      if (!window.confirm('Clean deploy will delete all existing files and regenerate your website from scratch. This may take longer than a regular redeploy. Continue?')) {
+        return;
+      }
+    }
+    
     setIsLoading(true);
     setError(null);
     try {
-      const updatedWebsite = await deployPortfolioWebsite(true); // Force rebuild
+      const updatedWebsite = await deployPortfolioWebsite(true, cleanDeploy);
       setWebsite(updatedWebsite);
       if (isDeploymentInProgress(updatedWebsite.deployment_status)){
         pollDeploymentStatus();
@@ -391,14 +398,23 @@ const WebsitePage: React.FC = () => {
               {isDeploymentInProgress(website.deployment_status) && (
                 <Alert severity="info" sx={{my:1}}>Your website is currently {website.deployment_status.status}. This page will update automatically.</Alert>
               )}
-               <Box sx={{ mt: 2, display: 'flex', gap: 2}}>
+               <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap'}}>
                 <Button 
                     variant="contained" 
-                    onClick={handleRedeploy} 
+                    onClick={() => handleRedeploy(false)} 
                     disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                    startIcon={isLoading ? <CircularProgress size={20} /> : <Language />}
+                    startIcon={isLoading ? <CircularProgress size={20} /> : <Refresh />}
                 >
                     {isLoading ? 'Redeploying...' : 'Redeploy'}
+                </Button>
+                <Button 
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => handleRedeploy(true)} 
+                    disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
+                    startIcon={<DeleteSweep />}
+                >
+                    Clean Deploy
                 </Button>
                 <Button 
                     variant="outlined" 
@@ -409,6 +425,9 @@ const WebsitePage: React.FC = () => {
                     Delete Website
                 </Button>
                </Box>
+               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                 <strong>Redeploy:</strong> Updates changed files only. <strong>Clean Deploy:</strong> Deletes all files and rebuilds from scratch (slower, but fixes sync issues).
+               </Typography>
             </Paper>
           ) : (
             <Alert severity="info">

@@ -37,8 +37,13 @@ export const updateWebsiteConfig = async (
 };
 
 // Function to deploy or redeploy the website
-export const deployPortfolioWebsite = async (forceRebuild: boolean = false): Promise<PortfolioWebsiteResponse> => {
-  const params = forceRebuild ? { force_rebuild: true } : {};
+export const deployPortfolioWebsite = async (
+  forceRebuild: boolean = false,
+  cleanDeploy: boolean = false
+): Promise<PortfolioWebsiteResponse> => {
+  const params: Record<string, boolean> = {};
+  if (forceRebuild) params.force_rebuild = true;
+  if (cleanDeploy) params.clean_deploy = true;
   const response = await api.post<PortfolioWebsiteResponse>(`${API_BASE_URL}/deploy`, null, { params });
   return response.data;
 };
