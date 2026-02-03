@@ -70,11 +70,6 @@ const Footer: React.FC = () => {
             </Link>
           </Box>
           <Box component="li" sx={{ display: 'inline' }}>
-            <Link component={RouterLink} to="/careers" color="text.secondary" underline="hover" fontSize="0.875rem">
-              Careers
-            </Link>
-          </Box>
-          <Box component="li" sx={{ display: 'inline' }}>
             <Link component={RouterLink} to="/privacy" color="text.secondary" underline="hover" fontSize="0.875rem">
               Privacy
             </Link>

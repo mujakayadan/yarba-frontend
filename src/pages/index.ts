@@ -34,7 +34,6 @@ export { default as UserPage } from './user/UserPage';
 export { default as SupportPage } from './footer/SupportPage';
 export { default as FAQPage } from './footer/FAQPage';
 export { default as BlogPage } from './footer/BlogPage';
-export { default as CareersPage } from './footer/CareersPage';
 export { default as PrivacyPage } from './footer/PrivacyPage';
 export { default as TermsPage } from './footer/TermsPage';
 export { default as ContactPage } from './footer/ContactPage';

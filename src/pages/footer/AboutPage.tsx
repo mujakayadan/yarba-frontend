@@ -19,11 +19,7 @@ import {
   GitHub as GitHubIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-  LocationOn as LocationIcon,
-  School as EducationIcon,
-  Work as WorkIcon,
-  Science as ScienceIcon,
-  Article as ArticleIcon
+  LocationOn as LocationIcon
 } from '@mui/icons-material';
 
 const AboutPage: React.FC = () => {
@@ -108,8 +104,8 @@ const AboutPage: React.FC = () => {
           Behind YARBA is a dedicated Software Engineer with extensive experience in machine learning and AI solutions.
         </Typography>
         
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={5}>
+        <Grid container spacing={4} justifyContent="center">
+          <Grid item xs={12} md={6} lg={5}>
             <Card sx={{ 
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
@@ -220,81 +216,6 @@ const AboutPage: React.FC = () => {
             </Card>
           </Grid>
           
-          <Grid item xs={12} md={7}>
-            <Stack spacing={3}>
-              <Card sx={{ p: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <WorkIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography variant="h6">Professional Experience</Typography>
-                </Box>
-                <Typography variant="body1" paragraph>
-                  Software Engineer with 3 years of experience developing software solutions with a focus on machine learning, 
-                  specializing in LLMs and computer vision applications.
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Currently working as an ML Engineer on LLMs, RAG, Chatbots and developing intelligent solutions that bridge 
-                  the gap between human language and machine understanding to create more intuitive and powerful AI applications.
-                </Typography>
-                <Typography variant="body1">
-                  4 work experiences across 5 countries and 3 different continents, bringing a global perspective to problem-solving.
-                </Typography>
-              </Card>
-              
-              <Card sx={{ p: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <EducationIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography variant="h6">Education</Typography>
-                </Box>
-                <Typography variant="body1">
-                  Holder of 3 Master's Degrees, with a strong academic foundation in machine learning, 
-                  artificial intelligence, and software engineering.
-                </Typography>
-              </Card>
-              
-              <Card sx={{ p: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <ScienceIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography variant="h6">Research</Typography>
-                </Box>
-                <Typography variant="body1" paragraph>
-                  Published research in Nature - Scientific Reports on "High Accuracy Gender Determination Using the Egg Shape Index" 
-                  (January 2023), contributing to innovative machine learning applications in biological sciences.
-                </Typography>
-                <Link 
-                  href="https://www.nature.com/articles/s41598-023-27585-5" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    color: 'primary.main',
-                    width: 'fit-content',
-                    '&:hover': {
-                      textDecoration: 'none',
-                      color: 'secondary.main'
-                    }
-                  }}
-                >
-                  <ArticleIcon sx={{ mr: 1 }} fontSize="small" />
-                  View Publication
-                </Link>
-              </Card>
-              
-              <Card sx={{ p: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <ScienceIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography variant="h6">Skills & Interests</Typography>
-                </Box>
-                <Typography variant="body1" paragraph>
-                  I enjoy automating workflows, optimizing systems, and turning complex challenges into real results.
-                </Typography>
-                <Typography variant="body1">
-                  I'm always curious and constantly learning, with a passion for developing intelligent solutions 
-                  that make a positive impact.
-                </Typography>
-              </Card>
-            </Stack>
-          </Grid>
         </Grid>
       </Box>
 

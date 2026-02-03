@@ -27,7 +27,6 @@ import {
   SupportPage,
   FAQPage,
   BlogPage,
-  CareersPage,
   PrivacyPage,
   TermsPage,
   ContactPage,
@@ -187,12 +186,6 @@ const App: React.FC = () => {
               <Route path="/blog" element={
                 <MainLayout>
                   <BlogPage />
-                </MainLayout>
-              } />
-              
-              <Route path="/careers" element={
-                <MainLayout>
-                  <CareersPage />
                 </MainLayout>
               } />
               
