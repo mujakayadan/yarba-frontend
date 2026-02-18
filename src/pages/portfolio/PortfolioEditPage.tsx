@@ -123,7 +123,7 @@ const PortfolioEditPage: React.FC = () => {
     time: string;
     responsibilities: string[];
   }>>([]);
-  const [newResponsibility, setNewResponsibility] = useState('');
+  const [newResponsibility, setNewResponsibility] = useState<Record<number, string>>({});
   
   // Education state
   const [education, setEducation] = useState<Array<{
@@ -1047,19 +1047,20 @@ const PortfolioEditPage: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                   label="New Responsibility"
-                  value={newResponsibility}
-                  onChange={(e) => setNewResponsibility(e.target.value)}
+                  value={newResponsibility[expIndex] || ''}
+                  onChange={(e) => setNewResponsibility(prev => ({ ...prev, [expIndex]: e.target.value }))}
                   variant="outlined"
                   size="small"
                   sx={{ flexGrow: 1, mr: 2 }}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      if (newResponsibility.trim()) {
+                      const value = (newResponsibility[expIndex] || '').trim();
+                      if (value) {
                         const updatedExperience = [...workExperience];
-                        updatedExperience[expIndex].responsibilities.push(newResponsibility.trim());
+                        updatedExperience[expIndex].responsibilities.push(value);
                         setWorkExperience(updatedExperience);
-                        setNewResponsibility('');
+                        setNewResponsibility(prev => ({ ...prev, [expIndex]: '' }));
                       }
                     }
                   }}
@@ -1068,14 +1069,15 @@ const PortfolioEditPage: React.FC = () => {
                 <Button
                   variant="outlined"
                   onClick={() => {
-                    if (newResponsibility.trim()) {
+                    const value = (newResponsibility[expIndex] || '').trim();
+                    if (value) {
                       const updatedExperience = [...workExperience];
-                      updatedExperience[expIndex].responsibilities.push(newResponsibility.trim());
+                      updatedExperience[expIndex].responsibilities.push(value);
                       setWorkExperience(updatedExperience);
-                      setNewResponsibility('');
+                      setNewResponsibility(prev => ({ ...prev, [expIndex]: '' }));
                     }
                   }}
-                  disabled={!newResponsibility.trim()}
+                  disabled={!(newResponsibility[expIndex] || '').trim()}
                 >
                   Add
                 </Button>
