@@ -49,6 +49,7 @@ import {
   updateCertifications
 } from '../../services/portfolioService';
 import { Portfolio } from '../../types/models';
+import { sortByDateDesc } from '../../utils/dateSort';
 
 // Define interface for skill categories
 interface SkillCategory {
@@ -209,22 +210,23 @@ const PortfolioEditPage: React.FC = () => {
         });
       }
       
-      // Initialize work experience
+      // Initialize work experience (sorted latest-first)
       if (portfolioData.work_experience && portfolioData.work_experience.length > 0) {
-        setWorkExperience(portfolioData.work_experience.map((exp: any) => ({
+        const mapped = portfolioData.work_experience.map((exp: any) => ({
           job_title: exp.job_title || exp.position || '',
           company: exp.company || '',
           location: exp.location || '',
           time: exp.time || `${exp.start_date || ''} - ${exp.current ? 'Present' : (exp.end_date || '')}`,
           responsibilities: exp.responsibilities || exp.achievements || []
-        })));
+        }));
+        setWorkExperience(sortByDateDesc(mapped));
       } else {
         setWorkExperience([]);
       }
       
-      // Initialize education
+      // Initialize education (sorted latest-first)
       if (portfolioData.education && portfolioData.education.length > 0) {
-        setEducation(portfolioData.education.map((edu: any) => ({
+        const mapped = portfolioData.education.map((edu: any) => ({
           degree_type: edu.degree_type || '',
           degree: edu.degree || '',
           university_name: edu.university_name || edu.institution || '',
@@ -232,19 +234,21 @@ const PortfolioEditPage: React.FC = () => {
           location: edu.location || '',
           GPA: edu.GPA || '',
           transcript: edu.transcript || edu.courses || []
-        })));
+        }));
+        setEducation(sortByDateDesc(mapped));
       } else {
         setEducation([]);
       }
       
-      // Initialize projects
+      // Initialize projects (sorted latest-first)
       if (portfolioData.projects && portfolioData.projects.length > 0) {
-        setProjects(portfolioData.projects.map((proj: any) => ({
+        const mapped = portfolioData.projects.map((proj: any) => ({
           name: proj.name || '',
           bullet_points: proj.bullet_points || proj.achievements || [],
           date: proj.date || proj.start_date || '',
           link: proj.link || ''
-        })));
+        }));
+        setProjects(sortByDateDesc(mapped));
       } else {
         setProjects([]);
       }
@@ -259,21 +263,22 @@ const PortfolioEditPage: React.FC = () => {
         setAwards([]);
       }
       
-      // Initialize publications
+      // Initialize publications (sorted latest-first)
       if (portfolioData.publications && portfolioData.publications.length > 0) {
-        setPublications(portfolioData.publications.map((pub: any) => ({
+        const mapped = portfolioData.publications.map((pub: any) => ({
           name: pub.name || pub.title || '',
           publisher: pub.publisher || '',
           link: pub.link || pub.url || '',
           time: pub.time || pub.date || ''
-        })));
+        }));
+        setPublications(sortByDateDesc(mapped));
       } else {
         setPublications([]);
       }
       
-      // Initialize certifications
+      // Initialize certifications (sorted latest-first)
       if (portfolioData.certifications && portfolioData.certifications.length > 0) {
-        setCertifications(portfolioData.certifications);
+        setCertifications(sortByDateDesc(portfolioData.certifications));
       } else {
         setCertifications([]);
       }

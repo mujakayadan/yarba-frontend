@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { getUserPortfolio, getPortfolioById } from '../../services/portfolioService';
 import { Portfolio } from '../../types/models';
+import { sortByDateDesc } from '../../utils/dateSort';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -214,6 +215,13 @@ const PortfolioViewPage: React.FC = () => {
   const handleCreateClick = () => {
     navigate('/portfolio/create');
   };
+
+  const sortedWorkExperience = sortByDateDesc(portfolio?.work_experience ?? []);
+  const sortedEducation = sortByDateDesc(portfolio?.education ?? []);
+  const sortedProjects = sortByDateDesc(portfolio?.projects ?? []);
+  const sortedCertifications = sortByDateDesc(portfolio?.certifications ?? []);
+  const sortedAwards = sortByDateDesc(portfolio?.awards ?? []);
+  const sortedPublications = sortByDateDesc(portfolio?.publications ?? []);
 
   if (loading) {
     return (
@@ -471,7 +479,7 @@ const PortfolioViewPage: React.FC = () => {
         {/* Work Experience Tab */}
         <TabPanel value={tabValue} index={2}>
           
-          {portfolio.work_experience && portfolio.work_experience.map((job, index) => (
+          {sortedWorkExperience.map((job, index) => (
             <Box key={index} sx={{ 
               p: 3, 
               mb: 3,
@@ -536,7 +544,7 @@ const PortfolioViewPage: React.FC = () => {
               )}
             </Box>
           ))}
-          {(!portfolio.work_experience || portfolio.work_experience.length === 0) && (
+          {sortedWorkExperience.length === 0 && (
             <Typography variant="body2" color="text.secondary">No work experience added yet</Typography>
           )}
         </TabPanel>
@@ -544,7 +552,7 @@ const PortfolioViewPage: React.FC = () => {
         {/* Education Tab */}
         <TabPanel value={tabValue} index={3}>
           
-          {portfolio.education && portfolio.education.map((edu, index) => (
+          {sortedEducation.map((edu, index) => (
             <Paper key={index} elevation={1} sx={{ p: 3, mb: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', mb: 1 }}>
                 <Box>
@@ -594,7 +602,7 @@ const PortfolioViewPage: React.FC = () => {
               )}
             </Paper>
           ))}
-          {(!portfolio.education || portfolio.education.length === 0) && (
+          {sortedEducation.length === 0 && (
             <Typography variant="body2" color="text.secondary">No education details added yet</Typography>
           )}
         </TabPanel>
@@ -602,7 +610,7 @@ const PortfolioViewPage: React.FC = () => {
         {/* Projects Tab */}
         <TabPanel value={tabValue} index={4}>
           
-          {portfolio.projects && portfolio.projects.map((project, index) => (
+          {sortedProjects.map((project, index) => (
             <Box key={index} sx={{ 
               p: 3, 
               mb: 3,
@@ -672,7 +680,7 @@ const PortfolioViewPage: React.FC = () => {
               )}
             </Box>
           ))}
-          {(!portfolio.projects || portfolio.projects.length === 0) && (
+          {sortedProjects.length === 0 && (
             <Typography variant="body2" color="text.secondary">No projects added yet</Typography>
           )}
         </TabPanel>
@@ -681,7 +689,7 @@ const PortfolioViewPage: React.FC = () => {
         <TabPanel value={tabValue} index={5}>
           
           <Grid container spacing={3}>
-            {portfolio.certifications && portfolio.certifications.map((cert, index) => (
+            {sortedCertifications.map((cert, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Paper elevation={1} sx={{ p: 2, height: '100%' }}>
                   <Typography variant="subtitle1" gutterBottom>{cert.name}</Typography>
@@ -705,7 +713,7 @@ const PortfolioViewPage: React.FC = () => {
                 </Paper>
               </Grid>
             ))}
-            {(!portfolio.certifications || portfolio.certifications.length === 0) && (
+            {sortedCertifications.length === 0 && (
               <Grid item xs={12}>
                 <Typography variant="body2" color="text.secondary">No certifications added yet</Typography>
               </Grid>
@@ -716,9 +724,9 @@ const PortfolioViewPage: React.FC = () => {
         {/* Awards Tab */}
         <TabPanel value={tabValue} index={6}>
           
-          {portfolio.awards && portfolio.awards.length > 0 ? (
+          {sortedAwards.length > 0 ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {portfolio.awards.map((award, index) => (
+              {sortedAwards.map((award, index) => (
                 <Paper key={index} elevation={1} sx={{ p: 3, mb: 1 }}>
                   <Grid container spacing={2}>
                     {/* Award Name/Title */}
@@ -805,9 +813,9 @@ const PortfolioViewPage: React.FC = () => {
         {/* Publications Tab */}
         <TabPanel value={tabValue} index={7}>
           
-          {portfolio.publications && portfolio.publications.length > 0 ? (
+          {sortedPublications.length > 0 ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}> 
-              {portfolio.publications.map((pub, index) => (
+              {sortedPublications.map((pub, index) => (
                 <Paper key={index} elevation={1} sx={{ p: 3, mb: 1 }}>
                   <Grid container spacing={2}>
                     {/* Publication Title/Name */}

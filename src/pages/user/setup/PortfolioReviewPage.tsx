@@ -13,6 +13,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../services/api';
+import { sortByDateDesc } from '../../../utils/dateSort';
 
 interface ParsedPortfolioData {
     career_summary?: {
@@ -270,7 +271,7 @@ const PortfolioReviewPage: React.FC = () => {
                     <AccordionDetails>
                         {parsedData.work_experience && parsedData.work_experience.length > 0 ? (
                             <Box>
-                                {parsedData.work_experience.map((job, index) => (
+                                {sortByDateDesc(parsedData.work_experience).map((job, index) => (
                                     <Box key={index} sx={{ mb: 3 }}>
                                         <Typography variant="subtitle1" fontWeight="bold">
                                             {job.job_title} at {job.company}
@@ -310,7 +311,7 @@ const PortfolioReviewPage: React.FC = () => {
                     <AccordionDetails>
                         {parsedData.education && parsedData.education.length > 0 ? (
                             <Box>
-                                {parsedData.education.map((edu, index) => (
+                                {sortByDateDesc(parsedData.education).map((edu, index) => (
                                     <Box key={index} sx={{ mb: 3 }}>
                                         <Typography variant="subtitle1" fontWeight="bold">
                                             {edu.degree_type ? `${edu.degree_type} in ` : ''}
@@ -357,7 +358,7 @@ const PortfolioReviewPage: React.FC = () => {
                     <AccordionDetails>
                         {parsedData.projects && parsedData.projects.length > 0 ? (
                             <Box>
-                                {parsedData.projects.map((project, index) => (
+                                {sortByDateDesc(parsedData.projects).map((project, index) => (
                                     <Box key={index} sx={{ mb: 3 }}>
                                         <Typography variant="subtitle1" fontWeight="bold">
                                             {project.name}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import { ParsedPortfolioData } from '../../../types/portfolio';
+import { sortByDateDesc } from '../../../utils/dateSort';
 
 import ParsedCareerSummaryDisplay from './ParsedCareerSummaryDisplay';
 import ParsedSkillsDisplay from './ParsedSkillsDisplay';
@@ -33,11 +34,11 @@ const ParsedPortfolioDisplay: React.FC<ParsedPortfolioDisplayProps> = ({ portfol
 
       {portfolioData.career_summary && <ParsedCareerSummaryDisplay careerSummary={portfolioData.career_summary} />}
       {portfolioData.skills && portfolioData.skills.length > 0 && <ParsedSkillsDisplay skills={portfolioData.skills} />}
-      {portfolioData.work_experience && portfolioData.work_experience.length > 0 && <ParsedWorkExperienceDisplay workExperience={portfolioData.work_experience} />}
-      {portfolioData.education && portfolioData.education.length > 0 && <ParsedEducationDisplay education={portfolioData.education} />}
-      {portfolioData.projects && portfolioData.projects.length > 0 && <ParsedProjectsDisplay projects={portfolioData.projects} />}
+      {portfolioData.work_experience && portfolioData.work_experience.length > 0 && <ParsedWorkExperienceDisplay workExperience={sortByDateDesc(portfolioData.work_experience)} />}
+      {portfolioData.education && portfolioData.education.length > 0 && <ParsedEducationDisplay education={sortByDateDesc(portfolioData.education)} />}
+      {portfolioData.projects && portfolioData.projects.length > 0 && <ParsedProjectsDisplay projects={sortByDateDesc(portfolioData.projects)} />}
       {portfolioData.awards && portfolioData.awards.length > 0 && <ParsedAwardsDisplay awards={portfolioData.awards} />}
-      {portfolioData.publications && portfolioData.publications.length > 0 && <ParsedPublicationsDisplay publications={portfolioData.publications} />}
+      {portfolioData.publications && portfolioData.publications.length > 0 && <ParsedPublicationsDisplay publications={sortByDateDesc(portfolioData.publications)} />}
       {portfolioData.certifications && portfolioData.certifications.length > 0 && <ParsedCertificationsDisplay certifications={portfolioData.certifications} />}
       {portfolioData.custom_sections && portfolioData.custom_sections.sections.length > 0 && <ParsedCustomSectionsDisplay customSections={portfolioData.custom_sections} />}
     </Box>
