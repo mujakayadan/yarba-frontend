@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User as FirebaseUser } from 'firebase/auth';
+import type { User as FirebaseUser } from 'firebase/auth';
 import api from '../services/api';
 import { 
   loginWithEmail,
   registerWithEmail,
   loginWithGoogle as loginWithGoogleService,
   logout,
-  exchangeFirebaseTokenForJWT,
   getCurrentFirebaseUser
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
@@ -183,55 +182,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Handle Firebase token exchange and user data fetch
-  const handleTokenExchange = async (fbUser: FirebaseUser) => {
-    try {
-      debug.log('Starting token exchange for user:', fbUser.email);
-      
-      // Check if we're offline before making API calls
-      if (checkNetworkConnectivity()) {
-        debug.warn('Device appears to be offline, skipping token exchange');
-        setLoading(false);
-        return;
-      }
-      
-      const tokenResponse = await exchangeFirebaseTokenForJWT();
-      
-      if (tokenResponse) {
-        const { access_token, user: responseUser, current_setup_step } = tokenResponse;
-        localStorage.setItem('auth_token', access_token);
-        
-        // Set Authorization header for future requests
-        api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-        debug.log('Token exchange successful, token saved');
-        
-        // Set authenticated state immediately
-        setIsAuthenticated(true);
-        
-        if (responseUser) {
-          setUser({ ...responseUser, current_setup_step });
-        }
-        
-        // Update setup state
-        updateSetupState(current_setup_step);
-        
-        // Fetch full user data to ensure we have the latest
-        await fetchCurrentUser();
-      } else {
-        debug.warn('Token exchange did not return a valid response');
-        setLoading(false);
-      }
-    } catch (err: any) {
-      debug.error('Token exchange error:', err);
-      setError(err.message || 'Error during authentication');
-      setLoading(false);
-    }
-  };
-
-  // Listen for Firebase auth state changes
   useEffect(() => {
-    debug.log('Setting up Firebase auth state listener');
-    
+    debug.log('Setting up auth bootstrap');
+
     // Set up online/offline event listeners
     const handleOnline = () => {
       debug.log('Device is now ONLINE');
@@ -255,37 +208,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
     
-    const checkCurrentUser = async () => {
+    const initializeAuth = async () => {
       try {
-        // Initial network check
         const isOffline = checkNetworkConnectivity();
-        
-        // If offline, we can skip the Firebase auth check to prevent errors
         if (isOffline) {
-          debug.warn('Device is offline, skipping Firebase auth check');
+          debug.warn('Device is offline, skipping auth bootstrap');
           setLoading(false);
           return;
         }
-        
-        const fbUser = await getCurrentFirebaseUser();
-        setFirebaseUser(fbUser);
-        
-        if (fbUser) {
-          debug.log('Firebase user is logged in:', fbUser.email);
-          await handleTokenExchange(fbUser);
-        } else {
-          debug.log('No Firebase user found');
-          setLoading(false);
-          setIsAuthenticated(false);
+
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          debug.log('Restoring session from stored auth token');
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          await fetchCurrentUser();
+          return;
         }
-      } catch (err: any) {
-        debug.error('Error checking current user:', err);
-        setError(err.message);
+
+        debug.log('No stored auth token, skipping Firebase bootstrap');
+        setLoading(false);
+        setIsAuthenticated(false);
+      } catch (err: unknown) {
+        debug.error('Error initializing auth:', err);
+        setError(err instanceof Error ? err.message : 'Error during authentication');
         setLoading(false);
       }
     };
-    
-    checkCurrentUser();
+
+    void initializeAuth();
     
     // Clean up event listeners
     return () => {

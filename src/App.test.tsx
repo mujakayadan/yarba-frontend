@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('./firebaseConfig', () => ({
-  auth: { tenantId: null, app: { options: {} } },
-  app: {},
-  analytics: null,
+  getFirebaseAuth: vi.fn(async () => ({ tenantId: null, currentUser: null, app: { options: {} } })),
+  getFirebaseApp: vi.fn(async () => ({})),
+  getFirebaseAnalytics: vi.fn(async () => null),
 }));
 
 vi.mock('./services/authService', () => ({

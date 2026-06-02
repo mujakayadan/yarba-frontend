@@ -7,6 +7,9 @@ const vendorChunk = (id: string): string | undefined => {
     return undefined;
   }
 
+  if (id.includes('animated-backgrounds')) {
+    return 'animated-backgrounds';
+  }
   if (id.includes('react-pdf') || id.includes('pdfjs-dist')) {
     return 'pdf';
   }

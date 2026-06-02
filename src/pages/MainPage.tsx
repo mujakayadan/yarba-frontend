@@ -1,6 +1,6 @@
 import Grid from '../mui/Grid';
 "use client";
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Container, Typography, Box, Button, Paper, Avatar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -9,8 +9,13 @@ import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import BuildIcon from '@mui/icons-material/Build';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import StarIcon from '@mui/icons-material/Star';
-import { AnimatedBackground } from 'animated-backgrounds';
 import MainLayout from '../components/layout/MainLayout';
+
+const AnimatedBackground = lazy(() =>
+  import('animated-backgrounds').then((module) => ({
+    default: module.AnimatedBackground as React.ComponentType<{ animationName: string }>,
+  })),
+);
 
 const FeaturePaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -71,7 +76,9 @@ const MainPage: React.FC = () => {
 
   return (
     <MainLayout hideDrawer={true}>
-      <AnimatedBackground animationName="fallingFoodFiesta" />
+      <Suspense fallback={null}>
+        <AnimatedBackground animationName="fallingFoodFiesta" />
+      </Suspense>
       <Box sx={{ overflowX: 'hidden' }}>
         <Container 
           disableGutters

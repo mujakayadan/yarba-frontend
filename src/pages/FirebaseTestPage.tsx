@@ -35,8 +35,8 @@ const FirebaseTestPage: React.FC = () => {
 
   // Get tenant ID from auth configuration
   useEffect(() => {
-    // Import the auth object at runtime to reflect latest changes
-    import('../firebaseConfig').then(({ auth }) => {
+    void import('../firebaseConfig').then(async ({ getFirebaseAuth }) => {
+      const auth = await getFirebaseAuth();
       setTenantId(auth.tenantId);
     });
   }, []);

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { Analytics } from '@vercel/analytics/react';
 import theme from './theme';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProfileProvider } from './contexts/ProfileContext';
@@ -10,6 +9,10 @@ import { AppQueryProvider } from './providers/QueryProvider';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import AppRoutes from './routes/AppRoutes';
 import { isDev } from './config/env';
+
+const Analytics = lazy(() =>
+  import('@vercel/analytics/react').then((module) => ({ default: module.Analytics })),
+);
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -31,7 +34,9 @@ const App: React.FC = () => {
             </ProfileProvider>
           </AuthProvider>
         </AppQueryProvider>
-        <Analytics />
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
       </ThemeProvider>
     </ErrorBoundary>
   );
