@@ -1,11 +1,13 @@
 # Yarba Frontend
 
-Frontend for Yarba — an AI-powered resume, cover letter, and portfolio platform.
+Frontend for [Yarba](https://github.com/mucahitkayadan/yarba-frontend) — an AI-powered resume, cover letter, and portfolio platform.
 
 ## Prerequisites
 
 - Node.js 18+
 - npm 8+
+- A running Yarba backend API (see backend repo documentation)
+- A Firebase project with Authentication enabled
 
 ## Setup
 
@@ -13,22 +15,12 @@ Frontend for Yarba — an AI-powered resume, cover letter, and portfolio platfor
 git clone https://github.com/mucahitkayadan/yarba-frontend.git
 cd yarba-frontend
 npm install
+cp .env.example .env.local
 ```
 
-Create `.env.local` in the project root:
+Edit `.env.local` with your backend URL and Firebase web app config from the Firebase Console.
 
-```env
-VITE_API_URL=http://localhost:8000/api/v1
-VITE_CLOUDFRONT_URL=https://your-cloudfront-domain/
-VITE_DEBUG=true
-VITE_FIREBASE_API_KEY=your-firebase-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-firebase-auth-domain
-VITE_FIREBASE_PROJECT_ID=your-firebase-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-firebase-storage-bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your-firebase-messaging-sender-id
-VITE_FIREBASE_APP_ID=your-firebase-app-id
-VITE_FIREBASE_MEASUREMENT_ID=your-firebase-measurement-id
-```
+See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Scripts
 
@@ -53,8 +45,12 @@ VITE_FIREBASE_MEASUREMENT_ID=your-firebase-measurement-id
 
 ## Deployment
 
-Configured for Vercel. Set `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
+Configured for Vercel. Set all `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
 
-## Firebase test page
+## Development tools
 
-Available at `/firebase-test` when authenticated.
+The Firebase debug page at `/firebase-test` is available only in development mode (`npm run dev`).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

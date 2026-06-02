@@ -88,7 +88,7 @@ export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | nul
   try {
     debug.log('Sending Firebase token to backend for JWT exchange');
     const response = await api.post<LoginResponse>('/auth/login', { id_token: idToken });
-    debug.log('JWT exchange successful, response:', response.data);
+    debug.log('JWT exchange successful');
     
     // Reset error state on success
     tokenExchangeInProgress = false;
@@ -117,7 +117,7 @@ export const registerWithEmail = async (data: RegisterRequest): Promise<LoginRes
     debug.log('Sending registration details to backend for:', data.email);
     const { email, password } = data;
     const response = await api.post<LoginResponse>('/auth/register', { email, password });
-    debug.log('Backend registration successful, response:', response.data);
+    debug.log('Backend registration successful for:', data.email);
     
     if (response.data.access_token) {
       storeToken(response.data.access_token);
@@ -296,7 +296,7 @@ export const verifyFirebaseToken = async (): Promise<any> => {
   try {
     debug.log('Verifying Firebase token');
     const response = await api.post('/auth/firebase/verify-token', { id_token: idToken });
-    debug.log('Token verification successful:', response.data);
+    debug.log('Token verification successful');
     return response.data;
   } catch (error) {
     debug.error('Error verifying Firebase token:', error);

@@ -8,9 +8,5 @@
   ],
   "github": {
     "silent": true
-  },
-  "env": {
-    "VITE_DEBUG": "false",
-    "VITE_FIREBASE_PROJECT_ID": "yarba-app"
   }
 }

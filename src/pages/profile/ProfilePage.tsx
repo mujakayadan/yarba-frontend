@@ -34,6 +34,9 @@ import {
   deleteSignature
 } from '../../services/profileService';
 import { Profile } from '../../types/models';
+import { createDebugger } from '../../utils/debug';
+
+const debug = createDebugger('ProfilePage');
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -82,12 +85,9 @@ const ProfilePage: React.FC = () => {
     try {
       setLoading(true);
       const response = await getUserProfile();
-      console.log('Fetched profile:', response);
-      console.log('Profile picture key from API:', response.profile_picture_key);
-      console.log('Signature key from API:', response.signature_key);
       setProfile(response);
     } catch (err: any) {
-      console.error('Failed to fetch profile:', err);
+      debug.error('Failed to fetch profile:', err);
       setError('Failed to load profile. Please try again.');
     } finally {
       setLoading(false);
@@ -125,31 +125,25 @@ const ProfilePage: React.FC = () => {
       setUploading(true);
       if (uploadType === 'profile') {
         const result = await uploadProfilePicture(selectedFile);
-        console.log('Profile picture upload result:', result);
-        // Update profile state directly if needed
         if (result && result.profile_picture_key) {
           setProfile(prev => prev ? { ...prev, profile_picture_key: result.profile_picture_key } : prev);
           setImageVersion(Date.now());
         } else {
-          // Fallback to refetching the profile
           await fetchProfile();
         }
       } else {
         const result = await uploadSignature(selectedFile);
-        console.log('Signature upload result:', result);
-        // Update profile state directly if needed
         if (result && result.signature_key) {
           setProfile(prev => prev ? { ...prev, signature_key: result.signature_key } : prev);
           setImageVersion(Date.now());
         } else {
-          // Fallback to refetching the profile
           await fetchProfile();
         }
       }
       
       handleCloseUploadDialog();
     } catch (err) {
-      console.error(`Failed to upload ${uploadType === 'profile' ? 'profile picture' : 'signature'}:`, err);
+      debug.error(`Failed to upload ${uploadType === 'profile' ? 'profile picture' : 'signature'}:`, err);
       setError(`Failed to upload ${uploadType === 'profile' ? 'profile picture' : 'signature'}. Please try again.`);
     } finally {
       setUploading(false);
@@ -158,26 +152,22 @@ const ProfilePage: React.FC = () => {
 
   const handleDeleteProfilePicture = async () => {
     try {
-      const result = await deleteProfilePicture();
-      console.log('Delete profile picture result:', result);
-      // Update profile state directly
+      await deleteProfilePicture();
       setProfile(prev => prev ? { ...prev, profile_picture_key: undefined } : prev);
       setImageVersion(Date.now());
     } catch (err) {
-      console.error('Failed to delete profile picture:', err);
+      debug.error('Failed to delete profile picture:', err);
       setError('Failed to delete profile picture. Please try again.');
     }
   };
 
   const handleDeleteSignature = async () => {
     try {
-      const result = await deleteSignature();
-      console.log('Delete signature result:', result);
-      // Update profile state directly
+      await deleteSignature();
       setProfile(prev => prev ? { ...prev, signature_key: undefined } : prev);
       setImageVersion(Date.now());
     } catch (err) {
-      console.error('Failed to delete signature:', err);
+      debug.error('Failed to delete signature:', err);
       setError('Failed to delete signature. Please try again.');
     }
   };

@@ -4,6 +4,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
+import { isDev } from '../config/env';
 
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const MainPage = lazy(() => import('../pages/MainPage'));
@@ -108,7 +109,7 @@ const AppRoutes: React.FC = () => (
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/firebase-test" element={<FirebaseTestPage />} />
+        {isDev && <Route path="/firebase-test" element={<FirebaseTestPage />} />}
         <Route path="/resumes" element={<ResumesPage />} />
         <Route path="/resumes/new" element={<CreateResumePage />} />
         <Route path="/resumes/:id" element={<ViewResumePage />} />

@@ -1,22 +1,35 @@
 import { initializeApp } from 'firebase/app';
 import { Analytics, getAnalytics, isSupported } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
-import { env, isDev } from './config/env';
+import { env } from './config/env';
 import { createDebugger } from './utils/debug';
 
 const debug = createDebugger('Firebase');
 
-const PROJECT_ID = 'yarba-app';
+const requiredFirebaseEnv = [
+  ['apiKey', env.firebase.apiKey],
+  ['authDomain', env.firebase.authDomain],
+  ['projectId', env.firebase.projectId],
+  ['storageBucket', env.firebase.storageBucket],
+  ['messagingSenderId', env.firebase.messagingSenderId],
+  ['appId', env.firebase.appId],
+] as const;
 
-if (isDev) {
-  console.log('Firebase initialization starting...');
-  console.log('Environment project ID:', env.firebase.projectId);
+const missingFirebaseEnv = requiredFirebaseEnv
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+if (missingFirebaseEnv.length > 0) {
+  throw new Error(
+    `Missing Firebase environment variables: ${missingFirebaseEnv.join(', ')}. ` +
+      'Copy .env.example to .env.local and fill in your Firebase web app config.',
+  );
 }
 
 const firebaseConfig = {
   apiKey: env.firebase.apiKey,
   authDomain: env.firebase.authDomain,
-  projectId: env.firebase.projectId || PROJECT_ID,
+  projectId: env.firebase.projectId,
   storageBucket: env.firebase.storageBucket,
   messagingSenderId: env.firebase.messagingSenderId,
   appId: env.firebase.appId,
@@ -51,13 +64,6 @@ isSupported()
 
 const auth = getAuth(app);
 auth.tenantId = null;
-
-if (isDev) {
-  console.log('Firebase auth configuration:', {
-    projectId: auth.app.options.projectId,
-    authDomain: auth.app.options.authDomain,
-  });
-}
 
 debug.log('Firebase initialized successfully');
 
