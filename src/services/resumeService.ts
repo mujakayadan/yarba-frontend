@@ -1,4 +1,5 @@
 import api from './api';
+import { env, isDev } from '../config/env';
 import { Resume, ResumeCreateRequest } from '../types/models';
 import { ResumesForSelectionResponse } from '../types/models';
 
@@ -30,20 +31,20 @@ export const getResumes = async (
   
   // Add sorting parameter
   params.append('sort_by', sort_by);
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log(`Adding sort_by=${sort_by}`);
   }
   
   const requestUrl = `/resumes?${params.toString()}`;
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log(`API Call: GET ${requestUrl}`);
-    console.log(`Full URL would be: ${process.env.REACT_APP_API_URL}${requestUrl}`);
+    console.log(`Full URL would be: ${env.apiUrl}${requestUrl}`);
   }
   const response = await api.get(requestUrl);
   
   // Backend now returns properly formatted paginated response
   if (response.data && response.data.items && typeof response.data.total === 'number') {
-    if (process.env.NODE_ENV !== 'production') {
+    if (isDev) {
       console.log(`API returned ${response.data.items.length} items, total: ${response.data.total}`);
     }
     return response.data;
@@ -97,7 +98,7 @@ export const deleteResume = async (id: string): Promise<void> => {
 
 // Generate PDF for a resume
 export const getResumePdf = async (id: string, timeout: number = 30): Promise<Blob | { pdf_url: string }> => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log(`Requesting PDF for resume ID: ${id} with timeout: ${timeout}`);
   }
   try {
@@ -115,7 +116,7 @@ export const getResumePdf = async (id: string, timeout: number = 30): Promise<Bl
     });
     return blobResponse.data;
   } catch (error: any) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (isDev) {
       console.error('PDF generation error:', error);
     }
     // If we get a response with error details
@@ -124,7 +125,7 @@ export const getResumePdf = async (id: string, timeout: number = 30): Promise<Bl
       if (error.response.data instanceof Blob) {
         try {
           const errorText = await error.response.data.text();
-          if (process.env.NODE_ENV !== 'production') {
+          if (isDev) {
             console.error('Server error message:', errorText);
           }
           throw new Error(errorText);

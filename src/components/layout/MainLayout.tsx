@@ -40,7 +40,8 @@ import {
   Language as LanguageIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
+import { env } from '../../config/env';
 import { getUserProfile } from '../../services/profileService';
 import { Profile } from '../../types/models';
 import Footer from './Footer';
@@ -65,7 +66,7 @@ const navItems = [
 ];
 
 interface MainLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   hideDrawer?: boolean;
 }
 
@@ -405,7 +406,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               >
                 {profile?.profile_picture_key && !imageError ? (
                   <img 
-                    src={`${process.env.REACT_APP_CLOUDFRONT_URL}${profile.profile_picture_key}?v=${imageVersion}`}
+                    src={`${env.cloudfrontUrl}${profile.profile_picture_key}?v=${imageVersion}`}
                     alt={profile?.personal_information?.full_name || "User profile"}
                     style={{ 
                       width: '100%',
@@ -597,7 +598,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
         }}
       >
         <Box sx={{ flexGrow: 1 }}>
-          {children}
+          {children ?? <Outlet />}
         </Box>
         <Footer />
       </Box>

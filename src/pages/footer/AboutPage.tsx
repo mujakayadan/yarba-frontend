@@ -1,18 +1,6 @@
+import Grid from '../../mui/Grid';
 import React from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardMedia,
-  Divider,
-  Paper,
-  Link,
-  Chip,
-  Stack
-} from '@mui/material';
+import { Container, Typography, Box, Card, CardContent, CardMedia, Divider, Paper, Link, Chip, Stack } from '@mui/material';
 import { 
   Language as WebIcon,
   LinkedIn as LinkedInIcon,

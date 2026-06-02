@@ -50,16 +50,14 @@ import { useNavigate } from 'react-router-dom';
 import { getCoverLetters, deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
 import { getResumeById } from '../../services/resumeService';
 import { CoverLetter } from '../../types/models';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { Toast } from '../../components/common';
+import { Toast, PdfPreviewDialog } from '../../components/common';
+import { usePdfPreview } from '../../hooks/usePdfPreview';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 const DEFAULT_PAGE_SIZE = 10;
 
 // Set up the worker for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
 const CoverLettersPage: React.FC = () => {
   const navigate = useNavigate();
   const [coverLetters, setCoverLetters] = useState<CoverLetter[]>([]);
@@ -75,11 +73,7 @@ const CoverLettersPage: React.FC = () => {
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
+  const pdfPreview = usePdfPreview();
   const [selectedCoverLetterName, setSelectedCoverLetterName] = useState<string>('');
   const [resumeTitles, setResumeTitles] = useState<Record<string, string>>({});
 
@@ -147,14 +141,6 @@ const CoverLettersPage: React.FC = () => {
       fetchResumeTitles();
     }
   }, [coverLetters]);
-
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -338,14 +324,7 @@ const CoverLettersPage: React.FC = () => {
       // Fetch the PDF from the URL
       const response = await fetch(pdfResponse.pdf_url);
       const blob = await response.blob();
-      setPdfBlob(blob);
-      
-      // Create a URL for the PDF blob
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-      
-      // Open the PDF viewer modal
-      setPdfViewerOpen(true);
+      pdfPreview.openPreviewFromBlob(blob);
       setSelectedCoverLetterId(coverLetterId);
     } catch (error: any) {
       console.error('Failed to generate PDF:', error);
@@ -366,31 +345,6 @@ const CoverLettersPage: React.FC = () => {
       handleMenuClose();
     }
   };
-  
-  const handleClosePdfViewer = () => {
-    setPdfViewerOpen(false);
-    setPageNumber(1);
-    setNumPages(null);
-    
-    // Clean up URL object
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(null);
-    }
-  };
-  
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setPageNumber(1);
-  };
-  
-  const changePage = (offset: number) => {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  };
-  
-  const previousPage = () => changePage(-1);
-  
-  const nextPage = () => changePage(1);
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: '100%' }}>
@@ -562,11 +516,11 @@ const CoverLettersPage: React.FC = () => {
                         >
                           <Button 
                             variant="outlined" 
-                            startIcon={generatingPdf && !pdfViewerOpen ? <CircularProgress size={16} /> : <PdfIcon />}
+                            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <PdfIcon />}
                             onClick={() => handleViewPdf(coverLetter.id)}
                             disabled={generatingPdf}
                           >
-                            {generatingPdf && !pdfViewerOpen ? 'Loading...' : 'See PDF'}
+                            {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
                           </Button>
                         </Tooltip>
                         <Tooltip 
@@ -755,104 +709,33 @@ const CoverLettersPage: React.FC = () => {
         onClose={() => setSnackbarOpen(false)}
       />
       
-      {/* PDF Viewer Dialog */}
-      <Dialog
-        open={pdfViewerOpen}
-        onClose={handleClosePdfViewer}
-        maxWidth="lg"
-        fullWidth
-        PaperProps={{
-          sx: {
-            height: '90vh',
-            maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column'
-          }
+      <PdfPreviewDialog
+        open={pdfPreview.open}
+        title={`${selectedCoverLetterName || 'Cover Letter'} PDF Preview`}
+        pdfUrl={pdfPreview.pdfUrl}
+        pageNumber={pdfPreview.pageNumber}
+        numPages={pdfPreview.numPages}
+        onClose={pdfPreview.closePreview}
+        onDocumentLoadSuccess={pdfPreview.onDocumentLoadSuccess}
+        onPrevious={pdfPreview.previousPage}
+        onNext={pdfPreview.nextPage}
+        onLoadError={(error) => {
+          setErrorMessage(error.message);
+          setSnackbarOpen(true);
         }}
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            {selectedCoverLetterName || 'Cover Letter'} PDF Preview
-          </Typography>
-          <IconButton onClick={handleClosePdfViewer} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {pdfUrl ? (
-            <Box sx={{ 
-              height: '100%', 
-              width: '100%', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center'
-            }}>
-              <Box sx={{ 
-                border: '1px solid black', 
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-              }}>
-                <Document
-                  file={pdfUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  onLoadError={(error) => {
-                    setErrorMessage(error.message);
-                    setSnackbarOpen(true);
-                  }}
-                  loading={<CircularProgress />}
-                >
-                  <Page 
-                    pageNumber={pageNumber} 
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    width={Math.min(window.innerWidth * 0.8, 800)}
-                  />
-                </Document>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-between', px: 3, py: 2 }}>
-          <Box>
-            {numPages && (
-              <Typography variant="body2">
-                Page {pageNumber} of {numPages}
-              </Typography>
-            )}
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button 
-              onClick={previousPage} 
-              disabled={pageNumber <= 1 || !numPages}
-              variant="outlined"
+        footerActions={
+          pdfPreview.pdfUrl && selectedCoverLetterId ? (
+            <Button
+              variant="contained"
+              startIcon={<PdfIcon />}
+              onClick={() => handleDownloadPdf(selectedCoverLetterId)}
               size="small"
             >
-              Previous
+              Download
             </Button>
-            <Button 
-              onClick={nextPage} 
-              disabled={!numPages || pageNumber >= numPages}
-              variant="outlined"
-              size="small"
-            >
-              Next
-            </Button>
-            {pdfUrl && selectedCoverLetterId && (
-              <Button
-                variant="contained"
-                startIcon={<PdfIcon />}
-                onClick={() => handleDownloadPdf(selectedCoverLetterId)}
-                size="small"
-              >
-                Download
-              </Button>
-            )}
-          </Box>
-        </DialogActions>
-      </Dialog>
+          ) : undefined
+        }
+      />
     </Box>
   );
 };

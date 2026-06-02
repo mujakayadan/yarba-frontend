@@ -10,6 +10,7 @@ export { default as ResumesPage } from './resume/ResumesPage';
 export { default as CoverLettersPage } from './cover-letter/CoverLettersPage';
 export { default as CoverLetterNewPage } from './cover-letter/CoverLetterNewPage';
 export { default as CoverLetterViewPage } from './cover-letter/CoverLetterViewPage';
+export { default as CoverLetterEditPage } from './cover-letter/CoverLetterEditPage';
 export { default as ViewResumePage } from './resume/ViewResumePage';
 export { default as EditResumePage } from './resume/EditResumePage';
 export { default as PortfolioPage } from './portfolio/PortfolioPage';

@@ -1,22 +1,7 @@
+import Grid from '../../mui/Grid';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Tabs, 
-  Tab, 
-  Paper, 
-  Button, 
-  CircularProgress, 
-  Alert,
-  Divider,
-  List,
-  ListItem,
-  Chip,
-  Avatar,
-  Grid,
-  IconButton
-} from '@mui/material';
+import { Box, Typography, Tabs, Tab, Paper, Button, CircularProgress, Alert, Divider, List, ListItem, Chip, Avatar, IconButton } from '@mui/material';
 import {
   Edit as EditIcon,
   Add as AddIcon,

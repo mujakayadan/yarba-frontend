@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node vercel-build.js",
+  "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "outputDirectory": "build",
   "rewrites": [
@@ -10,12 +10,7 @@
     "silent": true
   },
   "env": {
-    "REACT_APP_DEBUG": "false",
-    "REACT_APP_FIREBASE_PROJECT_ID": "yarba-app",
-    "SKIP_PREFLIGHT_CHECK": "true",
-    "DISABLE_ESLINT_PLUGIN": "true",
-    "ESLINT_NO_DEV_ERRORS": "true",
-    "TSC_COMPILE_ON_ERROR": "true",
-    "GENERATE_SOURCEMAP": "false"
+    "VITE_DEBUG": "false",
+    "VITE_FIREBASE_PROJECT_ID": "yarba-app"
   }
-} 
+}

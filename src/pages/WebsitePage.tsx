@@ -1,25 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Typography, 
-  Container, 
-  Paper, 
-  Box, 
-  Button, 
-  TextField, 
-  CircularProgress, 
-  Alert,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Link,
-  Chip,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent
-} from '@mui/material';
-import { CheckCircleOutline, ErrorOutline, Language, Refresh, DeleteSweep } from '@mui/icons-material';
+import Grid from '../mui/Grid';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Typography, Container, Paper, Box, Button, TextField, CircularProgress, Alert, Card, CardMedia, CardContent, Link, Chip, Stepper, Step, StepLabel, StepContent } from '@mui/material';
+import { CheckCircleOutline, ErrorOutline, Language, Refresh } from '@mui/icons-material';
 import { 
   createPortfolioWebsite, 
   getPortfolioWebsite, 
@@ -68,12 +50,12 @@ const WebsitePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [website, setWebsite] = useState<PortfolioWebsiteResponse | null>(null);
-  const [deploymentPollTimeout, setDeploymentPollTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [pollRetryCount, setPollRetryCount] = useState<number>(0);
+  const deploymentPollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollRetryCountRef = useRef<number>(0);
 
-  const MAX_POLL_RETRIES = 120; // 10 minutes at 5s intervals max
-  const MIN_POLL_INTERVAL = 2000; // Never poll faster than 2 seconds
-  const DEFAULT_POLL_INTERVAL = 5000; // Default 5 seconds for building status
+  const MAX_POLL_RETRIES = 120;
+  const MIN_POLL_INTERVAL = 2000;
+  const DEFAULT_POLL_INTERVAL = 5000;
 
   const fetchUserWebsite = useCallback(async () => {
     setIsLoading(true);
@@ -98,9 +80,9 @@ const WebsitePage: React.FC = () => {
   useEffect(() => {
     fetchUserWebsite();
     return () => {
-      if (deploymentPollTimeout) clearTimeout(deploymentPollTimeout);
+      if (deploymentPollTimeoutRef.current) clearTimeout(deploymentPollTimeoutRef.current);
     };
-  }, [fetchUserWebsite, deploymentPollTimeout]);
+  }, [fetchUserWebsite]);
 
   const debouncedCheckSubdomain = useCallback(
     debounce(async (name: string) => {
@@ -141,12 +123,12 @@ const WebsitePage: React.FC = () => {
   };
 
   const stopPolling = useCallback(() => {
-    if (deploymentPollTimeout) {
-      clearTimeout(deploymentPollTimeout);
-      setDeploymentPollTimeout(null);
+    if (deploymentPollTimeoutRef.current) {
+      clearTimeout(deploymentPollTimeoutRef.current);
+      deploymentPollTimeoutRef.current = null;
     }
-    setPollRetryCount(0);
-  }, [deploymentPollTimeout]);
+    pollRetryCountRef.current = 0;
+  }, []);
 
   const handleCreateAndDeploy = async () => {
     if (!subdomain || !subdomainAvailable) {
@@ -170,19 +152,17 @@ const WebsitePage: React.FC = () => {
     }
   };
 
-  const handleRedeploy = async (cleanDeploy: boolean = false) => {
+  const handleRedeploy = async () => {
     if (!website) return;
-    
-    if (cleanDeploy) {
-      if (!window.confirm('Clean deploy will delete all existing files and regenerate your website from scratch. This may take longer than a regular redeploy. Continue?')) {
-        return;
-      }
+
+    if (!window.confirm('Redeploy will delete all existing files and regenerate your website from scratch. Continue?')) {
+      return;
     }
-    
+
     setIsLoading(true);
     setError(null);
     try {
-      const updatedWebsite = await deployPortfolioWebsite(true, cleanDeploy);
+      const updatedWebsite = await deployPortfolioWebsite(true, true);
       setWebsite(updatedWebsite);
       if (isDeploymentInProgress(updatedWebsite.deployment_status)){
         pollDeploymentStatus();
@@ -216,84 +196,62 @@ const WebsitePage: React.FC = () => {
   }
 
   const pollDeploymentStatus = useCallback(() => {
-    if (deploymentPollTimeout) clearTimeout(deploymentPollTimeout);
+    if (deploymentPollTimeoutRef.current) clearTimeout(deploymentPollTimeoutRef.current);
     
     const performPoll = async () => {
-      // Check if we've exceeded maximum retries
-      if (pollRetryCount >= MAX_POLL_RETRIES) {
-        console.warn('Deployment polling timeout after 10 minutes');
+      if (pollRetryCountRef.current >= MAX_POLL_RETRIES) {
         stopPolling();
         return;
       }
 
       try {
-        // Use the existing service function
         const statusData = await getDeploymentStatus();
         
-        // Update website state
         setWebsite(prev => prev ? { ...prev, deployment_status: statusData } : null);
         
-        // Check if deployment is complete
         if (!isDeploymentInProgress(statusData)) {
-          console.log('Deployment completed:', statusData.status);
           stopPolling();
-          fetchUserWebsite(); // Re-fetch to get final state
+          fetchUserWebsite();
           return;
         }
 
-        // Use adaptive polling intervals based on status
         let nextInterval = DEFAULT_POLL_INTERVAL;
-        
-        // For building status, use shorter intervals, but respect minimum
         if (statusData.status === 'building') {
-          nextInterval = Math.max(MIN_POLL_INTERVAL, 3000); // 3 seconds for building
+          nextInterval = Math.max(MIN_POLL_INTERVAL, 3000);
         } else if (statusData.status === 'pending') {
-          nextInterval = Math.max(MIN_POLL_INTERVAL, 5000); // 5 seconds for pending
+          nextInterval = Math.max(MIN_POLL_INTERVAL, 5000);
         }
 
-        // Schedule next poll
-        setPollRetryCount(prev => prev + 1);
-        const timeout = setTimeout(performPoll, nextInterval);
-        setDeploymentPollTimeout(timeout);
+        pollRetryCountRef.current += 1;
+        deploymentPollTimeoutRef.current = setTimeout(performPoll, nextInterval);
         
       } catch (err: any) {
-        console.error('Failed to poll deployment status:', err);
-        
-        // Handle rate limiting specifically
         if (err.response?.status === 429) {
-          console.warn('Rate limited - increasing poll interval');
-          const backoffInterval = Math.max(10000, MIN_POLL_INTERVAL * 5); // 10 seconds minimum
-          setPollRetryCount(prev => prev + 1);
+          const backoffInterval = Math.max(10000, MIN_POLL_INTERVAL * 5);
+          pollRetryCountRef.current += 1;
           
-          if (pollRetryCount < MAX_POLL_RETRIES) {
-            const timeout = setTimeout(performPoll, backoffInterval);
-            setDeploymentPollTimeout(timeout);
+          if (pollRetryCountRef.current < MAX_POLL_RETRIES) {
+            deploymentPollTimeoutRef.current = setTimeout(performPoll, backoffInterval);
           } else {
-            console.error('Max polling retries exceeded due to rate limiting');
             stopPolling();
           }
           return;
         }
         
-        // Exponential backoff for other errors
-        const backoffInterval = Math.min(30000, DEFAULT_POLL_INTERVAL * Math.pow(2, Math.min(pollRetryCount, 5)));
-        setPollRetryCount(prev => prev + 1);
+        const backoffInterval = Math.min(30000, DEFAULT_POLL_INTERVAL * Math.pow(2, Math.min(pollRetryCountRef.current, 5)));
+        pollRetryCountRef.current += 1;
         
-        // Retry with exponential backoff, but respect max retries
-        if (pollRetryCount < MAX_POLL_RETRIES) {
-          const timeout = setTimeout(performPoll, backoffInterval);
-          setDeploymentPollTimeout(timeout);
+        if (pollRetryCountRef.current < MAX_POLL_RETRIES) {
+          deploymentPollTimeoutRef.current = setTimeout(performPoll, backoffInterval);
         } else {
-          console.error('Max polling retries exceeded due to errors');
           stopPolling();
         }
       }
     };
 
-    // Start polling with reset retry count
-    setPollRetryCount(0);
+    pollRetryCountRef.current = 0;
     performPoll();
-  }, [deploymentPollTimeout, fetchUserWebsite, pollRetryCount, stopPolling]);
+  }, [fetchUserWebsite, stopPolling]);
 
   const isDeploymentInProgress = (status: DeploymentStatus | undefined): boolean => {
     return !!status && (status.status === 'pending' || status.status === 'building');
@@ -401,20 +359,11 @@ const WebsitePage: React.FC = () => {
                <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap'}}>
                 <Button 
                     variant="contained" 
-                    onClick={() => handleRedeploy(false)} 
+                    onClick={handleRedeploy} 
                     disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
                     startIcon={isLoading ? <CircularProgress size={20} /> : <Refresh />}
                 >
                     {isLoading ? 'Redeploying...' : 'Redeploy'}
-                </Button>
-                <Button 
-                    variant="outlined"
-                    color="warning"
-                    onClick={() => handleRedeploy(true)} 
-                    disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                    startIcon={<DeleteSweep />}
-                >
-                    Clean Deploy
                 </Button>
                 <Button 
                     variant="outlined" 
@@ -426,7 +375,7 @@ const WebsitePage: React.FC = () => {
                 </Button>
                </Box>
                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                 <strong>Redeploy:</strong> Updates changed files only. <strong>Clean Deploy:</strong> Deletes all files and rebuilds from scratch (slower, but fixes sync issues).
+                 <strong>Redeploy:</strong> Deletes all files and rebuilds your website from scratch.
                </Typography>
             </Paper>
           ) : (

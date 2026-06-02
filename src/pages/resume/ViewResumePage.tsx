@@ -1,32 +1,7 @@
+import Grid from '../../mui/Grid';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Divider, 
-  Button, 
-  CircularProgress, 
-  Chip,
-  Stack,
-  Alert,
-  Breadcrumbs,
-  Link,
-  Tooltip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Card,
-  CardContent,
-  Avatar,
-  IconButton
-} from '@mui/material';
+import { Box, Typography, Paper, Divider, Button, CircularProgress, Chip, Stack, Alert, Breadcrumbs, Link, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText, Card, CardContent, Avatar, IconButton } from '@mui/material';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,
@@ -51,8 +26,8 @@ import {
 } from '@mui/icons-material';
 import { getResumeById, getResumePdf, deleteResume, regenerateResumeContent } from '../../services/resumeService';
 import { Resume } from '../../types/models';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { Toast } from '../../components/common';
+import { Toast, PdfPreviewDialog } from '../../components/common';
+import { usePdfPreview } from '../../hooks/usePdfPreview';
 import ReactMarkdown from 'react-markdown';
 
 interface PdfResponse {
@@ -68,8 +43,6 @@ const isBlob = (response: any): response is Blob => {
 };
 
 // Set up the worker for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
 const ViewResumePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -86,22 +59,7 @@ const ViewResumePage: React.FC = () => {
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
   const [generationErrorDialogOpen, setGenerationErrorDialogOpen] = useState(false);
   const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
-  
-  // PDF viewer state
-  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  
-  // Clean up object URL when component unmounts or dialog closes
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
+  const pdfPreview = usePdfPreview();
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -147,19 +105,12 @@ const ViewResumePage: React.FC = () => {
       
       // Check if response has pdf_url property (new format)
       if (isPdfResponse(response)) {
-        // Just use the URL directly, no need to create a blob
-        setPdfUrl(response.pdf_url);
-        setPdfBlob(null); // We don't have a blob anymore
+        pdfPreview.openPreviewFromUrl(response.pdf_url);
       } else if (isBlob(response)) {
-        // Fallback to old approach (treating response as blob)
-        setPdfBlob(response);
-        const url = URL.createObjectURL(response);
-        setPdfUrl(url);
+        pdfPreview.openPreviewFromBlob(response);
       } else {
         throw new Error('Unexpected response format from PDF service');
       }
-      
-      setPdfViewerOpen(true);
     } catch (err: any) {
       console.error('Failed to load PDF:', err);
       
@@ -189,31 +140,6 @@ const ViewResumePage: React.FC = () => {
       setGeneratingPdf(false);
     }
   };
-
-  const handleClosePdfViewer = () => {
-    setPdfViewerOpen(false);
-    setPageNumber(1);
-    setNumPages(null);
-    
-    // Clean up URL object
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(null);
-    }
-  };
-  
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setPageNumber(1);
-  };
-  
-  const changePage = (offset: number) => {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  };
-  
-  const previousPage = () => changePage(-1);
-  
-  const nextPage = () => changePage(1);
 
   const handleDownloadPdf = async () => {
     if (!id || !resume) return;
@@ -1382,12 +1308,12 @@ const ViewResumePage: React.FC = () => {
           </Button>
           <Button 
             variant="outlined" 
-            startIcon={generatingPdf && !pdfViewerOpen ? <CircularProgress size={16} /> : <VisibilityIcon />}
+            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <VisibilityIcon />}
             onClick={handleViewPdf}
             disabled={generatingPdf}
             size="small"
           >
-            {generatingPdf && !pdfViewerOpen ? 'Loading...' : 'See PDF'}
+            {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
           </Button>
           <Button 
             variant="contained" 
@@ -1526,135 +1452,62 @@ const ViewResumePage: React.FC = () => {
         </DialogActions>
       </Dialog>
       
-      {/* PDF Viewer Dialog */}
-      <Dialog
-        open={pdfViewerOpen}
-        onClose={handleClosePdfViewer}
-        maxWidth="lg"
-        fullWidth
-        PaperProps={{
-          sx: {
-            height: '90vh',
-            maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column'
-          }
-        }}
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" component="div">
-            {resume?.title || 'Resume'} PDF Preview
-          </Typography>
-          <IconButton onClick={handleClosePdfViewer} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {pdfUrl ? (
-            <Box sx={{ 
-              height: '100%', 
-              width: '100%', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center'
-            }}>
-              <Box sx={{ 
-                border: '1px solid black', 
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-              }}>
-                <Document
-                  file={pdfUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  onLoadError={(error) => setError(error.message)}
-                  loading={<CircularProgress />}
-                >
-                  <Page 
-                    pageNumber={pageNumber} 
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    width={Math.min(window.innerWidth * 0.8, 800)}
-                  />
-                </Document>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-between', px: 3, py: 2 }}>
-          <Box>
-            {numPages && (
-              <Typography variant="body2">
-                Page {pageNumber} of {numPages}
-              </Typography>
-            )}
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button 
-              onClick={previousPage} 
-              disabled={pageNumber <= 1 || !numPages}
-              variant="outlined"
-              size="small"
-            >
-              Previous
-            </Button>
-            <Button 
-              onClick={nextPage} 
-              disabled={!numPages || pageNumber >= numPages}
-              variant="outlined"
-              size="small"
-            >
-              Next
-            </Button>
-            {pdfUrl && (
-              <Button
-                variant="contained"
-                startIcon={<PdfIcon />}
-                onClick={async () => {
-                  setGeneratingPdf(true);
-                  try {
-                    if (pdfUrl.startsWith('http')) {
-                      // Fetch the PDF from the URL as a blob first
-                      const fetchedResponse = await fetch(pdfUrl);
-                      if (!fetchedResponse.ok) {
-                        setGenerationErrorMessage(`Failed to fetch PDF for download: ${fetchedResponse.statusText}`);
-                        setGenerationErrorDialogOpen(true);
-                        throw new Error(`Failed to fetch PDF from URL: ${fetchedResponse.statusText}`);
-                      }
-                      const blob = await fetchedResponse.blob();
-                      
-                      // Now use the blob download logic
-                      const objectUrl = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = objectUrl;
-                      link.setAttribute('download', `${resume?.title || 'resume'}.pdf`);
-                      document.body.appendChild(link);
-                      link.click();
-                      link.remove();
-                      window.URL.revokeObjectURL(objectUrl);
-                    } else {
-                       await handleDownloadPdf(); 
+      <PdfPreviewDialog
+        open={pdfPreview.open}
+        title={`${resume?.title || 'Resume'} PDF Preview`}
+        pdfUrl={pdfPreview.pdfUrl}
+        pageNumber={pdfPreview.pageNumber}
+        numPages={pdfPreview.numPages}
+        onClose={pdfPreview.closePreview}
+        onDocumentLoadSuccess={pdfPreview.onDocumentLoadSuccess}
+        onPrevious={pdfPreview.previousPage}
+        onNext={pdfPreview.nextPage}
+        onLoadError={(error) => setError(error.message)}
+        footerActions={
+          pdfPreview.pdfUrl ? (
+            <Button
+              variant="contained"
+              startIcon={<PdfIcon />}
+              onClick={async () => {
+                setGeneratingPdf(true);
+                try {
+                  if (pdfPreview.pdfUrl?.startsWith('http')) {
+                    const fetchedResponse = await fetch(pdfPreview.pdfUrl);
+                    if (!fetchedResponse.ok) {
+                      setGenerationErrorMessage(`Failed to fetch PDF for download: ${fetchedResponse.statusText}`);
+                      setGenerationErrorDialogOpen(true);
+                      throw new Error(`Failed to fetch PDF from URL: ${fetchedResponse.statusText}`);
                     }
-                  } catch (e: any) {
-                    console.error("Error downloading PDF from modal:", e);
-                    if (!generationErrorDialogOpen) { // Avoid opening if already opened by a specific error
-                        setGenerationErrorMessage(e.message || "Error downloading PDF from modal.");
-                        setGenerationErrorDialogOpen(true);
-                    }
-                  } finally {
-                    setGeneratingPdf(false);
+                    const blob = await fetchedResponse.blob();
+                    const objectUrl = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = objectUrl;
+                    link.setAttribute('download', `${resume?.title || 'resume'}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(objectUrl);
+                  } else {
+                    await handleDownloadPdf();
                   }
-                }}
-                size="small"
-              >
-                Download
-              </Button>
-            )}
-          </Box>
-        </DialogActions>
-      </Dialog>
+                } catch (e: unknown) {
+                  console.error('Error downloading PDF from modal:', e);
+                  if (!generationErrorDialogOpen) {
+                    const message = e instanceof Error ? e.message : 'Error downloading PDF from modal.';
+                    setGenerationErrorMessage(message);
+                    setGenerationErrorDialogOpen(true);
+                  }
+                } finally {
+                  setGeneratingPdf(false);
+                }
+              }}
+              size="small"
+            >
+              Download
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* Toast Notification */}
       <Toast

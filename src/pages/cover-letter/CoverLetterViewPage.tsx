@@ -1,25 +1,8 @@
+import Grid from '../../mui/Grid';
 import React, { useState, useEffect } from 'react';
+import { env } from '../../config/env';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Divider, 
-  Button, 
-  CircularProgress, 
-  Chip,
-  Stack,
-  Alert,
-  Breadcrumbs,
-  Link as MuiLink,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  Grid
-} from '@mui/material';
+import { Box, Typography, Paper, Divider, Button, CircularProgress, Chip, Stack, Alert, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,
@@ -31,10 +14,8 @@ import { getCoverLetterById, getCoverLetterPdf, deleteCoverLetter } from '../../
 import { getResumeById } from '../../services/resumeService';
 import { getUserProfile } from '../../services/profileService';
 import { CoverLetter, Resume, Profile } from '../../types/models';
-import { Document, Page, pdfjs } from 'react-pdf';
-
-// Set up the PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import { PdfPreviewDialog } from '../../components/common/PdfPreviewDialog';
+import { usePdfPreview } from '../../hooks/usePdfPreview';
 
 const CoverLetterViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,24 +32,9 @@ const CoverLetterViewPage: React.FC = () => {
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // PDF viewer state
-  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  
-  const [resumeTitle, setResumeTitle] = useState<string>('');
+  const pdfPreview = usePdfPreview();
   const [resumeData, setResumeData] = useState<Resume | null>(null);
-  
-  // Clean up object URL when component unmounts or dialog closes
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
+  const [resumeTitle, setResumeTitle] = useState<string>('');
 
   useEffect(() => {
     const fetchCoverLetter = async () => {
@@ -175,14 +141,7 @@ const CoverLetterViewPage: React.FC = () => {
       // Fetch the PDF from the URL
       const response = await fetch(pdfResponse.pdf_url);
       const blob = await response.blob();
-      setPdfBlob(blob);
-      
-      // Create a URL for the PDF blob
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-      
-      // Open the PDF viewer modal
-      setPdfViewerOpen(true);
+      pdfPreview.openPreviewFromBlob(blob);
     } catch (err: any) {
       console.error('Failed to generate PDF:', err);
       setError('Failed to generate PDF. Please try again.');
@@ -213,31 +172,6 @@ const CoverLetterViewPage: React.FC = () => {
       setGeneratingPdf(false);
     }
   };
-
-  const handleClosePdfViewer = () => {
-    setPdfViewerOpen(false);
-    setPageNumber(1);
-    setNumPages(null);
-    
-    // Clean up URL object
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(null);
-    }
-  };
-  
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setPageNumber(1);
-  };
-  
-  const changePage = (offset: number) => {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  };
-  
-  const previousPage = () => changePage(-1);
-  
-  const nextPage = () => changePage(1);
 
   if (loading) {
     return (
@@ -469,7 +403,7 @@ const CoverLetterViewPage: React.FC = () => {
                   {profileData?.signature_key && (
                     <img 
                       // Prepend CloudFront URL and use signature_key
-                      src={`${process.env.REACT_APP_CLOUDFRONT_URL}${profileData.signature_key}`}
+                      src={`${env.cloudfrontUrl}${profileData.signature_key}`}
                       alt="Signature" 
                       style={{ maxHeight: '60px', maxWidth: '200px' }} 
                     />
@@ -516,91 +450,29 @@ const CoverLetterViewPage: React.FC = () => {
         </DialogActions>
       </Dialog>
       
-      {/* PDF Viewer Dialog */}
-      <Dialog
-        open={pdfViewerOpen}
-        onClose={handleClosePdfViewer}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle>
-          {coverLetterTitle}
-          <IconButton
-            aria-label="close"
-            onClick={handleClosePdfViewer}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
+      <PdfPreviewDialog
+        open={pdfPreview.open}
+        title={coverLetterTitle}
+        pdfUrl={pdfPreview.pdfUrl}
+        pageNumber={pdfPreview.pageNumber}
+        numPages={pdfPreview.numPages}
+        onClose={pdfPreview.closePreview}
+        onDocumentLoadSuccess={pdfPreview.onDocumentLoadSuccess}
+        onPrevious={pdfPreview.previousPage}
+        onNext={pdfPreview.nextPage}
+        pageWidth={550}
+        footerActions={
+          <Button
+            startIcon={<PdfIcon />}
+            variant="contained"
+            onClick={handleDownloadPdf}
+            disabled={generatingPdf}
+            size="small"
           >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-            overflowX: 'auto'
-          }}>
-            {pdfBlob && (
-              <Document
-                file={pdfUrl}
-                onLoadSuccess={onDocumentLoadSuccess}
-                loading={<CircularProgress />}
-                error={<Typography color="error">Failed to load PDF</Typography>}
-              >
-                <Box sx={{ 
-                  border: '1px solid black', 
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                }}>
-                  <Page 
-                    pageNumber={pageNumber} 
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    width={550}
-                  />
-                </Box>
-              </Document>
-            )}
-            
-            <Box sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button
-                disabled={pageNumber <= 1}
-                onClick={previousPage}
-                variant="outlined"
-                size="small"
-              >
-                Previous
-              </Button>
-              <Typography variant="body2">
-                Page {pageNumber} of {numPages || '?'}
-              </Typography>
-              <Button
-                disabled={pageNumber >= (numPages || 1)}
-                onClick={nextPage}
-                variant="outlined"
-                size="small"
-              >
-                Next
-              </Button>
-            </Box>
-            
-            <Button
-              startIcon={<PdfIcon />}
-              variant="contained"
-              onClick={handleDownloadPdf}
-              disabled={generatingPdf}
-              sx={{ mt: 2 }}
-            >
-              Download PDF
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+            Download PDF
+          </Button>
+        }
+      />
     </Box>
   );
 };

@@ -10,7 +10,8 @@ import {
   getCurrentFirebaseUser
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
-import { UpdateSetupProgressRequest, UserSetupProgressResponse } from '../types/models';
+import { UpdateSetupProgressRequest, User, UserSetupProgressResponse } from '../types/models';
+import { AUTH_UNAUTHORIZED_EVENT } from '../utils/authEvents';
 
 const debug = createDebugger('AuthContext');
 
@@ -40,7 +41,7 @@ export const setupStepToRoute: Record<UserSetupStep, string | null> = {
 
 // Define the shape of our auth context state with more accurate typing
 export interface AuthContextState {
-  user: any | null;
+  user: User | null;
   firebaseUser: FirebaseUser | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -53,7 +54,7 @@ export interface AuthContextState {
   signInWithGoogleFlow: () => Promise<{ isNewUser?: boolean, setupRoute?: string }>;
   signOut: () => Promise<void>;
   setError: (error: string | null) => void;
-  updateProfile: (userData: any) => Promise<void>;
+  updateProfile: (profileData: Record<string, unknown>) => Promise<void>;
   updateUserSetupProgress: (data: UpdateSetupProgressRequest) => Promise<void>;
   getRedirectPathForUser: () => string;
 }
@@ -83,7 +84,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component that wraps app and provides auth context
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -244,6 +245,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    const handleUnauthorized = () => {
+      debug.warn('Unauthorized API response received');
+      localStorage.removeItem('auth_token');
+      setIsAuthenticated(false);
+      setUser(null);
+      setLoading(false);
+    };
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
     
     const checkCurrentUser = async () => {
       try {
@@ -281,6 +291,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
     };
   }, []);
 
@@ -432,7 +443,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Update profile function
-  const updateProfile = async (userData: any) => {
+  const updateProfile = async (profileData: Record<string, unknown>) => {
     try {
       debug.log('Updating user profile');
       setLoading(true);
@@ -441,7 +452,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Cannot update profile while offline');
       }
       
-      const response = await api.put('/profiles/me', userData);
+      const response = await api.put('/profiles/me', profileData);
       debug.log('Profile updated successfully', response.data);
       
       // Update local user state

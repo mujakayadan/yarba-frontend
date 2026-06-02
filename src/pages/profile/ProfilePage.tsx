@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { env } from '../../config/env';
 import {
   Box,
   Typography,
@@ -241,7 +242,7 @@ const ProfilePage: React.FC = () => {
               {/* User avatar in personal tab */}
               {profile.profile_picture_key ? (
                 <img 
-                  src={`${process.env.REACT_APP_CLOUDFRONT_URL}${profile.profile_picture_key}?v=${imageVersion}`}
+                  src={`${env.cloudfrontUrl}${profile.profile_picture_key}?v=${imageVersion}`}
                   alt={profile.personal_information?.full_name || "User profile picture"}
                   style={{ 
                     width: 100, 
@@ -649,7 +650,7 @@ const ProfilePage: React.FC = () => {
                 {profile?.profile_picture_key ? (
                   <Box sx={{ position: 'relative', mb: 2 }}>
                     <img
-                      src={`${process.env.REACT_APP_CLOUDFRONT_URL}${profile.profile_picture_key}?v=${imageVersion}`}
+                      src={`${env.cloudfrontUrl}${profile.profile_picture_key}?v=${imageVersion}`}
                       alt={profile?.personal_information?.full_name || "User profile"}
                       style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: '50%' }}
                     />
@@ -694,7 +695,7 @@ const ProfilePage: React.FC = () => {
                 {profile?.signature_key ? (
                   <Box sx={{ position: 'relative', mb: 2 }}>
                     <img
-                      src={`${process.env.REACT_APP_CLOUDFRONT_URL}${profile.signature_key}?v=${imageVersion}`}
+                      src={`${env.cloudfrontUrl}${profile.signature_key}?v=${imageVersion}`}
                       alt="Signature"
                       style={{ maxWidth: '100%', maxHeight: 150 }}
                     />

@@ -4,6 +4,7 @@ import { verifyFirebaseToken, getFirebaseIdToken, loginWithGoogle, loginWithEmai
 import { useAuth } from '../contexts/AuthContext';
 import { Google as GoogleIcon } from '@mui/icons-material';
 import api from '../services/api';
+import { env } from '../config/env';
 
 const FirebaseTestPage: React.FC = () => {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ const FirebaseTestPage: React.FC = () => {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
   const [paramName, setParamName] = useState('id_token');
-  const apiUrl = process.env.REACT_APP_API_URL || 'Not configured';
+  const apiUrl = env.apiUrl || 'Not configured';
   const [testEmail, setTestEmail] = useState('');
   const [testPassword, setTestPassword] = useState('');
   const [tenantId, setTenantId] = useState<string | null>(null);

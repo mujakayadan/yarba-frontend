@@ -1,5 +1,6 @@
+import Grid from '../../../mui/Grid';
 import React from 'react';
-import { Typography, Box, Chip, Paper, Grid } from '@mui/material';
+import { Typography, Box, Chip, Paper } from '@mui/material';
 import { Skill as SkillType } from '../../../types/portfolio'; // Renamed to avoid conflict with component name
 
 interface ParsedSkillsDisplayProps {

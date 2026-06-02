@@ -50,8 +50,8 @@ import { useNavigate } from 'react-router-dom';
 import { getResumes, deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
 import { getUserPortfolio } from '../../services/portfolioService';
 import { Portfolio } from '../../types/models';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { Toast } from '../../components/common';
+import { Toast, PdfPreviewDialog } from '../../components/common';
+import { usePdfPreview } from '../../hooks/usePdfPreview';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -69,8 +69,6 @@ const isBlob = (response: any): response is Blob => {
 };
 
 // Set up the worker for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
 // Define the API Resume interface
 interface APIResume {
   id: string;
@@ -129,11 +127,7 @@ const ResumesPage: React.FC = () => {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
   const [loadingPortfolios, setLoadingPortfolios] = useState(false);
   const [updatingResume, setUpdatingResume] = useState(false);
-  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
+  const pdfPreview = usePdfPreview();
   const [selectedResumeName, setSelectedResumeName] = useState<string>('');
 
   const fetchResumes = async () => {
@@ -187,14 +181,6 @@ const ResumesPage: React.FC = () => {
       clearTimeout(timerId);
     };
   }, [searchTerm]);
-
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -383,22 +369,14 @@ const ResumesPage: React.FC = () => {
       const response = await getResumePdf(resumeId);
       
       if (isPdfResponse(response)) {
-        // Use the URL directly
-        setPdfUrl(response.pdf_url);
-        setPdfBlob(null);
+        pdfPreview.openPreviewFromUrl(response.pdf_url);
       } else if (isBlob(response)) {
-        // Create a URL for the PDF blob
-        const blob: Blob = response;
-        setPdfBlob(blob);
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
+        pdfPreview.openPreviewFromBlob(response);
       } else {
         throw new Error('Unexpected response format from PDF service');
       }
-      
-      // Open the PDF viewer modal
-      setPdfViewerOpen(true);
-      setSelectedResumeId(resumeId); // Set the selected resume ID for download button
+
+      setSelectedResumeId(resumeId);
     } catch (error: any) {
       console.error('Failed to load PDF:', error);
       
@@ -420,31 +398,6 @@ const ResumesPage: React.FC = () => {
       setGeneratingPdf(false);
     }
   };
-  
-  const handleClosePdfViewer = () => {
-    setPdfViewerOpen(false);
-    setPageNumber(1);
-    setNumPages(null);
-    
-    // Clean up URL object
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(null);
-    }
-  };
-  
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setPageNumber(1);
-  };
-  
-  const changePage = (offset: number) => {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  };
-  
-  const previousPage = () => changePage(-1);
-  
-  const nextPage = () => changePage(1);
 
   const handleDownloadPdf = async (resumeId: string) => {
     setGeneratingPdf(true);
@@ -720,11 +673,11 @@ const ResumesPage: React.FC = () => {
                         >
                           <Button 
                             variant="outlined" 
-                            startIcon={generatingPdf && !pdfViewerOpen ? <CircularProgress size={16} /> : <PdfIcon />}
+                            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <PdfIcon />}
                             onClick={() => handleViewPdf(resume.id)}
                             disabled={generatingPdf}
                           >
-                            {generatingPdf && !pdfViewerOpen ? 'Loading...' : 'See PDF'}
+                            {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
                           </Button>
                         </Tooltip>
                         <Tooltip 
@@ -964,120 +917,46 @@ const ResumesPage: React.FC = () => {
         onClose={() => setSnackbarOpen(false)}
       />
       
-      {/* PDF Viewer Dialog */}
-      <Dialog
-        open={pdfViewerOpen}
-        onClose={handleClosePdfViewer}
-        maxWidth="lg"
-        fullWidth
-        PaperProps={{
-          sx: {
-            height: '90vh',
-            maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column'
-          }
+      <PdfPreviewDialog
+        open={pdfPreview.open}
+        title={`${selectedResumeName || 'Resume'} PDF Preview`}
+        pdfUrl={pdfPreview.pdfUrl}
+        pageNumber={pdfPreview.pageNumber}
+        numPages={pdfPreview.numPages}
+        onClose={pdfPreview.closePreview}
+        onDocumentLoadSuccess={pdfPreview.onDocumentLoadSuccess}
+        onPrevious={pdfPreview.previousPage}
+        onNext={pdfPreview.nextPage}
+        onLoadError={(error) => {
+          setErrorMessage(error.message);
+          setSnackbarOpen(true);
         }}
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            {selectedResumeName || 'Resume'} PDF Preview
-          </Typography>
-          <IconButton onClick={handleClosePdfViewer} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {pdfUrl ? (
-            <Box sx={{ 
-              height: '100%', 
-              width: '100%', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center'
-            }}>
-              <Box sx={{ 
-                border: '1px solid black', 
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-              }}>
-                <Document
-                  file={pdfUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  onLoadError={(error) => {
-                    setErrorMessage(error.message);
-                    setSnackbarOpen(true);
-                  }}
-                  loading={<CircularProgress />}
-                >
-                  <Page 
-                    pageNumber={pageNumber} 
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    width={Math.min(window.innerWidth * 0.8, 800)}
-                  />
-                </Document>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-between', px: 3, py: 2 }}>
-          <Box>
-            {numPages && (
-              <Typography variant="body2">
-                Page {pageNumber} of {numPages}
-              </Typography>
-            )}
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button 
-              onClick={previousPage} 
-              disabled={pageNumber <= 1 || !numPages}
-              variant="outlined"
+        footerActions={
+          pdfPreview.pdfUrl && selectedResumeId ? (
+            <Button
+              variant="contained"
+              startIcon={<PdfIcon />}
+              onClick={() => {
+                if (pdfPreview.pdfUrl?.startsWith('http')) {
+                  const resume = resumes.find((r) => r.id === selectedResumeId);
+                  const filename = resume ? `${resume.title}.pdf` : `resume-${selectedResumeId}.pdf`;
+                  const link = document.createElement('a');
+                  link.href = pdfPreview.pdfUrl;
+                  link.setAttribute('download', filename);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } else {
+                  handleDownloadPdf(selectedResumeId);
+                }
+              }}
               size="small"
             >
-              Previous
+              Download
             </Button>
-            <Button 
-              onClick={nextPage} 
-              disabled={!numPages || pageNumber >= numPages}
-              variant="outlined"
-              size="small"
-            >
-              Next
-            </Button>
-            {pdfUrl && selectedResumeId && (
-              <Button
-                variant="contained"
-                startIcon={<PdfIcon />}
-                onClick={() => {
-                  // If the URL is a direct link (not a blob URL), download directly
-                  if (pdfUrl.startsWith('http')) {
-                    const resume = resumes.find(r => r.id === selectedResumeId);
-                    const filename = resume ? `${resume.title}.pdf` : `resume-${selectedResumeId}.pdf`;
-                    
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.setAttribute('download', filename);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  } else {
-                    // Use the standard download function for blob URLs
-                    handleDownloadPdf(selectedResumeId);
-                  }
-                }}
-                size="small"
-              >
-                Download
-              </Button>
-            )}
-          </Box>
-        </DialogActions>
-      </Dialog>
+          ) : undefined
+        }
+      />
     </Box>
   );
 };

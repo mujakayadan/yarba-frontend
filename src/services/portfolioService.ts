@@ -1,11 +1,12 @@
 import api from './api';
+import { isDev } from '../config/env';
 import { Portfolio } from '../types/models';
 import { ParsedPortfolioData } from '../types/portfolio';
 
 // Get user's portfolio
 export const getUserPortfolio = async (): Promise<Portfolio> => {
   const response = await api.get('/portfolios/');
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log('Portfolio API response:', response.data);
   }
   return response.data;
@@ -14,7 +15,7 @@ export const getUserPortfolio = async (): Promise<Portfolio> => {
 // Get portfolio by ID
 export const getPortfolioById = async (portfolioId: string): Promise<Portfolio> => {
   const response = await api.get(`/portfolios/${portfolioId}`);
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log('Portfolio by ID API response:', response.data);
   }
   return response.data;
@@ -23,7 +24,7 @@ export const getPortfolioById = async (portfolioId: string): Promise<Portfolio> 
 // Get portfolio by profile ID
 export const getPortfolioByProfileId = async (profileId: string): Promise<Portfolio> => {
   const response = await api.get(`/portfolios/by-profile/${profileId}`);
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log('Portfolio by profile ID API response:', response.data);
   }
   return response.data;
@@ -37,7 +38,7 @@ export const createPortfolio = async (data: { profile_id?: string }): Promise<Po
 
 // Update portfolio
 export const updatePortfolio = async (portfolioId: string, data: Partial<Portfolio>): Promise<Portfolio> => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log(`Updating portfolio ${portfolioId} with data:`, data);
   }
   const response = await api.put(`/portfolios/${portfolioId}`, data);
@@ -46,7 +47,7 @@ export const updatePortfolio = async (portfolioId: string, data: Partial<Portfol
 
 // Partial update portfolio
 export const patchPortfolio = async (portfolioId: string, data: Partial<Portfolio>): Promise<Portfolio> => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     console.log(`Patching portfolio ${portfolioId} with data:`, data);
   }
   const response = await api.patch(`/portfolios/${portfolioId}`, data);
@@ -204,7 +205,7 @@ export const parsePortfolioDocument = async (file: File): Promise<ParsedPortfoli
     // and that response.data is the parsed JSON body
     return response.data;
   } catch (error: any) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (isDev) {
       console.error('Error in parsePortfolioDocument service:', error);
     }
     // Enhance error reporting, you might want to check if error.response.data exists

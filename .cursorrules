@@ -13,19 +13,20 @@ Build a clean, maintainable, and idiomatic React application that provides users
 
 ## Tech Stack
 
-- React 18
-- TypeScript 4.9+
-- Material-UI (MUI) v5 for components and theming
-- React Router v6 (page routing)
-- Formik + Yup (form handling and validation)
-- Firebase 10.x (authentication via Google, email/password)
+- React 19
+- TypeScript 5
+- Vite 6
+- Material-UI (MUI) v7 for components and theming
+- React Router v7 (page routing)
+- TanStack Query 5 (server state)
+- Firebase 12.x (authentication via Google, email/password)
 - Axios (backend API requests)
-- React Testing Library + Jest
+- React Testing Library + Vitest
 - ESLint
-- Create React App with react-app-rewired
 - Vercel (deployment)
-- react-pdf (PDF preview)
+- react-pdf 10 (PDF preview)
 - react-markdown (markdown rendering)
+- Environment variables use `VITE_*` prefix via `src/config/env.ts`
 
 ---
 
@@ -49,6 +50,7 @@ Build a clean, maintainable, and idiomatic React application that provides users
 ## UI/UX Guidelines
 
 - Use **MUI components** consistently—do not mix with other UI libraries
+- For layout grids with `item` / `xs` props, import `Grid` from `src/mui/Grid.tsx` (MUI 7 GridLegacy), not from `@mui/material`
 - Follow MUI theming conventions defined in `src/theme.ts`
 - Components must be responsive and mobile-friendly
 - Accessibility (a11y) is mandatory:

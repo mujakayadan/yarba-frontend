@@ -36,8 +36,8 @@ export const createCoverLetter = async (data: CoverLetterCreateRequest): Promise
 
 // Update an existing cover letter
 export const updateCoverLetter = async (
-  id: string, 
-  data: { template_id?: string, content?: any }
+  id: string,
+  data: { template_id?: string; content?: string }
 ): Promise<CoverLetter> => {
   const response = await api.put(`/cover-letters/${id}`, data);
   return response.data;

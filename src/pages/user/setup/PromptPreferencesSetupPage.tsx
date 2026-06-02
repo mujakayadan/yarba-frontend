@@ -1,8 +1,7 @@
+import Grid from '../../../mui/Grid';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Button, Container, Typography, Box, TextField, Grid, CircularProgress, Alert, Paper, Divider
-} from '@mui/material';
+import { Button, Container, Typography, Box, TextField, CircularProgress, Alert, Paper, Divider } from '@mui/material';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';
 import { Profile } from '../../../types/models';

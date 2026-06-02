@@ -1,23 +1,7 @@
+import Grid from '../../mui/Grid';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-  Alert,
-  Divider,
-  Stack,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  IconButton,
-  Chip
-} from '@mui/material';
+import { Box, Button, CircularProgress, Container, Paper, TextField, Typography, Alert, Divider, Stack, Accordion, AccordionSummary, AccordionDetails, IconButton, Chip } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon, Visibility as VisibilityIcon, ExpandMore as ExpandMoreIcon, Add as AddIcon, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon } from '@mui/icons-material';
 import { getResumeById, updateResume } from '../../services/resumeService';
 import { Resume } from '../../types/models';

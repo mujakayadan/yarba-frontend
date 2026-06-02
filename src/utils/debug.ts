@@ -1,31 +1,25 @@
-/**
- * Debug utility for better logging in development mode
- */
+import { env } from '../config/env';
 
-// Check if debug mode is enabled
-const isDebugMode = process.env.REACT_APP_DEBUG === 'true';
+const isDebugMode = env.debug;
 
-// Create namespaced logger that only logs in debug mode
 export const createDebugger = (namespace: string) => {
-  // Return object with console methods that only work in debug mode
   return {
-    log: (...args: any[]) => {
+    log: (...args: unknown[]) => {
       if (isDebugMode) {
         console.log(`[${namespace}]`, ...args);
       }
     },
-    info: (...args: any[]) => {
+    info: (...args: unknown[]) => {
       if (isDebugMode) {
         console.info(`[${namespace}]`, ...args);
       }
     },
-    warn: (...args: any[]) => {
+    warn: (...args: unknown[]) => {
       if (isDebugMode) {
         console.warn(`[${namespace}]`, ...args);
       }
     },
-    error: (...args: any[]) => {
-      // Always log errors, but add namespace in debug mode
+    error: (...args: unknown[]) => {
       if (isDebugMode) {
         console.error(`[${namespace}]`, ...args);
       } else {
@@ -42,16 +36,15 @@ export const createDebugger = (namespace: string) => {
         console.groupEnd();
       }
     },
-    table: (data: any) => {
+    table: (data: unknown) => {
       if (isDebugMode) {
         console.log(`[${namespace}] Table:`);
         console.table(data);
       }
-    }
+    },
   };
 };
 
-// Default debugger
 export const debug = createDebugger('App');
 
-export default debug; 
+export default debug;

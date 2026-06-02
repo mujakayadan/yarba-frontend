@@ -169,7 +169,6 @@ const PortfolioUploadPage: React.FC = () => {
                         <UploadBox
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
-                            component="div"
                         >
                             <CloudUploadIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
                             <Typography variant="h6" gutterBottom>

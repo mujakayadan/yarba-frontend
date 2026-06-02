@@ -1,6 +1,7 @@
+import Grid from '../mui/Grid';
 "use client";
 import React from 'react';
-import { Container, Typography, Box, Button, Grid, Paper, Avatar } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, Avatar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/system';
 import { Theme } from '@mui/material/styles';

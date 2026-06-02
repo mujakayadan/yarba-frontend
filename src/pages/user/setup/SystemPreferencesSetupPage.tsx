@@ -1,9 +1,7 @@
+import Grid from '../../../mui/Grid';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Button, Container, Typography, Box, Grid, CircularProgress, Alert, Paper,
-    FormGroup, FormControlLabel, Switch, Tooltip
-} from '@mui/material';
+import { Button, Container, Typography, Box, CircularProgress, Alert, Paper, FormGroup, FormControlLabel, Switch, Tooltip } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';

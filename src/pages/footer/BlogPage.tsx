@@ -1,16 +1,6 @@
+import Grid from '../../mui/Grid';
 import React from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Grid, 
-  Card, 
-  CardContent,
-  CardMedia,
-  Divider,
-  Chip,
-  Button
-} from '@mui/material';
+import { Container, Typography, Box, Card, CardContent, CardMedia, Divider, Chip, Button } from '@mui/material';
 
 const BlogPage: React.FC = () => {
   // Sample blog posts
