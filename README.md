@@ -1,12 +1,27 @@
 # Yarba Frontend
 
-Frontend for [Yarba](https://github.com/mucahitkayadan/yarba-frontend) — an AI-powered resume, cover letter, and portfolio platform.
+Frontend for **Yarba** — an AI-powered resume, cover letter, and portfolio platform.
+
+## Related repositories
+
+| Repo | URL |
+|------|-----|
+| Frontend (this repo) | [github.com/mucahitkayadan/yarba-frontend](https://github.com/mucahitkayadan/yarba-frontend) |
+| Backend | [github.com/mucahitkayadan/yarba-backend](https://github.com/mucahitkayadan/yarba-backend) |
+
+```bash
+# Frontend
+git clone https://github.com/mucahitkayadan/yarba-frontend.git
+
+# Backend
+git clone https://github.com/mucahitkayadan/yarba-backend.git
+```
 
 ## Prerequisites
 
 - Node.js 18+
 - npm 8+
-- A running Yarba backend API (see backend repo documentation)
+- [Yarba backend](https://github.com/mucahitkayadan/yarba-backend) running locally or deployed
 - A Firebase project with Authentication enabled
 
 ## Setup
@@ -18,7 +33,7 @@ npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your backend URL and Firebase web app config from the Firebase Console.
+Edit `.env.local` with your backend URL (e.g. `http://localhost:8000/api/v1`) and Firebase web app config from the Firebase Console. See the [backend README](https://github.com/mucahitkayadan/yarba-backend) for API setup.
 
 See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
