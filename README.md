@@ -19,7 +19,7 @@ git clone https://github.com/mucahitkayadan/yarba-backend.git
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 24+
 - npm 8+
 - [Yarba backend](https://github.com/mucahitkayadan/yarba-backend) running locally or deployed
 - A Firebase project with Authentication enabled
