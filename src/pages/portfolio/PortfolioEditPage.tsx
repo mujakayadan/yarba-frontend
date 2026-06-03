@@ -1,24 +1,15 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Tabs, Tab, Paper, Button, CircularProgress, Alert } from '@mui/material';
 import { Save as SaveIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { usePortfolioEditForm } from '../../hooks/usePortfolioEditForm';
-import {
-  PortfolioEditTabPanel,
-  CareerSummaryEditTab,
-  SkillsEditTab,
-  WorkExperienceEditTab,
-  EducationEditTab,
-  ProjectsEditTab,
-  AwardsEditTab,
-  PublicationsEditTab,
-  CertificationsEditTab,
-} from '../../components/portfolio/edit';
+import { PORTFOLIO_EDIT_TABS } from '../../components/portfolio/edit/portfolioEditTabs';
 
 const PortfolioEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const form = usePortfolioEditForm(id);
+  const ActiveTab = PORTFOLIO_EDIT_TABS[form.renderedTab]?.Tab;
 
   if (form.loading) {
     return (
@@ -86,41 +77,37 @@ const PortfolioEditPage: React.FC = () => {
             variant="scrollable"
             scrollButtons="auto"
           >
-            <Tab label="Career Summary" />
-            <Tab label="Skills" />
-            <Tab label="Work Experience" />
-            <Tab label="Education" />
-            <Tab label="Projects" />
-            <Tab label="Awards" />
-            <Tab label="Publications" />
-            <Tab label="Certifications" />
+            {PORTFOLIO_EDIT_TABS.map((tab, index) => (
+              <Tab
+                key={tab.label}
+                label={tab.label}
+                id={`portfolio-edit-tab-${index}`}
+                aria-controls={`portfolio-edit-tabpanel-${index}`}
+              />
+            ))}
           </Tabs>
         </Box>
 
-        <PortfolioEditTabPanel value={form.tabValue} index={0}>
-          <CareerSummaryEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={1}>
-          <SkillsEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={2}>
-          <WorkExperienceEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={3}>
-          <EducationEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={4}>
-          <ProjectsEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={5}>
-          <AwardsEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={6}>
-          <PublicationsEditTab form={form} />
-        </PortfolioEditTabPanel>
-        <PortfolioEditTabPanel value={form.tabValue} index={7}>
-          <CertificationsEditTab form={form} />
-        </PortfolioEditTabPanel>
+        <div
+          role="tabpanel"
+          id={`portfolio-edit-tabpanel-${form.renderedTab}`}
+          aria-labelledby={`portfolio-edit-tab-${form.renderedTab}`}
+          aria-busy={form.isTabPending}
+        >
+          <Box sx={{ p: 3, minHeight: 120, opacity: form.isTabPending ? 0.6 : 1, transition: 'opacity 150ms' }}>
+            {ActiveTab && (
+              <Suspense
+                fallback={
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <CircularProgress size={32} />
+                  </Box>
+                }
+              >
+                <ActiveTab form={form} />
+              </Suspense>
+            )}
+          </Box>
+        </div>
       </Paper>
     </Box>
   );

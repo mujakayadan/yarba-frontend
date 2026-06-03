@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -27,7 +27,7 @@ import {
   MenuItem
 } from '@mui/material';
 import { createCoverLetter } from '../../services/coverLetterService';
-import { getResumesForSelection } from '../../services/resumeService';
+import { useResumesForSelection } from '../../hooks/useResumes';
 import { ResumeForSelection } from '../../types/models';
 import { Refresh as RefreshIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 
@@ -36,9 +36,14 @@ const CoverLetterNewPage: React.FC = () => {
   
   // State
   const [loading, setLoading] = useState(false);
-  const [resumesLoading, setResumesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [resumes, setResumes] = useState<ResumeForSelection[]>([]);
+  const {
+    data: resumesData,
+    isLoading: resumesLoading,
+    isError: resumesIsError,
+    refetch: refetchResumes,
+  } = useResumesForSelection('updated_desc');
+  const resumes = resumesData?.resumes ?? [];
   const [selectedResumeId, setSelectedResumeId] = useState<string>('');
   const [selectedResume, setSelectedResume] = useState<ResumeForSelection | null>(null);
   const [generatePdf, setGeneratePdf] = useState<boolean>(true);
@@ -48,61 +53,38 @@ const CoverLetterNewPage: React.FC = () => {
 
   // State for the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalResumes, setModalResumes] = useState<ResumeForSelection[]>([]);
-  const [modalLoading, setModalLoading] = useState(false);
-  const [modalError, setModalError] = useState<string | null>(null);
   const [modalSearchTerm, setModalSearchTerm] = useState('');
-  const [modalSortBy, setModalSortBy] = useState('updated_desc'); // Default sort
+  const [modalSortBy, setModalSortBy] = useState('updated_desc');
 
-  // Fetch resumes on component mount
+  const {
+    data: modalResumesData,
+    isLoading: modalLoading,
+    isError: modalIsError,
+    error: modalQueryError,
+  } = useResumesForSelection(modalSortBy);
+
+  const modalResumes = React.useMemo(() => {
+    const items = modalResumesData?.resumes ?? [];
+    if (!modalSearchTerm) {
+      return items;
+    }
+    return items.filter((r) =>
+      r.resume_name.toLowerCase().includes(modalSearchTerm.toLowerCase())
+    );
+  }, [modalResumesData?.resumes, modalSearchTerm]);
+
+  const modalError =
+    modalIsError && modalQueryError
+      ? modalQueryError instanceof Error
+        ? modalQueryError.message
+        : 'Failed to load resumes.'
+      : null;
+
   useEffect(() => {
-    fetchResumes();
-  }, []);
-
-  const fetchResumes = async () => {
-    setResumesLoading(true);
-    setError(null);
-    
-    try {
-      // Call the new service function with sorting parameter
-      const response = await getResumesForSelection('updated_desc'); 
-      setResumes(response.resumes); // Update state with response.resumes
-    } catch (err: any) {
-      console.error('Failed to fetch resumes for selection:', err);
+    if (resumesIsError) {
       setError('Failed to load resumes. Please try again.');
-    } finally {
-      setResumesLoading(false);
     }
-  };
-
-  // Fetch Resumes for the Modal
-  const fetchModalResumes = useCallback(async () => {
-    setModalLoading(true);
-    setModalError(null);
-    try {
-      // Pass sorting parameter. API doesn't support search yet based on description.
-      const response = await getResumesForSelection(modalSortBy);
-      // Simple frontend filtering for now
-      const filtered = response.resumes.filter(r =>
-        r.resume_name.toLowerCase().includes(modalSearchTerm.toLowerCase())
-      );
-      setModalResumes(filtered);
-    } catch (err: any) {
-      console.error('Failed to fetch resumes for modal:', err);
-      setModalError(err.message || 'Failed to load resumes.');
-      setModalResumes([]); // Clear resumes on error
-    } finally {
-      setModalLoading(false);
-    }
-  }, [modalSortBy, modalSearchTerm]);
-
-  // Effect to fetch resumes when modal opens or sort/search changes
-  useEffect(() => {
-    if (isModalOpen) {
-      fetchModalResumes();
-    }
-    // Dependency array includes things that trigger a refetch within the modal
-  }, [isModalOpen, modalSortBy, modalSearchTerm, fetchModalResumes]);
+  }, [resumesIsError]);
 
   const validateForm = (): boolean => {
     const newErrors: { resumeId?: string } = {};
@@ -187,7 +169,7 @@ const CoverLetterNewPage: React.FC = () => {
               <Button 
                 color="inherit" 
                 size="small" 
-                onClick={fetchResumes}
+                onClick={() => refetchResumes()}
                 startIcon={<RefreshIcon />}
               >
                 Retry

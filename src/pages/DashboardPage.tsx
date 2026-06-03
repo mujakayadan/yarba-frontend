@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Paper, 
   Typography, 
@@ -20,12 +20,12 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { getResumes } from '../services/resumeService';
-import { getCoverLetters } from '../services/coverLetterService';
-import { getUserPortfolio } from '../services/portfolioService';
-import { getUserProfile } from '../services/profileService';
 import { getResumeById } from '../services/resumeService';
-import { Resume, CoverLetter, Portfolio, Profile } from '../types/models';
+import { Resume, CoverLetter } from '../types/models';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { useUserPortfolio } from '../hooks/usePortfolio';
+import { useResumes } from '../hooks/useResumes';
+import { useCoverLetters } from '../hooks/useCoverLetters';
 
 // Define a unified type for recent items
 interface RecentItem {
@@ -38,126 +38,94 @@ interface RecentItem {
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // State for data
-  const [resumeCount, setResumeCount] = useState(0);
-  const [coverLetterCount, setCoverLetterCount] = useState(0);
-  const [portfolioComplete, setPortfolioComplete] = useState(false);
-  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [resumeTitles, setResumeTitles] = useState<Record<string, string>>({});
 
-  // Fetch data on component mount
+  const { data: profile } = useUserProfile();
+  const { data: portfolio, isError: portfolioError } = useUserPortfolio();
+  const {
+    data: resumesData,
+    isLoading: resumesLoading,
+    isError: resumesError,
+  } = useResumes({ skip: 0, limit: 10, sort_by: 'updated_desc' });
+  const {
+    data: coverLettersData,
+    isLoading: coverLettersLoading,
+    isError: coverLettersError,
+  } = useCoverLetters({ skip: 0, limit: 3, sort_by: 'updated_desc' });
+
+  const loading = resumesLoading || coverLettersLoading;
+
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Fetch resumes, cover letters, and portfolio data in parallel
-        const [resumesResponse, coverLettersResponse, portfolioResponse, profileResponse] = await Promise.all([
-          getResumes(0, 10),
-          getCoverLetters(undefined, undefined, 0, 3),
-          getUserPortfolio().catch(err => {
-            console.warn('Portfolio not found or error:', err);
-            return null;
-          }),
-          getUserProfile().catch(err => {
-            console.warn('Profile not found or error:', err);
-            return null;
-          })
-        ]);
-        
-        // Update counts
-        setResumeCount(resumesResponse.total);
-        setCoverLetterCount(coverLettersResponse.items.length);
-        
-        // Set profile
-        if (profileResponse) {
-          setProfile(profileResponse);
-        }
-        
-        // Check if portfolio is complete
-        if (portfolioResponse) {
-          // Simple check - portfolio is complete if it has career summary and at least some skills
-          const hasCareerSummary = Boolean(
-            portfolioResponse.career_summary?.default_summary
-          );
-          const hasSkills = portfolioResponse.skills && portfolioResponse.skills.length > 0;
-          setPortfolioComplete(hasCareerSummary && hasSkills);
-        } else {
-          setPortfolioComplete(false);
-        }
-        
-        // Collect resume IDs from cover letters
-        const resumeIds = coverLettersResponse.items.map((cl: CoverLetter) => cl.resume_id);
-        const uniqueResumeIds = Array.from(new Set(resumeIds));
-        
-        // Fetch resume titles for cover letters
-        const resumeTitlesMap: Record<string, string> = {};
-        
-        // Check if resumes exist before adding them to the titles map
-        await Promise.all(
-          uniqueResumeIds.map(async (resumeId) => {
-            try {
-              const resume = await getResumeById(resumeId);
-              if (resume) {
-                resumeTitlesMap[resumeId] = resume.title;
-              }
-            } catch (err) {
-              console.warn(`Resume ${resumeId} might have been deleted:`, err);
-              // Don't add to map if it doesn't exist
-            }
-          })
-        );
-        setResumeTitles(resumeTitlesMap);
-        
-        // Combine recent items, sort by date, filter out deleted items, and take the 5 most recent
-        
-        // First, handle resumes
-        const validResumes = resumesResponse.items.map((resume: Resume) => ({
-          id: resume.id,
-          title: resume.title,
-          type: 'resume' as const,
-          date: resume.updated_at || resume.created_at
-        }));
-        
-        // Then handle cover letters, only including ones with valid resumes
-        const validCoverLetters = coverLettersResponse.items
-          .filter((coverLetter: CoverLetter) => 
-            // Only include cover letters that have a valid resume title (meaning the resume exists)
-            resumeTitlesMap[coverLetter.resume_id] !== undefined
-          )
-          .map((coverLetter: CoverLetter) => ({
-            id: coverLetter.id,
-            title: resumeTitlesMap[coverLetter.resume_id] 
-              ? `${resumeTitlesMap[coverLetter.resume_id]}` 
-              : `Cover Letter (${coverLetter.resume_id.substring(0, 8)})`,
-            type: 'cover-letter' as const,
-            date: coverLetter.updated_at || coverLetter.created_at
-          }));
-        
-        // Combine valid items
-        const combinedItems: RecentItem[] = [...validResumes, ...validCoverLetters];
-        
-        // Sort by date (newest first) and take the most recent 6
-        const sortedItems = combinedItems.sort((a, b) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        ).slice(0, 6);
-        
-        setRecentItems(sortedItems);
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setError('Failed to load dashboard data. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
+    if (resumesError || coverLettersError) {
+      setError('Failed to load dashboard data. Please try again later.');
+    }
+  }, [resumesError, coverLettersError]);
+
+  useEffect(() => {
+    const items = coverLettersData?.items ?? [];
+    const resumeIds = Array.from(new Set(items.map((cl) => cl.resume_id)));
+    const fromList: Record<string, string> = {};
+    resumesData?.items.forEach((r) => {
+      fromList[r.id] = r.title;
+    });
+
+    const missingIds = resumeIds.filter((id) => !fromList[id]);
+    if (missingIds.length === 0) {
+      setResumeTitles(fromList);
+      return;
+    }
+
+    const loadMissing = async () => {
+      const map = { ...fromList };
+      await Promise.all(
+        missingIds.map(async (resumeId) => {
+          try {
+            const resume = await getResumeById(resumeId);
+            map[resumeId] = resume.title;
+          } catch {
+            // resume may have been deleted
+          }
+        })
+      );
+      setResumeTitles(map);
     };
-    
-    fetchDashboardData();
-  }, []);
+    loadMissing();
+  }, [coverLettersData?.items, resumesData?.items]);
+
+  const resumeCount = resumesData?.total ?? 0;
+  const coverLetterCount = coverLettersData?.items.length ?? 0;
+
+  const portfolioComplete = useMemo(() => {
+    if (portfolioError || !portfolio) {
+      return false;
+    }
+    const hasCareerSummary = Boolean(portfolio.career_summary?.default_summary);
+    const hasSkills = portfolio.skills && portfolio.skills.length > 0;
+    return Boolean(hasCareerSummary && hasSkills);
+  }, [portfolio, portfolioError]);
+
+  const recentItems = useMemo(() => {
+    const validResumes: RecentItem[] = (resumesData?.items ?? []).map((resume: Resume) => ({
+      id: resume.id,
+      title: resume.title,
+      type: 'resume' as const,
+      date: resume.updated_at || resume.created_at,
+    }));
+
+    const validCoverLetters: RecentItem[] = (coverLettersData?.items ?? [])
+      .filter((cl: CoverLetter) => resumeTitles[cl.resume_id] !== undefined)
+      .map((cl: CoverLetter) => ({
+        id: cl.id,
+        title: resumeTitles[cl.resume_id],
+        type: 'cover-letter' as const,
+        date: cl.updated_at || cl.created_at,
+      }));
+
+    return [...validResumes, ...validCoverLetters]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 6);
+  }, [resumesData?.items, coverLettersData?.items, resumeTitles]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

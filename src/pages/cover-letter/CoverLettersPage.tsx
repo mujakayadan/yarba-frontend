@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { 
   Box, 
   Typography, 
@@ -47,11 +48,14 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { getCoverLetters, deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
-import { getResumeById } from '../../services/resumeService';
+import { deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { Toast, PdfPreviewDialog } from '../../components/common';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
+import { getResumeById } from '../../services/resumeService';
+import { useCoverLetters } from '../../hooks/useCoverLetters';
+import { coverLetterKeys } from '../../lib/queryKeys';
+import { queryClient } from '../../providers/QueryProvider';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -60,9 +64,6 @@ const DEFAULT_PAGE_SIZE = 10;
 // Set up the worker for PDF.js
 const CoverLettersPage: React.FC = () => {
   const navigate = useNavigate();
-  const [coverLetters, setCoverLetters] = useState<CoverLetter[]>([]);
-  const [totalCoverLetters, setTotalCoverLetters] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
@@ -77,47 +78,49 @@ const CoverLettersPage: React.FC = () => {
   const [selectedCoverLetterName, setSelectedCoverLetterName] = useState<string>('');
   const [resumeTitles, setResumeTitles] = useState<Record<string, string>>({});
 
-  const fetchCoverLetters = async () => {
-    setLoading(true);
-    try {
-      const template_id = undefined;
-      const resume_id = undefined;
-      const skip = (page - 1) * pageSize;
-      const limit = pageSize;
-      const sort_by = 'updated_desc';
-      
-      console.log(`Fetching cover letters with template_id=${template_id}, resume_id=${resume_id}, skip=${skip}, limit=${limit}, sort_by=${sort_by}`);
-      
-      const result = await getCoverLetters(template_id, resume_id, skip, limit, sort_by);
-      console.log('API result:', result);
-      
-      // Apply filtering based on searchTerm if needed
-      const filteredResults = searchTerm 
-        ? result.items.filter(cl => getCoverLetterTitle(cl).toLowerCase().includes(searchTerm.toLowerCase()))
-        : result.items;
-      
-      setCoverLetters(filteredResults);
-      setTotalCoverLetters(result.total);
-      
-      console.log(`Loaded ${result.total} cover letters, displaying ${filteredResults.length}`);
-    } catch (error) {
-      console.error('Failed to fetch cover letters:', error);
-      setCoverLetters([]);
-      setTotalCoverLetters(0);
-    } finally {
-      setLoading(false);
+  const getCoverLetterTitle = (coverLetter: CoverLetter) => {
+    const resumeTitle = resumeTitles[coverLetter.resume_id];
+    if (resumeTitle) {
+      return resumeTitle;
     }
+    return `Cover Letter (${coverLetter.resume_id.substring(0, 8)})`;
   };
 
-  useEffect(() => {
-    console.log(`Page/PageSize changed: page=${page}, pageSize=${pageSize}, fetching cover letters...`);
-    fetchCoverLetters();
-  }, [page, pageSize, searchTerm]);
+  const listParams = useMemo(
+    () => ({
+      skip: (page - 1) * pageSize,
+      limit: pageSize,
+      sort_by: 'updated_desc',
+    }),
+    [page, pageSize]
+  );
+
+  const { data: coverLettersData, isLoading, isFetching } = useCoverLetters(listParams);
+
+  const coverLetters = useMemo(() => {
+    const items = coverLettersData?.items ?? [];
+    if (!searchTerm) {
+      return items;
+    }
+    return items.filter((cl) =>
+      getCoverLetterTitle(cl).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [coverLettersData?.items, searchTerm, resumeTitles]);
+
+  const totalCoverLetters = coverLettersData?.total ?? 0;
+  const loading = isLoading || isFetching;
+
+  const deleteCoverLetterMutation = useMutation({
+    mutationFn: deleteCoverLetter,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: coverLetterKeys.all });
+    },
+  });
 
   useEffect(() => {
-    // Fetch resume titles for all cover letters
     const fetchResumeTitles = async () => {
-      const resumeIds = coverLetters.map(cl => cl.resume_id);
+      const items = coverLettersData?.items ?? [];
+      const resumeIds = items.map((cl) => cl.resume_id);
       const uniqueResumeIds = Array.from(new Set(resumeIds));
       
       const newResumeTitles: Record<string, string> = {};
@@ -137,10 +140,10 @@ const CoverLettersPage: React.FC = () => {
       setResumeTitles(newResumeTitles);
     };
     
-    if (coverLetters.length > 0) {
+    if ((coverLettersData?.items ?? []).length > 0) {
       fetchResumeTitles();
     }
-  }, [coverLetters]);
+  }, [coverLettersData?.items]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -194,34 +197,17 @@ const CoverLettersPage: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedCoverLetterId) return;
-    
+
     setDeletingCoverLetter(true);
     try {
-      await deleteCoverLetter(selectedCoverLetterId);
-      
-      // Remove the deleted cover letter from the local state
-      const updatedCoverLetters = coverLetters.filter(cl => cl.id !== selectedCoverLetterId);
-      setCoverLetters(updatedCoverLetters);
-      
+      await deleteCoverLetterMutation.mutateAsync(selectedCoverLetterId);
+
       const newTotalCount = totalCoverLetters - 1;
-      setTotalCoverLetters(newTotalCount);
-      
-      // Calculate how many total pages we would have after deletion
       const totalPages = Math.ceil(newTotalCount / pageSize);
-      
-      // Check if we need to adjust the page number or refresh the data
+
       if (page > totalPages && totalPages > 0) {
-        // Go to the last available page if current page no longer exists
         setPage(totalPages);
-      } else if (updatedCoverLetters.length === 0 && newTotalCount > 0) {
-        // If we deleted the last item on the page but there are more items, refresh
-        fetchCoverLetters();
-      } else if (updatedCoverLetters.length < pageSize && newTotalCount > updatedCoverLetters.length) {
-        // If we have fewer items than page size but there are more items in total,
-        // we should refresh to pull in items from the next page
-        fetchCoverLetters();
       }
-      
     } catch (error: any) {
       console.error('Failed to delete cover letter:', error);
       // Display error message to the user
@@ -297,15 +283,6 @@ const CoverLettersPage: React.FC = () => {
       month: 'short', 
       day: 'numeric' 
     });
-  };
-
-  // Generate title using resume title when available
-  const getCoverLetterTitle = (coverLetter: CoverLetter) => {
-    const resumeId = coverLetter.resume_id;
-    if (resumeTitles[resumeId]) {
-      return `${resumeTitles[resumeId]}`;
-    }
-    return `(${resumeId.substring(0, 8)})`;
   };
 
   const handleViewPdf = async (coverLetterId: string) => {

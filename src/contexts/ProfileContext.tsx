@@ -1,7 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { profileKeys } from '../lib/queryKeys';
+import { queryClient } from '../providers/QueryProvider';
 import { getUserProfile } from '../services/profileService';
 import { Profile } from '../types/models';
-import { useAuth } from './AuthContext';
 
 interface ProfileContextType {
   profile: Profile | null;
@@ -20,51 +23,39 @@ const ProfileContext = createContext<ProfileContextType>({
 export const useProfile = () => useContext(ProfileContext);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { data, isLoading, error, isFetching } = useUserProfile();
 
-  const fetchProfile = async (): Promise<Profile | null> => {
+  const refreshProfile = useCallback(async (): Promise<Profile | null> => {
     if (!user) {
-      setLoading(false);
       return null;
     }
-    
     try {
-      setLoading(true);
-      setError(null);
-      const data = await getUserProfile();
-      setProfile(data);
-      return data;
-    } catch (err: any) {
-      console.error('Failed to fetch profile:', err);
-      setError(err.message || 'Failed to load profile data');
+      return await queryClient.fetchQuery({
+        queryKey: profileKeys.me(),
+        queryFn: getUserProfile,
+      });
+    } catch (err: unknown) {
+      console.error('Failed to refresh profile:', err);
       return null;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial fetch when the context is mounted
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-      setLoading(false);
     }
   }, [user]);
 
-  const refreshProfile = async (): Promise<Profile | null> => {
-    return await fetchProfile();
-  };
+  const errorMessage =
+    error instanceof Error ? error.message : error ? 'Failed to load profile data' : null;
 
   return (
-    <ProfileContext.Provider value={{ profile, loading, error, refreshProfile }}>
+    <ProfileContext.Provider
+      value={{
+        profile: data ?? null,
+        loading: isLoading || (!!user && isFetching && !data),
+        error: errorMessage,
+        refreshProfile,
+      }}
+    >
       {children}
     </ProfileContext.Provider>
   );
 };
 
-export default ProfileContext; 
+export default ProfileContext;

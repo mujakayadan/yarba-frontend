@@ -4,7 +4,6 @@ import { Typography, Container, Paper, Box, Button, TextField, CircularProgress,
 import { CheckCircleOutline, ErrorOutline, Language, Refresh } from '@mui/icons-material';
 import { 
   createPortfolioWebsite, 
-  getPortfolioWebsite, 
   checkSubdomainAvailability, 
   deployPortfolioWebsite,
   deletePortfolioWebsite,
@@ -12,6 +11,9 @@ import {
 } from '../services/websiteService';
 import { PortfolioWebsiteResponse, PortfolioWebsiteConfig, DeploymentStatus } from '../types/models';
 import debounce from 'lodash/debounce';
+import { usePortfolioWebsite } from '../hooks/useWebsite';
+import { websiteKeys } from '../lib/queryKeys';
+import { queryClient } from '../providers/QueryProvider';
 
 const THEMES = [
   { 
@@ -47,9 +49,22 @@ const WebsitePage: React.FC = () => {
   const [subdomainError, setSubdomainError] = useState<string | null>(null);
   const [suggestedSubdomains, setSuggestedSubdomains] = useState<string[]>([]);
   const [isCheckingSubdomain, setIsCheckingSubdomain] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { data: website, isLoading: websiteQueryLoading, error: websiteQueryError, refetch } =
+    usePortfolioWebsite();
+  const [actionLoading, setActionLoading] = useState(false);
+  const isLoading = websiteQueryLoading || actionLoading;
   const [error, setError] = useState<string | null>(null);
-  const [website, setWebsite] = useState<PortfolioWebsiteResponse | null>(null);
+
+  const setWebsite = useCallback((value: PortfolioWebsiteResponse | null) => {
+    queryClient.setQueryData(websiteKeys.portfolio(), value);
+  }, []);
+
+  const updateWebsite = useCallback(
+    (updater: (prev: PortfolioWebsiteResponse | null | undefined) => PortfolioWebsiteResponse | null) => {
+      queryClient.setQueryData(websiteKeys.portfolio(), updater);
+    },
+    []
+  );
   const deploymentPollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollRetryCountRef = useRef<number>(0);
 
@@ -58,31 +73,43 @@ const WebsitePage: React.FC = () => {
   const DEFAULT_POLL_INTERVAL = 5000;
 
   const fetchUserWebsite = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const existingWebsite = await getPortfolioWebsite();
-      setWebsite(existingWebsite);
-      if (existingWebsite) {
-        setActiveStep(2); // Skip to management if website exists
-        setSelectedTheme(existingWebsite.config.theme);
-        setSubdomain(existingWebsite.subdomain);
-        if (isDeploymentInProgress(existingWebsite.deployment_status)) {
-          pollDeploymentStatus();
-        }
+    const { data: existingWebsite } = await refetch();
+    if (existingWebsite) {
+      setActiveStep(2);
+      setSelectedTheme(existingWebsite.config.theme);
+      setSubdomain(existingWebsite.subdomain);
+      if (isDeploymentInProgress(existingWebsite.deployment_status)) {
+        pollDeploymentStatus();
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch website data.');
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  }, [refetch]);
 
   useEffect(() => {
-    fetchUserWebsite();
+    if (website) {
+      setActiveStep(2);
+      setSelectedTheme(website.config.theme);
+      setSubdomain(website.subdomain);
+      if (isDeploymentInProgress(website.deployment_status)) {
+        pollDeploymentStatus();
+      }
+    }
+  }, [website?.subdomain]);
+
+  useEffect(() => {
+    if (websiteQueryError) {
+      setError(
+        websiteQueryError instanceof Error
+          ? websiteQueryError.message
+          : 'Failed to fetch website data.'
+      );
+    }
+  }, [websiteQueryError]);
+
+  useEffect(() => {
     return () => {
       if (deploymentPollTimeoutRef.current) clearTimeout(deploymentPollTimeoutRef.current);
     };
-  }, [fetchUserWebsite]);
+  }, []);
 
   const debouncedCheckSubdomain = useCallback(
     debounce(async (name: string) => {
@@ -135,7 +162,7 @@ const WebsitePage: React.FC = () => {
       setError('Please enter a valid and available subdomain.');
       return;
     }
-    setIsLoading(true);
+    setActionLoading(true);
     setError(null);
     try {
       const config: PortfolioWebsiteConfig = { ...DEFAULT_CONFIG, theme: selectedTheme };
@@ -148,7 +175,7 @@ const WebsitePage: React.FC = () => {
     } catch (err: any) {
       setError(err.response?.data?.detail || err.message || 'Failed to create website.');
     } finally {
-      setIsLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -159,7 +186,7 @@ const WebsitePage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
+    setActionLoading(true);
     setError(null);
     try {
       const updatedWebsite = await deployPortfolioWebsite(true, true);
@@ -170,14 +197,14 @@ const WebsitePage: React.FC = () => {
     } catch (err: any) {
       setError(err.response?.data?.detail || err.message || 'Failed to redeploy website.');
     } finally {
-      setIsLoading(false);
+      setActionLoading(false);
     }
   };
 
   const handleDelete = async () => {
     if (!website) return;
     if (!window.confirm('Are you sure you want to delete your portfolio website? This action cannot be undone.')) return;
-    setIsLoading(true);
+    setActionLoading(true);
     setError(null);
     try {
       await deletePortfolioWebsite();
@@ -191,7 +218,7 @@ const WebsitePage: React.FC = () => {
     } catch (err: any) {
       setError(err.response?.data?.detail || err.message || 'Failed to delete website.');
     } finally {
-      setIsLoading(false);
+      setActionLoading(false);
     }
   }
 
@@ -207,7 +234,7 @@ const WebsitePage: React.FC = () => {
       try {
         const statusData = await getDeploymentStatus();
         
-        setWebsite(prev => prev ? { ...prev, deployment_status: statusData } : null);
+        updateWebsite((prev) => (prev ? { ...prev, deployment_status: statusData } : null));
         
         if (!isDeploymentInProgress(statusData)) {
           stopPolling();

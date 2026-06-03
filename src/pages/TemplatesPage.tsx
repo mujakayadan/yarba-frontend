@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -19,11 +19,7 @@ import {
   Mail as CoverLetterIcon,
   Code as PreambleIcon
 } from '@mui/icons-material';
-import { 
-  getPreambles, 
-  getResumeTemplates, 
-  getCoverLetterTemplates 
-} from '../services/templateService';
+import { useCoverLetterTemplates, usePreambles, useResumeTemplates } from '../hooks/useTemplates';
 import { Preamble, TexHeader } from '../types/models';
 
 // Unified template interface for display purposes
@@ -70,60 +66,70 @@ function a11yProps(index: number) {
 
 const TemplatesPage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
-  const [resumeTemplates, setResumeTemplates] = useState<Template[]>([]);
-  const [coverLetterTemplates, setCoverLetterTemplates] = useState<Template[]>([]);
-  const [preambles, setPreambles] = useState<Template[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
+  const {
+    data: preambleData,
+    isLoading: preamblesLoading,
+    isError: preamblesError,
+    refetch: refetchPreambles,
+  } = usePreambles();
+  const {
+    data: resumeData,
+    isLoading: resumesLoading,
+    isError: resumesError,
+    refetch: refetchResumeTemplates,
+  } = useResumeTemplates();
+  const {
+    data: coverLetterData,
+    isLoading: coverLettersLoading,
+    isError: coverLettersError,
+    refetch: refetchCoverLetterTemplates,
+  } = useCoverLetterTemplates();
 
-  const fetchTemplates = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Fetch all template types in parallel
-      const [preambleData, resumeData, coverLetterData] = await Promise.all([
-        getPreambles(),
-        getResumeTemplates(),
-        getCoverLetterTemplates()
-      ]);
-      
-      // Map to the unified Template interface
-      setPreambles(preambleData.map(p => ({
+  const loading = preamblesLoading || resumesLoading || coverLettersLoading;
+
+  const preambles = useMemo(
+    () =>
+      (preambleData ?? []).map((p) => ({
         id: p.id,
         name: p.name,
         description: p.description || 'LaTeX preamble',
         created_at: p.created_at,
-        preview_url: undefined
-      })));
-      
-      // Convert each template to our unified Template interface
-      // TypeScript type assertion to handle the unknown structure
-      setResumeTemplates((resumeData as any[]).map(t => ({
+        preview_url: undefined,
+      })),
+    [preambleData]
+  );
+
+  const resumeTemplates = useMemo(
+    () =>
+      ((resumeData as any[]) ?? []).map((t) => ({
         id: t.id,
         name: t.name,
         description: t.description || 'Resume template',
         created_at: t.created_at,
-        preview_url: t.preview_url || undefined
-      })));
-      
-      setCoverLetterTemplates((coverLetterData as any[]).map(t => ({
+        preview_url: t.preview_url || undefined,
+      })),
+    [resumeData]
+  );
+
+  const coverLetterTemplates = useMemo(
+    () =>
+      ((coverLetterData as any[]) ?? []).map((t) => ({
         id: t.id,
         name: t.name,
         description: t.description || 'Cover letter template',
         created_at: t.created_at,
-        preview_url: t.preview_url || undefined
-      })));
-    } catch (err: any) {
-      console.error('Failed to fetch templates:', err);
+        preview_url: t.preview_url || undefined,
+      })),
+    [coverLetterData]
+  );
+
+  if (preamblesError || resumesError || coverLettersError) {
+    if (!error) {
       setError('Failed to load templates. Please try again later.');
-    } finally {
-      setLoading(false);
     }
-  };
+  }
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -147,7 +153,11 @@ const TemplatesPage: React.FC = () => {
       <Alert severity="error" sx={{ my: 2 }}>
         {error}
         <Button
-          onClick={fetchTemplates}
+          onClick={() => {
+            refetchPreambles();
+            refetchResumeTemplates();
+            refetchCoverLetterTemplates();
+          }}
           variant="outlined"
           size="small"
           sx={{ ml: 2 }}

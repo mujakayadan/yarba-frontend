@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { 
   Box, 
   Typography, 
@@ -47,11 +48,14 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { getResumes, deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
-import { getUserPortfolio } from '../../services/portfolioService';
+import { deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
 import { Portfolio } from '../../types/models';
 import { Toast, PdfPreviewDialog } from '../../components/common';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
+import { useResumes } from '../../hooks/useResumes';
+import { useUserPortfolio } from '../../hooks/usePortfolio';
+import { resumeKeys } from '../../lib/queryKeys';
+import { queryClient } from '../../providers/QueryProvider';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -108,9 +112,6 @@ const DEFAULT_PAGE_SIZE = 10;
 
 const ResumesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [resumes, setResumes] = useState<APIResume[]>([]);
-  const [totalResumes, setTotalResumes] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [page, setPage] = useState(1);
@@ -125,52 +126,33 @@ const ResumesPage: React.FC = () => {
   const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
   const [availablePortfolios, setAvailablePortfolios] = useState<Portfolio[]>([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
-  const [loadingPortfolios, setLoadingPortfolios] = useState(false);
   const [updatingResume, setUpdatingResume] = useState(false);
   const pdfPreview = usePdfPreview();
   const [selectedResumeName, setSelectedResumeName] = useState<string>('');
 
-  const fetchResumes = async () => {
-    setLoading(true);
-    try {
-      const skip = (page - 1) * pageSize;
-      const limit = pageSize;
-      const searchTermForApi = debouncedSearchTerm ? debouncedSearchTerm : undefined;
-      
-      console.log(`Fetching resumes with skip=${skip}, limit=${limit}, search_term=${searchTermForApi}, sort_by=updated_desc`);
-      
-      // Use the new sort_by parameter and pass search_term
-      const result = await getResumes(skip, limit, searchTermForApi, undefined, 'updated_desc');
-      console.log('API result:', result);
-      
-      // Log timestamps to verify sorting
-      if (result.items.length > 0) {
-        console.log('First resume updated_at:', result.items[0].updated_at);
-        if (result.items.length > 1) {
-          console.log('Second resume updated_at:', result.items[1].updated_at);
-        }
-      }
-      
-      // API now returns data already sorted, no need for client-side sorting
-      setResumes(result.items as unknown as APIResume[]);
-      
-      // Set the total count from the total property
-      setTotalResumes(result.total || 0);
-      
-      console.log(`Loaded ${result.items.length} resumes, total: ${result.total}`);
-    } catch (error) {
-      console.error('Failed to fetch resumes:', error);
-      setResumes([]);
-      setTotalResumes(0);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const listParams = useMemo(
+    () => ({
+      skip: (page - 1) * pageSize,
+      limit: pageSize,
+      search_term: debouncedSearchTerm || undefined,
+      sort_by: 'updated_desc',
+    }),
+    [page, pageSize, debouncedSearchTerm]
+  );
 
-  useEffect(() => {
-    console.log(`Page/PageSize changed: page=${page}, pageSize=${pageSize}, fetching resumes...`);
-    fetchResumes();
-  }, [page, pageSize, debouncedSearchTerm]);
+  const { data: resumesData, isLoading, isFetching } = useResumes(listParams);
+  const resumes = (resumesData?.items ?? []) as unknown as APIResume[];
+  const totalResumes = resumesData?.total ?? 0;
+  const loading = isLoading || isFetching;
+
+  const deleteResumeMutation = useMutation({
+    mutationFn: deleteResume,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: resumeKeys.all });
+    },
+  });
+
+  const { data: userPortfolio, isLoading: loadingPortfolios } = useUserPortfolio();
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -234,34 +216,17 @@ const ResumesPage: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedResumeId) return;
-    
+
     setDeletingResume(true);
     try {
-      await deleteResume(selectedResumeId);
-      
-      // Remove the deleted resume from the local state
-      const updatedResumes = resumes.filter(resume => resume.id !== selectedResumeId);
-      setResumes(updatedResumes);
-      
+      await deleteResumeMutation.mutateAsync(selectedResumeId);
+
       const newTotalCount = totalResumes - 1;
-      setTotalResumes(newTotalCount);
-      
-      // Calculate how many total pages we would have after deletion
       const totalPages = Math.ceil(newTotalCount / pageSize);
-      
-      // Check if we need to adjust the page number or refresh the data
+
       if (page > totalPages && totalPages > 0) {
-        // Go to the last available page if current page no longer exists
         setPage(totalPages);
-      } else if (updatedResumes.length === 0 && newTotalCount > 0) {
-        // If we deleted the last item on the page but there are more items, refresh
-        fetchResumes();
-      } else if (updatedResumes.length < pageSize && newTotalCount > updatedResumes.length) {
-        // If we have fewer items than page size but there are more items in total,
-        // we should refresh to pull in items from the next page
-        fetchResumes();
       }
-      
     } catch (error: any) {
       console.error('Failed to delete resume:', error);
       // Display error message to the user
@@ -295,24 +260,17 @@ const ResumesPage: React.FC = () => {
     handleMenuClose();
   };
 
-  const handleOpenPortfolioDialog = async (resumeId: string) => {
+  const handleOpenPortfolioDialog = (resumeId: string) => {
     setSelectedResumeId(resumeId);
-    setLoadingPortfolios(true);
     setPortfolioDialogOpen(true);
-    
-    try {
-      const portfolio = await getUserPortfolio();
-      setAvailablePortfolios([portfolio]);
-      
-      if (portfolio) {
-        setSelectedPortfolioId(portfolio._id);
-      }
-    } catch (error) {
-      console.error('Failed to fetch portfolio:', error);
+
+    if (userPortfolio) {
+      setAvailablePortfolios([userPortfolio]);
+      setSelectedPortfolioId(userPortfolio._id);
+    } else {
+      setAvailablePortfolios([]);
       setErrorMessage('Failed to load available portfolio');
       setSnackbarOpen(true);
-    } finally {
-      setLoadingPortfolios(false);
     }
   };
   
@@ -326,13 +284,8 @@ const ResumesPage: React.FC = () => {
     setUpdatingResume(true);
     try {
       await updateResume(selectedResumeId, { portfolio_id: selectedPortfolioId });
-      
-      // Update the resume in our local state
-      setResumes(resumes.map(resume => 
-        resume.id === selectedResumeId 
-          ? { ...resume, portfolio_id: selectedPortfolioId } 
-          : resume
-      ));
+
+      queryClient.invalidateQueries({ queryKey: resumeKeys.all });
       
       setErrorMessage('Resume successfully updated with new portfolio');
       setSnackbarOpen(true);

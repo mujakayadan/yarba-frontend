@@ -19,15 +19,13 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import { createPortfolio } from '../../services/portfolioService';
-import { getUserProfile } from '../../services/profileService';
-import { Profile } from '../../types/models';
+import { useUserProfile } from '../../hooks/useUserProfile';
 
 const PortfolioCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const { data: profile, isLoading: profileLoading, isError: profileIsError, error: profileQueryError } = useUserProfile();
   const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
   
   // Basic form state
   const [portfolioName, setPortfolioName] = useState('');
@@ -38,30 +36,17 @@ const PortfolioCreatePage: React.FC = () => {
   const [newSkill, setNewSkill] = useState('');
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   
-  // Fetch user profile to link with portfolio
   useEffect(() => {
-    const fetchProfile = async () => {
-      setProfileLoading(true);
-      try {
-        const profileData = await getUserProfile();
-        setProfile(profileData);
-      } catch (err: any) {
-        console.error('Failed to fetch profile:', err);
-        
-        // If profile doesn't exist, redirect to profile creation
-        if (err.response && err.response.status === 404) {
-          setError('You need to create a profile before creating a portfolio.');
-        } else {
-          setError('Failed to load user profile. Please try again.');
-        }
-      } finally {
-        setProfileLoading(false);
+    if (profileIsError) {
+      const err = profileQueryError as { response?: { status?: number } };
+      if (err?.response?.status === 404) {
+        setError('You need to create a profile before creating a portfolio.');
+      } else {
+        setError('Failed to load user profile. Please try again.');
       }
-    };
-    
-    fetchProfile();
-  }, [navigate]);
-  
+    }
+  }, [profileIsError, profileQueryError]);
+
   const handleAddSkill = () => {
     if (!newSkill.trim()) return;
     

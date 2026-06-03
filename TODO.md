@@ -33,6 +33,8 @@
 - [x] Shared PDF preview (`PdfPreviewDialog`, `usePdfPreview`)
 - [x] Split PDF preview from list/view pages
 - [x] Split `PortfolioEditPage` into hook + 8 tab components
+- [x] INP: `useDeferredTabs` + lazy tab panels (portfolio view/edit, profile view/edit)
+- [x] TanStack Query server-state: `useUserProfile`, `usePortfolio`, list/detail hooks, mutations + invalidation
 
 ## Tier 4 — Cleanup & docs
 - [x] Fix App.test.tsx for Vitest

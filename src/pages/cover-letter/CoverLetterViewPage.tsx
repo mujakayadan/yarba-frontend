@@ -1,5 +1,6 @@
 import Grid from '../../mui/Grid';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { env } from '../../config/env';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Divider, Button, CircularProgress, Chip, Stack, Alert, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
@@ -10,83 +11,66 @@ import {
   Delete as DeleteIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { getCoverLetterById, getCoverLetterPdf, deleteCoverLetter } from '../../services/coverLetterService';
-import { getResumeById } from '../../services/resumeService';
-import { getUserProfile } from '../../services/profileService';
-import { CoverLetter, Resume, Profile } from '../../types/models';
+import { getCoverLetterPdf, deleteCoverLetter } from '../../services/coverLetterService';
+import { CoverLetter } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common/PdfPreviewDialog';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
+import { useCoverLetter } from '../../hooks/useCoverLetter';
+import { useUserProfile } from '../../hooks/useUserProfile';
+import { useResume } from '../../hooks/useResume';
+import { coverLetterKeys } from '../../lib/queryKeys';
+import { queryClient } from '../../providers/QueryProvider';
 
 const CoverLetterViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [coverLetter, setCoverLetter] = useState<CoverLetter | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: coverLetter,
+    isLoading: loading,
+    isError,
+    error: coverLetterError,
+  } = useCoverLetter(id);
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    isError: profileIsError,
+    error: profileQueryError,
+  } = useUserProfile();
+  const { data: resumeData } = useResume(coverLetter?.resume_id);
+
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCoverLetter, setDeletingCoverLetter] = useState(false);
-  
-  // Profile Data state
-  const [profileData, setProfileData] = useState<Profile | null>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [profileError, setProfileError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   const pdfPreview = usePdfPreview();
-  const [resumeData, setResumeData] = useState<Resume | null>(null);
-  const [resumeTitle, setResumeTitle] = useState<string>('');
 
-  useEffect(() => {
-    const fetchCoverLetter = async () => {
-      if (!id) return;
-      
-      setLoading(true);
-      try {
-        const data = await getCoverLetterById(id);
-        setCoverLetter(data);
-        
-        // Fetch resume title and data
-        try {
-          const resume = await getResumeById(data.resume_id);
-          setResumeTitle(resume.title);
-          setResumeData(resume);
-        } catch (resumeErr) {
-          console.error('Failed to fetch resume:', resumeErr);
-        }
-        
-        setError(null);
-      } catch (err: any) {
-        console.error('Failed to fetch cover letter:', err);
-        setError(err.message || 'Failed to fetch cover letter details');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const error =
+    isError && coverLetterError
+      ? coverLetterError instanceof Error
+        ? coverLetterError.message
+        : 'Failed to fetch cover letter details'
+      : null;
 
-    fetchCoverLetter();
-  }, [id]);
+  const profileError =
+    profileIsError && profileQueryError
+      ? profileQueryError instanceof Error
+        ? profileQueryError.message
+        : 'Failed to load profile data.'
+      : null;
 
-  // Fetch Full Profile Data
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      setProfileLoading(true);
-      setProfileError(null);
-      try {
-        const data = await getUserProfile(); // Fetch full profile
-        setProfileData(data);
-      } catch (err: any) {
-        console.error('Failed to fetch profile data:', err);
-        setProfileError(err.message || 'Failed to load profile data.');
-      } finally {
-        setProfileLoading(false);
-      }
-    };
+  const resumeTitle = resumeData?.title ?? '';
+  const coverLetterTitle = coverLetter
+    ? resumeTitle || `Cover Letter (${coverLetter.resume_id.substring(0, 8)})`
+    : '';
 
-    fetchProfileData();
-  }, []); // Runs once on mount
-
-  // Generate a title for the cover letter
-  const coverLetterTitle = coverLetter ? (resumeTitle || `Cover Letter (${coverLetter.resume_id.substring(0, 8)})`) : '';
+  const deleteMutation = useMutation({
+    mutationFn: deleteCoverLetter,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: coverLetterKeys.all });
+    },
+  });
 
   const handleEdit = () => {
     if (id) {
@@ -108,14 +92,15 @@ const CoverLetterViewPage: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!id) return;
-    
+
     setDeletingCoverLetter(true);
+    setDeleteError(null);
     try {
-      await deleteCoverLetter(id);
+      await deleteMutation.mutateAsync(id);
       navigate('/cover-letters');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to delete cover letter:', err);
-      setError('Failed to delete cover letter. Please try again.');
+      setDeleteError('Failed to delete cover letter. Please try again.');
       setDeleteDialogOpen(false);
     } finally {
       setDeletingCoverLetter(false);
@@ -144,7 +129,7 @@ const CoverLetterViewPage: React.FC = () => {
       pdfPreview.openPreviewFromBlob(blob);
     } catch (err: any) {
       console.error('Failed to generate PDF:', err);
-      setError('Failed to generate PDF. Please try again.');
+      setPdfError('Failed to generate PDF. Please try again.');
     } finally {
       setGeneratingPdf(false);
     }
@@ -167,7 +152,7 @@ const CoverLetterViewPage: React.FC = () => {
 
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
-      setError('Failed to download PDF. Please try again.');
+      setPdfError('Failed to download PDF. Please try again.');
     } finally {
       setGeneratingPdf(false);
     }

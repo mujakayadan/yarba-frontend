@@ -42,8 +42,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { env } from '../../config/env';
-import { getUserProfile } from '../../services/profileService';
-import { Profile } from '../../types/models';
+import { useUserProfile } from '../../hooks/useUserProfile';
 import Footer from './Footer';
 
 // Define navigation items
@@ -79,47 +78,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(!isMobile && !hideDrawer);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { data: profile } = useUserProfile();
   const [imageVersion, setImageVersion] = useState<number>(Date.now());
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    // Fetch user profile to get profile picture if user is authenticated
-    if (user) {
-      fetchProfile();
-    }
     if (hideDrawer) {
-        setDrawerOpen(false);
+      setDrawerOpen(false);
     }
-  }, [user, hideDrawer]);
+  }, [hideDrawer]);
 
-  // Add a timer to refresh the image version periodically to catch updates
   useEffect(() => {
-    // Update image version to force refresh
-    setImageVersion(Date.now());
-    
-    // Set up periodic refresh
+    if (profile?.profile_picture_key) {
+      setImageError(false);
+      setImageVersion(Date.now());
+    }
+  }, [profile?.profile_picture_key]);
+
+  useEffect(() => {
     const refreshInterval = setInterval(() => {
       setImageVersion(Date.now());
-    }, 60000); // Refresh every minute
-    
+    }, 60000);
+
     return () => clearInterval(refreshInterval);
   }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const profileData = await getUserProfile();
-      setProfile(profileData);
-      // Reset image error state to try loading the image again
-      setImageError(false);
-      // Force image refresh when profile is loaded
-      setImageVersion(Date.now());
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-    }
-  };
 
   const toggleDrawer = () => {
     if (!hideDrawer) {

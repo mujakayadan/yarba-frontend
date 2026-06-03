@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createResume, extractJobDetails, JobExtractionDetails } from '../../services/resumeService';
-import { getUserProfile } from '../../services/profileService';
-import { ResumeCreateRequest, Profile } from '../../types/models';
+import { useUserProfile } from '../../hooks/useUserProfile';
+import { ResumeCreateRequest } from '../../types/models';
 import { Toast } from '../../components/common';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
@@ -51,33 +51,17 @@ function TabPanel(props: TabPanelProps) {
 const CreateResumePage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
   const [error, setError] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [jobDescription, setJobDescription] = useState('');
   const [jobDescriptionUrl, setJobDescriptionUrl] = useState('');
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
   const [extractedJobDetails, setExtractedJobDetails] = useState<JobExtractionDetails | null>(null);
   const [isJobExtracted, setIsJobExtracted] = useState(false);
   const [extractionError, setExtractionError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  const fetchUserProfile = async () => {
-    try {
-      const profileData = await getUserProfile();
-      setProfile(profileData);
-    } catch (err) {
-      console.error('Failed to fetch profile:', err);
-    } finally {
-      setProfileLoading(false);
-    }
-  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);

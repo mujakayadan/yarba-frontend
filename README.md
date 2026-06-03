@@ -62,6 +62,10 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 Configured for Vercel. Set all `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
 
+## Server state (TanStack Query)
+
+API reads go through hooks in `src/hooks/` with keys from `src/lib/queryKeys.ts` (for example `useUserProfile`, `usePortfolioById`, `useResumes`). After writes, use mutation hooks or `queryClient.invalidateQueries` so cached data stays in sync. Keep in-progress form drafts in component state, not in the query cache.
+
 ## Development tools
 
 The Firebase debug page at `/firebase-test` is available only in development mode (`npm run dev`).

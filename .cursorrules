@@ -75,9 +75,11 @@ src/
     common/       # Shared/reusable components
     layout/       # Layout components (Header, Sidebar, etc.)
     portfolio/    # Portfolio-specific components
+  hooks/              # TanStack Query hooks (useUserProfile, usePortfolioById, etc.)
+  lib/queryKeys.ts    # Central query key factories
   contexts/
     AuthContext.tsx     # Firebase auth + backend JWT state
-    ProfileContext.tsx  # User profile state
+    ProfileContext.tsx  # User profile (wraps useUserProfile cache)
   hooks/          # Custom React hooks
   pages/
     resume/       # Resume pages (list, edit, create)
@@ -130,10 +132,17 @@ src/
 ## API Integration
 
 - All requests use the Axios instance from `src/services/api.ts`
-- Base URL is configured via `REACT_APP_API_URL` environment variable
+- Base URL is configured via `VITE_API_URL` environment variable
 - JWT token is automatically attached via request interceptor
 - Handle errors explicitly—don't let errors silently fail
 - Use TypeScript interfaces for all request/response payloads
+
+### Server state (TanStack Query)
+
+- Read server data with hooks in `src/hooks/` (`useUserProfile`, `usePortfolioById`, `useResumes`, etc.)
+- Use query keys from `src/lib/queryKeys.ts`; invalidate related keys after mutations
+- Do not add new `useEffect` + `useState` fetch loops for API data that other pages already load
+- Keep edit-form draft state in React state; the query cache holds server truth
 
 ### Backend API Reference
 

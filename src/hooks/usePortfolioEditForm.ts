@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useDeferredTabs } from './useDeferredTabs';
 import { useNavigate } from 'react-router-dom';
-import {
-  getPortfolioById,
-  updateAwards,
-  updateCareerSummary,
-  updateCertifications,
-  updateEducation,
-  updateProjects,
-  updatePublications,
-  updateSkills,
-  updateWorkExperience,
-} from '../services/portfolioService';
 import { Portfolio } from '../types/models';
 import {
   AwardFormItem,
@@ -23,13 +13,16 @@ import {
   WorkExperienceFormItem,
 } from '../types/portfolioEdit';
 import { extractApiErrorMessage, mapPortfolioToEditForm } from '../utils/portfolioEditMappers';
+import { usePortfolioById } from './usePortfolio';
+import { usePortfolioMutations } from './usePortfolioMutations';
 
 export const usePortfolioEditForm = (id: string | undefined) => {
   const navigate = useNavigate();
+  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
+  const { data: portfolio, isLoading, isError, error: queryError } = usePortfolioById(id);
+  const mutations = usePortfolioMutations(id);
 
-  const [tabValue, setTabValue] = useState(0);
-  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [formSeeded, setFormSeeded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -74,33 +67,20 @@ export const usePortfolioEditForm = (id: string | undefined) => {
     setCertifications(form.certifications);
   }, []);
 
-  const fetchPortfolio = useCallback(async () => {
-    if (!id) {
-      return;
+  useEffect(() => {
+    if (portfolio && !formSeeded) {
+      applyFormState(portfolio);
+      setFormSeeded(true);
     }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const portfolioData = await getPortfolioById(id);
-      setPortfolio(portfolioData);
-      applyFormState(portfolioData);
-    } catch (err: unknown) {
-      console.error('Failed to fetch portfolio:', err);
-      setError(extractApiErrorMessage(err, 'Failed to load portfolio. Please try again later.'));
-    } finally {
-      setLoading(false);
-    }
-  }, [applyFormState, id]);
+  }, [portfolio, formSeeded, applyFormState]);
 
   useEffect(() => {
-    fetchPortfolio();
-  }, [fetchPortfolio]);
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+    if (isError && queryError) {
+      setError(
+        extractApiErrorMessage(queryError, 'Failed to load portfolio. Please try again later.')
+      );
+    }
+  }, [isError, queryError]);
 
   const handleAddSkill = () => {
     if (!newSkill.trim()) {
@@ -176,9 +156,11 @@ export const usePortfolioEditForm = (id: string | undefined) => {
     setSuccess(null);
 
     try {
+      let updated: Portfolio | undefined;
+
       switch (tabValue) {
         case 0:
-          await updateCareerSummary(id, careerSummary);
+          updated = await mutations.updateCareerSummaryMutation.mutateAsync(careerSummary);
           setSuccess('Career summary updated successfully!');
           break;
         case 1: {
@@ -188,16 +170,16 @@ export const usePortfolioEditForm = (id: string | undefined) => {
               category: category.category,
               skills: [...category.skills],
             }));
-          await updateSkills(id, formattedSkills);
+          updated = await mutations.updateSkillsMutation.mutateAsync(formattedSkills);
           setSuccess('Skills updated successfully!');
           break;
         }
         case 2:
-          await updateWorkExperience(id, workExperience);
+          updated = await mutations.updateWorkExperienceMutation.mutateAsync(workExperience);
           setSuccess('Work experience updated successfully!');
           break;
         case 3:
-          await updateEducation(id, education);
+          updated = await mutations.updateEducationMutation.mutateAsync(education);
           setSuccess('Education updated successfully!');
           break;
         case 4: {
@@ -205,27 +187,29 @@ export const usePortfolioEditForm = (id: string | undefined) => {
             ...project,
             link: project.link === '' ? undefined : project.link,
           }));
-          await updateProjects(id, projectsToSave);
+          updated = await mutations.updateProjectsMutation.mutateAsync(projectsToSave);
           setSuccess('Projects updated successfully!');
           break;
         }
         case 5:
-          await updateAwards(id, awards);
+          updated = await mutations.updateAwardsMutation.mutateAsync(awards);
           setSuccess('Awards updated successfully!');
           break;
         case 6:
-          await updatePublications(id, publications);
+          updated = await mutations.updatePublicationsMutation.mutateAsync(publications);
           setSuccess('Publications updated successfully!');
           break;
         case 7:
-          await updateCertifications(id, certifications);
+          updated = await mutations.updateCertificationsMutation.mutateAsync(certifications);
           setSuccess('Certifications updated successfully!');
           break;
         default:
           break;
       }
 
-      await fetchPortfolio();
+      if (updated) {
+        applyFormState(updated);
+      }
     } catch (err: unknown) {
       console.error('Failed to update portfolio:', err);
       setError(extractApiErrorMessage(err, 'Failed to update portfolio. Please try again.'));
@@ -246,8 +230,10 @@ export const usePortfolioEditForm = (id: string | undefined) => {
 
   return {
     tabValue,
-    portfolio,
-    loading,
+    renderedTab,
+    isTabPending,
+    portfolio: portfolio ?? null,
+    loading: isLoading,
     saving,
     error,
     success,
