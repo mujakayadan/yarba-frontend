@@ -20,9 +20,7 @@ const PortfolioViewPage: React.FC = () => {
   const activeQuery = id ? portfolioByIdQuery : userPortfolioQuery;
   const portfolio = activeQuery.data as ViewPortfolio | undefined;
   const loading = activeQuery.isLoading;
-  const error = activeQuery.isError
-    ? 'Failed to load portfolio. Please try again later.'
-    : null;
+  const error = activeQuery.isError ? 'Failed to load portfolio. Please try again later.' : null;
 
   const sorted = useMemo(
     () => (portfolio ? getPortfolioViewSortedData(portfolio) : null),
@@ -93,7 +91,12 @@ const PortfolioViewPage: React.FC = () => {
   return (
     <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'right', alignItems: 'center', mb: 3 }}>
-        <Button variant="contained" color="primary" startIcon={<EditIcon />} onClick={handleEditClick}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<EditIcon />}
+          onClick={handleEditClick}
+        >
           Edit Portfolio
         </Button>
       </Box>
@@ -128,7 +131,14 @@ const PortfolioViewPage: React.FC = () => {
           aria-labelledby={`portfolio-tab-${renderedTab}`}
           aria-busy={isTabPending}
         >
-          <Box sx={{ p: 3, minHeight: 120, opacity: isTabPending ? 0.6 : 1, transition: 'opacity 150ms' }}>
+          <Box
+            sx={{
+              p: 3,
+              minHeight: 120,
+              opacity: isTabPending ? 0.6 : 1,
+              transition: 'opacity 150ms',
+            }}
+          >
             {ActiveTab && sorted && (
               <Suspense fallback={<TabPanelFallback />}>
                 <ActiveTab portfolio={portfolio} sorted={sorted} />

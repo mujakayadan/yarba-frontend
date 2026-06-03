@@ -237,7 +237,7 @@ export interface TexHeader {
   id: string;
   name: string;
   description?: string;
-  template_type: "resume" | "cover_letter";
+  template_type: 'resume' | 'cover_letter';
   template_id: string;
   content: string; // LaTeX header content
   created_at: string;
@@ -343,7 +343,8 @@ export interface SubdomainAvailabilityResponse {
   suggested_alternatives?: string[];
 }
 
-export interface WebsiteAnalytics { // Illustrative structure based on documentation
+export interface WebsiteAnalytics {
+  // Illustrative structure based on documentation
   page_views: number;
   unique_visitors: number;
   bounce_rate: number;
@@ -352,4 +353,4 @@ export interface WebsiteAnalytics { // Illustrative structure based on documenta
   traffic_sources: { [key: string]: number }; // Example: { "source_example": 50 }
   period_start: string; // datetime
   period_end: string; // datetime
-} 
+}

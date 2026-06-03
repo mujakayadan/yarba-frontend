@@ -18,10 +18,7 @@ import {
   Save as SaveIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
-import {
-  generateCoverLetterContent,
-  updateCoverLetter,
-} from '../../services/coverLetterService';
+import { generateCoverLetterContent, updateCoverLetter } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { Toast } from '../../components/common';
 import { useCoverLetter } from '../../hooks/useCoverLetter';
@@ -53,7 +50,9 @@ const CoverLetterEditPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
+    'success'
+  );
 
   useEffect(() => {
     if (initialCoverLetter && !formSeeded) {
@@ -111,9 +110,13 @@ const CoverLetterEditPage: React.FC = () => {
         queryClient.setQueryData(coverLetterKeys.detail(id), updated);
       }
       setContent(contentToEditableText(updated.content));
-      showToast(regenerate ? 'Cover letter regenerated' : 'Cover letter content generated', 'success');
+      showToast(
+        regenerate ? 'Cover letter regenerated' : 'Cover letter content generated',
+        'success'
+      );
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to generate cover letter content';
+      const message =
+        err instanceof Error ? err.message : 'Failed to generate cover letter content';
       setError(message);
       showToast(message, 'error');
     } finally {

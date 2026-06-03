@@ -33,9 +33,7 @@ export const AwardsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => {
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Details
                       </Typography>
-                      <Typography variant="body1">
-                        {award.explanation}
-                      </Typography>
+                      <Typography variant="body1">{award.explanation}</Typography>
                     </Box>
                     <Divider />
                   </Grid>
@@ -50,9 +48,7 @@ export const AwardsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => {
                           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                             Issuer
                           </Typography>
-                          <Typography variant="body1">
-                            {award.issuer}
-                          </Typography>
+                          <Typography variant="body1">{award.issuer}</Typography>
                         </Box>
                       </Grid>
                     )}
@@ -63,9 +59,7 @@ export const AwardsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => {
                           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                             Date
                           </Typography>
-                          <Typography variant="body1">
-                            {award.date}
-                          </Typography>
+                          <Typography variant="body1">{award.date}</Typography>
                         </Box>
                       </Grid>
                     )}
@@ -77,9 +71,7 @@ export const AwardsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => {
                           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                             Description
                           </Typography>
-                          <Typography variant="body1">
-                            {award.description}
-                          </Typography>
+                          <Typography variant="body1">{award.description}</Typography>
                         </Box>
                       </Grid>
                     )}
@@ -90,7 +82,9 @@ export const AwardsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => {
           ))}
         </Box>
       ) : (
-        <Typography variant="body2" color="text.secondary">No awards added yet</Typography>
+        <Typography variant="body2" color="text.secondary">
+          No awards added yet
+        </Typography>
       )}
     </>
   );

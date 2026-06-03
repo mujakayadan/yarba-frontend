@@ -6,8 +6,10 @@ export interface PortfolioEditTabConfig {
   Tab: ComponentType<{ form: PortfolioEditForm }>;
 }
 
-const lazyTab = (loader: () => Promise<{ [key: string]: ComponentType<{ form: PortfolioEditForm }> }>, name: string) =>
-  lazy(() => loader().then((module) => ({ default: module[name] })));
+const lazyTab = (
+  loader: () => Promise<{ [key: string]: ComponentType<{ form: PortfolioEditForm }> }>,
+  name: string
+) => lazy(() => loader().then((module) => ({ default: module[name] })));
 
 export const PORTFOLIO_EDIT_TABS: readonly PortfolioEditTabConfig[] = [
   {

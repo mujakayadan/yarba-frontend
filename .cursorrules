@@ -312,5 +312,8 @@ npm start          # Start dev server
 npm run dev        # Start dev server (debug mode)
 npm test           # Run tests
 npm run build      # Production build
-npm run lint       # Run ESLint
+npm run lint           # Run ESLint
+npm run format         # Prettier write
+npm run format:check   # Prettier check (CI)
+# git commit runs husky → lint-staged (prettier + eslint --fix on staged files)
 ```

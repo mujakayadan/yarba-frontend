@@ -9,12 +9,24 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
     <>
       {sortedEducation.map((edu, index) => (
         <Paper key={index} elevation={1} sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', mb: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              mb: 1,
+            }}
+          >
             <Box>
-              <Typography variant="h6">{edu.degree_type || ''} {edu.degree}</Typography>
+              <Typography variant="h6">
+                {edu.degree_type || ''} {edu.degree}
+              </Typography>
               <Typography variant="subtitle1">{edu.institution || edu.university_name}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {edu.time || (edu.start_date && `${edu.start_date}${edu.end_date ? ` - ${edu.end_date}` : ''}${edu.current ? ' - Present' : ''}`)} | {edu.field_of_study || ''}
+                {edu.time ||
+                  (edu.start_date &&
+                    `${edu.start_date}${edu.end_date ? ` - ${edu.end_date}` : ''}${edu.current ? ' - Present' : ''}`)}{' '}
+                | {edu.field_of_study || ''}
                 {edu.location && ` | ${edu.location}`}
               </Typography>
             </Box>
@@ -34,9 +46,11 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
             </Typography>
           )}
 
-          {(edu.transcript && edu.transcript.length > 0) && (
+          {edu.transcript && edu.transcript.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Transcript/Courses:</Typography>
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                Transcript/Courses:
+              </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {edu.transcript.map((course, courseIndex) => (
                   <Chip key={courseIndex} label={course} size="small" />
@@ -45,9 +59,11 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
             </Box>
           )}
 
-          {(!edu.transcript && edu.courses && edu.courses.length > 0) && (
+          {!edu.transcript && edu.courses && edu.courses.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Relevant Courses:</Typography>
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                Relevant Courses:
+              </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {edu.courses.map((course, courseIndex) => (
                   <Chip key={courseIndex} label={course} size="small" />
@@ -58,7 +74,9 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
         </Paper>
       ))}
       {sortedEducation.length === 0 && (
-        <Typography variant="body2" color="text.secondary">No education details added yet</Typography>
+        <Typography variant="body2" color="text.secondary">
+          No education details added yet
+        </Typography>
       )}
     </>
   );

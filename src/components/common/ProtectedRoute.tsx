@@ -16,7 +16,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // If the app is still loading auth state, show spinner
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -25,26 +27,28 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // Handle offline mode more gracefully - if offline, show a message instead of redirecting
   if (isOfflineMode) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        p: 3 
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          p: 3,
+        }}
+      >
         <Alert severity="warning" sx={{ mb: 2, width: '100%', maxWidth: 500 }}>
           You appear to be offline. Some features may be limited.
         </Alert>
-        
+
         {!isAuthenticated ? (
           <>
             <Typography variant="h6" gutterBottom>
               Authentication Required
             </Typography>
             <Typography variant="body1">
-              This page requires authentication, but we can't connect to our servers.
-              Please check your internet connection and try again.
+              This page requires authentication, but we can't connect to our servers. Please check
+              your internet connection and try again.
             </Typography>
             <Box mt={2}>
               <Navigate to="/login" state={{ from: location, offline: true }} replace />
@@ -70,4 +74,4 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // If authenticated and not loading, and no pending setup step, render the children components
   return <>{children}</>;
-}; 
+};

@@ -20,7 +20,9 @@ export const CertificationsEditTab: React.FC<CertificationsEditTabProps> = ({ fo
 
       {certifications.map((certification, certIndex) => (
         <Paper key={certIndex} variant="outlined" sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Typography variant="subtitle1" fontWeight="bold">
               {certification.name || 'Untitled Certification'}
             </Typography>

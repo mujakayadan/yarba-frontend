@@ -3,9 +3,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci --include=dev",
   "outputDirectory": "build",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "github": {
     "silent": true
   }

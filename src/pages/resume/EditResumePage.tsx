@@ -1,8 +1,33 @@
 import Grid from '../../mui/Grid';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, CircularProgress, Container, Paper, TextField, Typography, Alert, Divider, Stack, Accordion, AccordionSummary, AccordionDetails, IconButton, Chip } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Save as SaveIcon, Visibility as VisibilityIcon, ExpandMore as ExpandMoreIcon, Add as AddIcon, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+  Alert,
+  Divider,
+  Stack,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
+  Chip,
+} from '@mui/material';
+import {
+  ArrowBack as ArrowBackIcon,
+  Save as SaveIcon,
+  Visibility as VisibilityIcon,
+  ExpandMore as ExpandMoreIcon,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+} from '@mui/icons-material';
 import { getResumeById, updateResume } from '../../services/resumeService';
 import { Resume } from '../../types/models';
 import { Toast } from '../../components/common';
@@ -57,7 +82,9 @@ const EditResumePage: React.FC = () => {
 
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
+    'success'
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,7 +169,9 @@ const EditResumePage: React.FC = () => {
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -152,7 +181,9 @@ const EditResumePage: React.FC = () => {
   if (error) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
           Back to Resumes
         </Button>
@@ -174,13 +205,32 @@ const EditResumePage: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 1, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 2,
+            gap: 1,
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant="h5">Edit Resume</Typography>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBack} size="small">
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={handleBack}
+              size="small"
+            >
               Back
             </Button>
-            <Button variant="outlined" startIcon={<VisibilityIcon />} onClick={handleView} size="small">
+            <Button
+              variant="outlined"
+              startIcon={<VisibilityIcon />}
+              onClick={handleView}
+              size="small"
+            >
               View
             </Button>
             <Button
@@ -253,8 +303,10 @@ const EditResumePage: React.FC = () => {
                   right: 0,
                   left: 0,
                   height: jobDescriptionExpanded ? 0 : '30px',
-                  background: jobDescriptionExpanded ? 'none' : 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))'
-                }
+                  background: jobDescriptionExpanded
+                    ? 'none'
+                    : 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))',
+                },
               }}
             >
               <TextField
@@ -290,10 +342,35 @@ const EditResumePage: React.FC = () => {
               <AccordionDetails>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="Job Title" fullWidth value={content.career_summary?.job_title || ''} onChange={(e) => setContent({ ...content, career_summary: { ...content.career_summary, job_title: e.target.value } })} />
+                    <TextField
+                      label="Job Title"
+                      fullWidth
+                      value={content.career_summary?.job_title || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          career_summary: { ...content.career_summary, job_title: e.target.value },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField label="Summary" fullWidth multiline minRows={3} value={content.career_summary?.default_summary || ''} onChange={(e) => setContent({ ...content, career_summary: { ...content.career_summary, default_summary: e.target.value } })} />
+                    <TextField
+                      label="Summary"
+                      fullWidth
+                      multiline
+                      minRows={3}
+                      value={content.career_summary?.default_summary || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          career_summary: {
+                            ...content.career_summary,
+                            default_summary: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                 </Grid>
               </AccordionDetails>
@@ -307,25 +384,116 @@ const EditResumePage: React.FC = () => {
               <AccordionDetails>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="Full Name" fullWidth value={content.personal_information?.full_name || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, full_name: e.target.value } })} />
+                    <TextField
+                      label="Full Name"
+                      fullWidth
+                      value={content.personal_information?.full_name || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            full_name: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="Email" fullWidth value={content.personal_information?.email || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, email: e.target.value } })} />
+                    <TextField
+                      label="Email"
+                      fullWidth
+                      value={content.personal_information?.email || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            email: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="Phone" fullWidth value={content.personal_information?.phone || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, phone: e.target.value } })} />
+                    <TextField
+                      label="Phone"
+                      fullWidth
+                      value={content.personal_information?.phone || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            phone: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="Address" fullWidth value={content.personal_information?.address || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, address: e.target.value } })} />
+                    <TextField
+                      label="Address"
+                      fullWidth
+                      value={content.personal_information?.address || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            address: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="LinkedIn URL" fullWidth value={content.personal_information?.linkedin || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, linkedin: e.target.value } })} />
+                    <TextField
+                      label="LinkedIn URL"
+                      fullWidth
+                      value={content.personal_information?.linkedin || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            linkedin: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField label="GitHub URL" fullWidth value={content.personal_information?.github || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, github: e.target.value } })} />
+                    <TextField
+                      label="GitHub URL"
+                      fullWidth
+                      value={content.personal_information?.github || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            github: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField label="Website" fullWidth value={content.personal_information?.website || ''} onChange={(e) => setContent({ ...content, personal_information: { ...content.personal_information, website: e.target.value } })} />
+                    <TextField
+                      label="Website"
+                      fullWidth
+                      value={content.personal_information?.website || ''}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          personal_information: {
+                            ...content.personal_information,
+                            website: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </Grid>
                 </Grid>
               </AccordionDetails>
@@ -340,7 +508,14 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.skills || []).map((cat: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 1,
+                        }}
+                      >
                         <TextField
                           label="Category"
                           value={cat.category || ''}
@@ -350,11 +525,14 @@ const EditResumePage: React.FC = () => {
                             setContent({ ...content, skills: next });
                           }}
                         />
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.skills];
-                          next.splice(idx, 1);
-                          setContent({ ...content, skills: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.skills];
+                            next.splice(idx, 1);
+                            setContent({ ...content, skills: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
@@ -392,7 +570,15 @@ const EditResumePage: React.FC = () => {
                       </Box>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, skills: [...(content.skills || []), { category: '', skills: [] }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        skills: [...(content.skills || []), { category: '', skills: [] }],
+                      })
+                    }
+                  >
                     Add Category
                   </Button>
                 </Stack>
@@ -408,81 +594,149 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.work_experience || []).map((job: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Position #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.work_experience];
-                          next.splice(idx, 1);
-                          setContent({ ...content, work_experience: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.work_experience];
+                            next.splice(idx, 1);
+                            setContent({ ...content, work_experience: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Job Title" fullWidth value={job.job_title || job.position || ''} onChange={(e) => {
-                            const next = [...content.work_experience];
-                            next[idx] = { ...next[idx], job_title: e.target.value };
-                            setContent({ ...content, work_experience: next });
-                          }} />
+                          <TextField
+                            label="Job Title"
+                            fullWidth
+                            value={job.job_title || job.position || ''}
+                            onChange={(e) => {
+                              const next = [...content.work_experience];
+                              next[idx] = { ...next[idx], job_title: e.target.value };
+                              setContent({ ...content, work_experience: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Company" fullWidth value={job.company || ''} onChange={(e) => {
-                            const next = [...content.work_experience];
-                            next[idx] = { ...next[idx], company: e.target.value };
-                            setContent({ ...content, work_experience: next });
-                          }} />
+                          <TextField
+                            label="Company"
+                            fullWidth
+                            value={job.company || ''}
+                            onChange={(e) => {
+                              const next = [...content.work_experience];
+                              next[idx] = { ...next[idx], company: e.target.value };
+                              setContent({ ...content, work_experience: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Location" fullWidth value={job.location || ''} onChange={(e) => {
-                            const next = [...content.work_experience];
-                            next[idx] = { ...next[idx], location: e.target.value };
-                            setContent({ ...content, work_experience: next });
-                          }} />
+                          <TextField
+                            label="Location"
+                            fullWidth
+                            value={job.location || ''}
+                            onChange={(e) => {
+                              const next = [...content.work_experience];
+                              next[idx] = { ...next[idx], location: e.target.value };
+                              setContent({ ...content, work_experience: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Time or Date Range" fullWidth value={job.time || ''} onChange={(e) => {
-                            const next = [...content.work_experience];
-                            next[idx] = { ...next[idx], time: e.target.value };
-                            setContent({ ...content, work_experience: next });
-                          }} helperText="Example: 2022–Present" />
+                          <TextField
+                            label="Time or Date Range"
+                            fullWidth
+                            value={job.time || ''}
+                            onChange={(e) => {
+                              const next = [...content.work_experience];
+                              next[idx] = { ...next[idx], time: e.target.value };
+                              setContent({ ...content, work_experience: next });
+                            }}
+                            helperText="Example: 2022–Present"
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <TextField label="Description" fullWidth multiline minRows={2} value={job.description || ''} onChange={(e) => {
-                            const next = [...content.work_experience];
-                            next[idx] = { ...next[idx], description: e.target.value };
-                            setContent({ ...content, work_experience: next });
-                          }} />
+                          <TextField
+                            label="Description"
+                            fullWidth
+                            multiline
+                            minRows={2}
+                            value={job.description || ''}
+                            onChange={(e) => {
+                              const next = [...content.work_experience];
+                              next[idx] = { ...next[idx], description: e.target.value };
+                              setContent({ ...content, work_experience: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <Typography variant="body2" sx={{ mb: 1 }}>Achievements/Responsibilities</Typography>
+                          <Typography variant="body2" sx={{ mb: 1 }}>
+                            Achievements/Responsibilities
+                          </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {(job.achievements || job.responsibilities || []).map((p: string, pIdx: number) => (
-                              <Chip key={pIdx} label={p} onDelete={() => {
+                            {(job.achievements || job.responsibilities || []).map(
+                              (p: string, pIdx: number) => (
+                                <Chip
+                                  key={pIdx}
+                                  label={p}
+                                  onDelete={() => {
+                                    const next = [...content.work_experience];
+                                    const arr = [
+                                      ...(next[idx].achievements ||
+                                        next[idx].responsibilities ||
+                                        []),
+                                    ];
+                                    arr.splice(pIdx, 1);
+                                    next[idx] = { ...next[idx], achievements: arr };
+                                    setContent({ ...content, work_experience: next });
+                                  }}
+                                />
+                              )
+                            )}
+                          </Box>
+                          <TextField
+                            size="small"
+                            label="Add bullet"
+                            fullWidth
+                            sx={{ mt: 1 }}
+                            onKeyDown={(e) => {
+                              const input = e.target as HTMLInputElement;
+                              if (e.key === 'Enter' && input.value.trim()) {
                                 const next = [...content.work_experience];
-                                const arr = [...(next[idx].achievements || next[idx].responsibilities || [])];
-                                arr.splice(pIdx, 1);
+                                const arr = [
+                                  ...(next[idx].achievements || next[idx].responsibilities || []),
+                                ];
+                                arr.push(input.value.trim());
                                 next[idx] = { ...next[idx], achievements: arr };
                                 setContent({ ...content, work_experience: next });
-                              }} />
-                            ))}
-                          </Box>
-                          <TextField size="small" label="Add bullet" fullWidth sx={{ mt: 1 }} onKeyDown={(e) => {
-                            const input = e.target as HTMLInputElement;
-                            if (e.key === 'Enter' && input.value.trim()) {
-                              const next = [...content.work_experience];
-                              const arr = [...(next[idx].achievements || next[idx].responsibilities || [])];
-                              arr.push(input.value.trim());
-                              next[idx] = { ...next[idx], achievements: arr };
-                              setContent({ ...content, work_experience: next });
-                              input.value = '';
-                            }
-                          }} />
+                                input.value = '';
+                              }
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, work_experience: [...(content.work_experience || []), { job_title: '', company: '', location: '', time: '', achievements: [] }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        work_experience: [
+                          ...(content.work_experience || []),
+                          { job_title: '', company: '', location: '', time: '', achievements: [] },
+                        ],
+                      })
+                    }
+                  >
                     Add Experience
                   </Button>
                 </Stack>
@@ -498,88 +752,161 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.education || []).map((edu: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Education #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.education];
-                          next.splice(idx, 1);
-                          setContent({ ...content, education: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.education];
+                            next.splice(idx, 1);
+                            setContent({ ...content, education: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Degree" fullWidth value={edu.degree || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], degree: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="Degree"
+                            fullWidth
+                            value={edu.degree || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], degree: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Degree Type" fullWidth value={edu.degree_type || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], degree_type: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="Degree Type"
+                            fullWidth
+                            value={edu.degree_type || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], degree_type: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Institution" fullWidth value={edu.institution || edu.university_name || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], institution: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="Institution"
+                            fullWidth
+                            value={edu.institution || edu.university_name || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], institution: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Location" fullWidth value={edu.location || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], location: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="Location"
+                            fullWidth
+                            value={edu.location || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], location: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Time" fullWidth value={edu.time || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], time: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="Time"
+                            fullWidth
+                            value={edu.time || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], time: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="GPA" fullWidth value={edu.GPA || ''} onChange={(e) => {
-                            const next = [...content.education];
-                            next[idx] = { ...next[idx], GPA: e.target.value };
-                            setContent({ ...content, education: next });
-                          }} />
+                          <TextField
+                            label="GPA"
+                            fullWidth
+                            value={edu.GPA || ''}
+                            onChange={(e) => {
+                              const next = [...content.education];
+                              next[idx] = { ...next[idx], GPA: e.target.value };
+                              setContent({ ...content, education: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <Typography variant="body2" sx={{ mb: 1 }}>Courses</Typography>
+                          <Typography variant="body2" sx={{ mb: 1 }}>
+                            Courses
+                          </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {(edu.courses || edu.transcript || []).map((c: string, cIdx: number) => (
-                              <Chip key={cIdx} label={c} onDelete={() => {
+                            {(edu.courses || edu.transcript || []).map(
+                              (c: string, cIdx: number) => (
+                                <Chip
+                                  key={cIdx}
+                                  label={c}
+                                  onDelete={() => {
+                                    const next = [...content.education];
+                                    const arr = [
+                                      ...(next[idx].courses || next[idx].transcript || []),
+                                    ];
+                                    arr.splice(cIdx, 1);
+                                    next[idx] = { ...next[idx], courses: arr };
+                                    setContent({ ...content, education: next });
+                                  }}
+                                />
+                              )
+                            )}
+                          </Box>
+                          <TextField
+                            size="small"
+                            label="Add course"
+                            fullWidth
+                            sx={{ mt: 1 }}
+                            onKeyDown={(e) => {
+                              const input = e.target as HTMLInputElement;
+                              if (e.key === 'Enter' && input.value.trim()) {
                                 const next = [...content.education];
                                 const arr = [...(next[idx].courses || next[idx].transcript || [])];
-                                arr.splice(cIdx, 1);
+                                arr.push(input.value.trim());
                                 next[idx] = { ...next[idx], courses: arr };
                                 setContent({ ...content, education: next });
-                              }} />
-                            ))}
-                          </Box>
-                          <TextField size="small" label="Add course" fullWidth sx={{ mt: 1 }} onKeyDown={(e) => {
-                            const input = e.target as HTMLInputElement;
-                            if (e.key === 'Enter' && input.value.trim()) {
-                              const next = [...content.education];
-                              const arr = [...(next[idx].courses || next[idx].transcript || [])];
-                              arr.push(input.value.trim());
-                              next[idx] = { ...next[idx], courses: arr };
-                              setContent({ ...content, education: next });
-                              input.value = '';
-                            }
-                          }} />
+                                input.value = '';
+                              }
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, education: [...(content.education || []), { degree_type: '', degree: '', institution: '', time: '', GPA: '', courses: [] }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        education: [
+                          ...(content.education || []),
+                          {
+                            degree_type: '',
+                            degree: '',
+                            institution: '',
+                            time: '',
+                            GPA: '',
+                            courses: [],
+                          },
+                        ],
+                      })
+                    }
+                  >
                     Add Education
                   </Button>
                 </Stack>
@@ -595,67 +922,114 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.projects || []).map((proj: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Project #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.projects];
-                          next.splice(idx, 1);
-                          setContent({ ...content, projects: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.projects];
+                            next.splice(idx, 1);
+                            setContent({ ...content, projects: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Name" fullWidth value={proj.name || ''} onChange={(e) => {
-                            const next = [...content.projects];
-                            next[idx] = { ...next[idx], name: e.target.value };
-                            setContent({ ...content, projects: next });
-                          }} />
+                          <TextField
+                            label="Name"
+                            fullWidth
+                            value={proj.name || ''}
+                            onChange={(e) => {
+                              const next = [...content.projects];
+                              next[idx] = { ...next[idx], name: e.target.value };
+                              setContent({ ...content, projects: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Link" fullWidth value={proj.link || proj.url || ''} onChange={(e) => {
-                            const next = [...content.projects];
-                            next[idx] = { ...next[idx], link: e.target.value };
-                            setContent({ ...content, projects: next });
-                          }} />
+                          <TextField
+                            label="Link"
+                            fullWidth
+                            value={proj.link || proj.url || ''}
+                            onChange={(e) => {
+                              const next = [...content.projects];
+                              next[idx] = { ...next[idx], link: e.target.value };
+                              setContent({ ...content, projects: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Date" fullWidth value={proj.date || ''} onChange={(e) => {
-                            const next = [...content.projects];
-                            next[idx] = { ...next[idx], date: e.target.value };
-                            setContent({ ...content, projects: next });
-                          }} />
+                          <TextField
+                            label="Date"
+                            fullWidth
+                            value={proj.date || ''}
+                            onChange={(e) => {
+                              const next = [...content.projects];
+                              next[idx] = { ...next[idx], date: e.target.value };
+                              setContent({ ...content, projects: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <Typography variant="body2" sx={{ mb: 1 }}>Bullet Points</Typography>
+                          <Typography variant="body2" sx={{ mb: 1 }}>
+                            Bullet Points
+                          </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                             {(proj.bullet_points || []).map((bp: string, bIdx: number) => (
-                              <Chip key={bIdx} label={bp} onDelete={() => {
-                                const next = [...content.projects];
-                                const arr = [...(next[idx].bullet_points || [])];
-                                arr.splice(bIdx, 1);
-                                next[idx] = { ...next[idx], bullet_points: arr };
-                                setContent({ ...content, projects: next });
-                              }} />
+                              <Chip
+                                key={bIdx}
+                                label={bp}
+                                onDelete={() => {
+                                  const next = [...content.projects];
+                                  const arr = [...(next[idx].bullet_points || [])];
+                                  arr.splice(bIdx, 1);
+                                  next[idx] = { ...next[idx], bullet_points: arr };
+                                  setContent({ ...content, projects: next });
+                                }}
+                              />
                             ))}
                           </Box>
-                          <TextField size="small" label="Add bullet" fullWidth sx={{ mt: 1 }} onKeyDown={(e) => {
-                            const input = e.target as HTMLInputElement;
-                            if (e.key === 'Enter' && input.value.trim()) {
-                              const next = [...content.projects];
-                              const arr = [...(next[idx].bullet_points || [])];
-                              arr.push(input.value.trim());
-                              next[idx] = { ...next[idx], bullet_points: arr };
-                              setContent({ ...content, projects: next });
-                              input.value = '';
-                            }
-                          }} />
+                          <TextField
+                            size="small"
+                            label="Add bullet"
+                            fullWidth
+                            sx={{ mt: 1 }}
+                            onKeyDown={(e) => {
+                              const input = e.target as HTMLInputElement;
+                              if (e.key === 'Enter' && input.value.trim()) {
+                                const next = [...content.projects];
+                                const arr = [...(next[idx].bullet_points || [])];
+                                arr.push(input.value.trim());
+                                next[idx] = { ...next[idx], bullet_points: arr };
+                                setContent({ ...content, projects: next });
+                                input.value = '';
+                              }
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, projects: [...(content.projects || []), { name: '', link: '', date: '', bullet_points: [] }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        projects: [
+                          ...(content.projects || []),
+                          { name: '', link: '', date: '', bullet_points: [] },
+                        ],
+                      })
+                    }
+                  >
                     Add Project
                   </Button>
                 </Stack>
@@ -671,49 +1045,91 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.awards || []).map((aw: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Award #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.awards];
-                          next.splice(idx, 1);
-                          setContent({ ...content, awards: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.awards];
+                            next.splice(idx, 1);
+                            setContent({ ...content, awards: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Title" fullWidth value={aw.title || aw.name || ''} onChange={(e) => {
-                            const next = [...content.awards];
-                            next[idx] = { ...next[idx], title: e.target.value };
-                            setContent({ ...content, awards: next });
-                          }} />
+                          <TextField
+                            label="Title"
+                            fullWidth
+                            value={aw.title || aw.name || ''}
+                            onChange={(e) => {
+                              const next = [...content.awards];
+                              next[idx] = { ...next[idx], title: e.target.value };
+                              setContent({ ...content, awards: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Issuer" fullWidth value={aw.issuer || ''} onChange={(e) => {
-                            const next = [...content.awards];
-                            next[idx] = { ...next[idx], issuer: e.target.value };
-                            setContent({ ...content, awards: next });
-                          }} />
+                          <TextField
+                            label="Issuer"
+                            fullWidth
+                            value={aw.issuer || ''}
+                            onChange={(e) => {
+                              const next = [...content.awards];
+                              next[idx] = { ...next[idx], issuer: e.target.value };
+                              setContent({ ...content, awards: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Date" fullWidth value={aw.date || ''} onChange={(e) => {
-                            const next = [...content.awards];
-                            next[idx] = { ...next[idx], date: e.target.value };
-                            setContent({ ...content, awards: next });
-                          }} />
+                          <TextField
+                            label="Date"
+                            fullWidth
+                            value={aw.date || ''}
+                            onChange={(e) => {
+                              const next = [...content.awards];
+                              next[idx] = { ...next[idx], date: e.target.value };
+                              setContent({ ...content, awards: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <TextField label="Description" fullWidth multiline minRows={2} value={aw.description || aw.explanation || ''} onChange={(e) => {
-                            const next = [...content.awards];
-                            next[idx] = { ...next[idx], description: e.target.value };
-                            setContent({ ...content, awards: next });
-                          }} />
+                          <TextField
+                            label="Description"
+                            fullWidth
+                            multiline
+                            minRows={2}
+                            value={aw.description || aw.explanation || ''}
+                            onChange={(e) => {
+                              const next = [...content.awards];
+                              next[idx] = { ...next[idx], description: e.target.value };
+                              setContent({ ...content, awards: next });
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, awards: [...(content.awards || []), { title: '', issuer: '', date: '', description: '' }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        awards: [
+                          ...(content.awards || []),
+                          { title: '', issuer: '', date: '', description: '' },
+                        ],
+                      })
+                    }
+                  >
                     Add Award
                   </Button>
                 </Stack>
@@ -729,56 +1145,103 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.publications || []).map((pub: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Publication #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.publications];
-                          next.splice(idx, 1);
-                          setContent({ ...content, publications: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.publications];
+                            next.splice(idx, 1);
+                            setContent({ ...content, publications: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Title" fullWidth value={pub.title || pub.name || ''} onChange={(e) => {
-                            const next = [...content.publications];
-                            next[idx] = { ...next[idx], title: e.target.value };
-                            setContent({ ...content, publications: next });
-                          }} />
+                          <TextField
+                            label="Title"
+                            fullWidth
+                            value={pub.title || pub.name || ''}
+                            onChange={(e) => {
+                              const next = [...content.publications];
+                              next[idx] = { ...next[idx], title: e.target.value };
+                              setContent({ ...content, publications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Publisher" fullWidth value={pub.publisher || ''} onChange={(e) => {
-                            const next = [...content.publications];
-                            next[idx] = { ...next[idx], publisher: e.target.value };
-                            setContent({ ...content, publications: next });
-                          }} />
+                          <TextField
+                            label="Publisher"
+                            fullWidth
+                            value={pub.publisher || ''}
+                            onChange={(e) => {
+                              const next = [...content.publications];
+                              next[idx] = { ...next[idx], publisher: e.target.value };
+                              setContent({ ...content, publications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Date" fullWidth value={pub.date || pub.time || ''} onChange={(e) => {
-                            const next = [...content.publications];
-                            next[idx] = { ...next[idx], date: e.target.value };
-                            setContent({ ...content, publications: next });
-                          }} />
+                          <TextField
+                            label="Date"
+                            fullWidth
+                            value={pub.date || pub.time || ''}
+                            onChange={(e) => {
+                              const next = [...content.publications];
+                              next[idx] = { ...next[idx], date: e.target.value };
+                              setContent({ ...content, publications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="URL" fullWidth value={pub.url || pub.link || ''} onChange={(e) => {
-                            const next = [...content.publications];
-                            next[idx] = { ...next[idx], url: e.target.value };
-                            setContent({ ...content, publications: next });
-                          }} />
+                          <TextField
+                            label="URL"
+                            fullWidth
+                            value={pub.url || pub.link || ''}
+                            onChange={(e) => {
+                              const next = [...content.publications];
+                              next[idx] = { ...next[idx], url: e.target.value };
+                              setContent({ ...content, publications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <TextField label="Description" fullWidth multiline minRows={2} value={pub.description || ''} onChange={(e) => {
-                            const next = [...content.publications];
-                            next[idx] = { ...next[idx], description: e.target.value };
-                            setContent({ ...content, publications: next });
-                          }} />
+                          <TextField
+                            label="Description"
+                            fullWidth
+                            multiline
+                            minRows={2}
+                            value={pub.description || ''}
+                            onChange={(e) => {
+                              const next = [...content.publications];
+                              next[idx] = { ...next[idx], description: e.target.value };
+                              setContent({ ...content, publications: next });
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, publications: [...(content.publications || []), { title: '', publisher: '', date: '', url: '', description: '' }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        publications: [
+                          ...(content.publications || []),
+                          { title: '', publisher: '', date: '', url: '', description: '' },
+                        ],
+                      })
+                    }
+                  >
                     Add Publication
                   </Button>
                 </Stack>
@@ -794,49 +1257,91 @@ const EditResumePage: React.FC = () => {
                 <Stack spacing={2}>
                   {(content.certifications || []).map((cert: any, idx: number) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Typography variant="subtitle2">Certification #{idx + 1}</Typography>
-                        <IconButton color="error" onClick={() => {
-                          const next = [...content.certifications];
-                          next.splice(idx, 1);
-                          setContent({ ...content, certifications: next });
-                        }}>
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            const next = [...content.certifications];
+                            next.splice(idx, 1);
+                            setContent({ ...content, certifications: next });
+                          }}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Name" fullWidth value={cert.name || ''} onChange={(e) => {
-                            const next = [...content.certifications];
-                            next[idx] = { ...next[idx], name: e.target.value };
-                            setContent({ ...content, certifications: next });
-                          }} />
+                          <TextField
+                            label="Name"
+                            fullWidth
+                            value={cert.name || ''}
+                            onChange={(e) => {
+                              const next = [...content.certifications];
+                              next[idx] = { ...next[idx], name: e.target.value };
+                              setContent({ ...content, certifications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Issuer" fullWidth value={cert.issuer || ''} onChange={(e) => {
-                            const next = [...content.certifications];
-                            next[idx] = { ...next[idx], issuer: e.target.value };
-                            setContent({ ...content, certifications: next });
-                          }} />
+                          <TextField
+                            label="Issuer"
+                            fullWidth
+                            value={cert.issuer || ''}
+                            onChange={(e) => {
+                              const next = [...content.certifications];
+                              next[idx] = { ...next[idx], issuer: e.target.value };
+                              setContent({ ...content, certifications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                          <TextField label="Date" fullWidth value={cert.date || ''} onChange={(e) => {
-                            const next = [...content.certifications];
-                            next[idx] = { ...next[idx], date: e.target.value };
-                            setContent({ ...content, certifications: next });
-                          }} />
+                          <TextField
+                            label="Date"
+                            fullWidth
+                            value={cert.date || ''}
+                            onChange={(e) => {
+                              const next = [...content.certifications];
+                              next[idx] = { ...next[idx], date: e.target.value };
+                              setContent({ ...content, certifications: next });
+                            }}
+                          />
                         </Grid>
                         <Grid item xs={12}>
-                          <TextField label="Description" fullWidth multiline minRows={2} value={cert.description || ''} onChange={(e) => {
-                            const next = [...content.certifications];
-                            next[idx] = { ...next[idx], description: e.target.value };
-                            setContent({ ...content, certifications: next });
-                          }} />
+                          <TextField
+                            label="Description"
+                            fullWidth
+                            multiline
+                            minRows={2}
+                            value={cert.description || ''}
+                            onChange={(e) => {
+                              const next = [...content.certifications];
+                              next[idx] = { ...next[idx], description: e.target.value };
+                              setContent({ ...content, certifications: next });
+                            }}
+                          />
                         </Grid>
                       </Grid>
                     </Paper>
                   ))}
-                  <Button startIcon={<AddIcon />} onClick={() => setContent({ ...content, certifications: [...(content.certifications || []), { name: '', issuer: '', date: '', description: '' }] })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        certifications: [
+                          ...(content.certifications || []),
+                          { name: '', issuer: '', date: '', description: '' },
+                        ],
+                      })
+                    }
+                  >
                     Add Certification
                   </Button>
                 </Stack>

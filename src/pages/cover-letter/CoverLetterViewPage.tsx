@@ -3,7 +3,25 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { env } from '../../config/env';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Divider, Button, CircularProgress, Chip, Stack, Alert, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  Button,
+  CircularProgress,
+  Chip,
+  Stack,
+  Alert,
+  Breadcrumbs,
+  Link as MuiLink,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+} from '@mui/material';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,
@@ -109,20 +127,20 @@ const CoverLetterViewPage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   const handleViewPdf = async () => {
     if (!id || !coverLetter) return;
-    
+
     setGeneratingPdf(true);
     try {
       const pdfResponse = await getCoverLetterPdf(id);
-      
+
       // Fetch the PDF from the URL
       const response = await fetch(pdfResponse.pdf_url);
       const blob = await response.blob();
@@ -149,7 +167,6 @@ const CoverLetterViewPage: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       setPdfError('Failed to download PDF. Please try again.');
@@ -172,10 +189,7 @@ const CoverLetterViewPage: React.FC = () => {
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={handleBack}
-        >
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
           Back to Cover Letters
         </Button>
       </Box>
@@ -186,11 +200,7 @@ const CoverLetterViewPage: React.FC = () => {
     return (
       <Box sx={{ p: 3 }}>
         <Alert severity="warning">Cover letter not found.</Alert>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={handleBack}
-          sx={{ mt: 2 }}
-        >
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mt: 2 }}>
           Back to Cover Letters
         </Button>
       </Box>
@@ -201,25 +211,22 @@ const CoverLetterViewPage: React.FC = () => {
     <Box sx={{ p: 3 }}>
       {/* Navigation breadcrumbs */}
       <Breadcrumbs sx={{ mb: 3 }}>
-        <MuiLink 
-          underline="hover" 
-          color="inherit" 
-          onClick={handleBack}
-          sx={{ cursor: 'pointer' }}
-        >
+        <MuiLink underline="hover" color="inherit" onClick={handleBack} sx={{ cursor: 'pointer' }}>
           Cover Letters
         </MuiLink>
         <Typography color="text.primary">{coverLetterTitle}</Typography>
       </Breadcrumbs>
-      
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'flex-start', 
-        mb: 3,
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2
-      }}>
+
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          mb: 3,
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+        }}
+      >
         <Box sx={{ maxWidth: { xs: '100%', md: '60%' } }}>
           {/* Removed H4 title and Chips stack in previous step */}
           {/* Remove Last Updated Typography */}
@@ -229,21 +236,21 @@ const CoverLetterViewPage: React.FC = () => {
           </Typography>
           */}
         </Box>
-        
-        <Stack 
-          direction="row" 
+
+        <Stack
+          direction="row"
           spacing={1}
-          sx={{ 
-            flexWrap: 'wrap', 
+          sx={{
+            flexWrap: 'wrap',
             gap: 1,
             width: { xs: '100%', md: 'auto' },
-            justifyContent: { xs: 'flex-start', md: 'flex-end' }
+            justifyContent: { xs: 'flex-start', md: 'flex-end' },
           }}
         >
           {/* Add Back button similar to ViewResumePage */}
-          <Button 
-            variant="outlined" 
-            startIcon={<ArrowBackIcon />} 
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
             onClick={handleBack}
             size="small"
           >
@@ -265,11 +272,7 @@ const CoverLetterViewPage: React.FC = () => {
           >
             Download PDF
           </Button>
-          <Button
-            startIcon={<EditIcon />}
-            onClick={handleEdit}
-            variant="outlined"
-          >
+          <Button startIcon={<EditIcon />} onClick={handleEdit} variant="outlined">
             Edit
           </Button>
           <Button
@@ -282,7 +285,7 @@ const CoverLetterViewPage: React.FC = () => {
           </Button>
         </Stack>
       </Box>
-      
+
       {/* Cover Letter Content */}
       <Box sx={{ width: '100%' }}>
         {/* Cover Letter Details */}
@@ -291,134 +294,220 @@ const CoverLetterViewPage: React.FC = () => {
             Cover Letter Details
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Template</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Template
+              </Typography>
               <Typography variant="body2">{coverLetter.template_id}</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Created</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Created
+              </Typography>
               <Typography variant="body2">{formatDate(coverLetter.created_at)}</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Updated</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Updated
+              </Typography>
               <Typography variant="body2">{formatDate(coverLetter.updated_at)}</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Resume ID</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Resume ID
+              </Typography>
               <Typography variant="body2">{coverLetter.resume_id}</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Has PDF</Typography> 
+              <Typography variant="subtitle2" color="text.secondary">
+                Has PDF
+              </Typography>
               {/* Reverted to check has_pdf */}
               <Typography variant="body2">{coverLetter.has_pdf ? 'Yes' : 'No'}</Typography>
             </Grid>
           </Grid>
         </Paper>
-        
+
         {/* Cover Letter Content */}
         <Paper elevation={0} sx={{ mb: 3, p: 2, backgroundColor: '#f9f9f9' }}>
           <Typography variant="h6" component="div" gutterBottom color="primary">
             Cover Letter Content
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
+
           {/* Cover Letter Content - Re-applying visual structure */}
           {coverLetter.content && typeof coverLetter.content === 'string' ? (
-            <Paper elevation={0} sx={{ 
-              p: { xs: 3, sm: 5 }, 
-              backgroundColor: '#fcfcfc',
-              backgroundImage: 'linear-gradient(to bottom, #f9f9f9, #fcfcfc 15%)',
-              border: '1px solid #e0e0e0',
-              borderRadius: 2,
-              boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-              fontFamily: '"Georgia", serif',
-              lineHeight: 1.6,
-              maxWidth: '800px',
-              margin: '0 auto',
-              position: 'relative',
-            }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 3, sm: 5 },
+                backgroundColor: '#fcfcfc',
+                backgroundImage: 'linear-gradient(to bottom, #f9f9f9, #fcfcfc 15%)',
+                border: '1px solid #e0e0e0',
+                borderRadius: 2,
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                fontFamily: '"Georgia", serif',
+                lineHeight: 1.6,
+                maxWidth: '800px',
+                margin: '0 auto',
+                position: 'relative',
+              }}
+            >
               {/* Personal Information Header - Use profileData now */}
               {profileLoading ? (
-                <Box sx={{ textAlign: 'center', my: 2}}><CircularProgress size={20} /></Box>
+                <Box sx={{ textAlign: 'center', my: 2 }}>
+                  <CircularProgress size={20} />
+                </Box>
               ) : profileError ? (
-                <Alert severity="warning" sx={{ mb: 2 }}>Error loading profile data: {profileError}</Alert>
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  Error loading profile data: {profileError}
+                </Alert>
               ) : profileData?.personal_information ? (
                 <Box sx={{ mb: 4, textAlign: 'center', borderBottom: '1px solid #eee', pb: 3 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: 1, color: '#333'}}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      mb: 1,
+                      color: '#333',
+                    }}
+                  >
                     {profileData.personal_information.full_name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {profileData.personal_information.email && `${profileData.personal_information.email}`}
-                    {profileData.personal_information.phone && ` | ${profileData.personal_information.phone}`}
+                    {profileData.personal_information.email &&
+                      `${profileData.personal_information.email}`}
+                    {profileData.personal_information.phone &&
+                      ` | ${profileData.personal_information.phone}`}
                     {profileData.personal_information.website && (
-                      <> | <MuiLink href={profileData.personal_information.website} target="_blank" rel="noopener noreferrer" color="inherit">Website</MuiLink></>
+                      <>
+                        {' '}
+                        |{' '}
+                        <MuiLink
+                          href={profileData.personal_information.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          color="inherit"
+                        >
+                          Website
+                        </MuiLink>
+                      </>
                     )}
                     {profileData.personal_information.linkedin && (
-                      <> | <MuiLink href={profileData.personal_information.linkedin} target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</MuiLink></>
+                      <>
+                        {' '}
+                        |{' '}
+                        <MuiLink
+                          href={profileData.personal_information.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          color="inherit"
+                        >
+                          LinkedIn
+                        </MuiLink>
+                      </>
                     )}
                     {profileData.personal_information.github && (
-                      <> | <MuiLink href={profileData.personal_information.github} target="_blank" rel="noopener noreferrer" color="inherit">GitHub</MuiLink></>
+                      <>
+                        {' '}
+                        |{' '}
+                        <MuiLink
+                          href={profileData.personal_information.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          color="inherit"
+                        >
+                          GitHub
+                        </MuiLink>
+                      </>
                     )}
                   </Typography>
                 </Box>
               ) : (
                 <Box sx={{ mb: 4, textAlign: 'center', borderBottom: '1px solid #eee', pb: 3 }}>
-                   <Typography variant="body2" color="text.secondary">Personal information not available.</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Personal information not available.
+                  </Typography>
                 </Box>
               )}
-              
+
               {/* Cover Letter Body */}
-              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 5, fontSize: '1.02rem', color: '#222', textAlign: 'justify' }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  mb: 5,
+                  fontSize: '1.02rem',
+                  color: '#222',
+                  textAlign: 'justify',
+                }}
+              >
                 {coverLetter.content}
               </Typography>
-              
+
               {/* Closing and Signature */}
               <Box sx={{ mt: 6 }}>
-                <Typography variant="body1" sx={{ mb: 4, fontStyle: 'normal', fontSize: '1.02rem' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 4, fontStyle: 'normal', fontSize: '1.02rem' }}
+                >
                   Sincerely,
                 </Typography>
                 {/* Signature Image */}
                 <Box sx={{ height: 60, mb: 1 }}>
                   {profileData?.signature_key && (
-                    <img 
+                    <img
                       // Prepend CloudFront URL and use signature_key
                       src={`${env.cloudfrontUrl}${profileData.signature_key}`}
-                      alt="Signature" 
-                      style={{ maxHeight: '60px', maxWidth: '200px' }} 
+                      alt="Signature"
+                      style={{ maxHeight: '60px', maxWidth: '200px' }}
                     />
                   )}
                 </Box>
-                <Typography variant="body1" sx={{ fontWeight: 500, borderTop: '1px solid #eaeaea', pt: 1, display: 'inline-block', fontSize: '1.02rem' }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 500,
+                    borderTop: '1px solid #eaeaea',
+                    pt: 1,
+                    display: 'inline-block',
+                    fontSize: '1.02rem',
+                  }}
+                >
                   {/* Get name from profileData state */}
                   {profileData?.personal_information?.full_name || ''}
                 </Typography>
                 {/* Date - MOVED HERE, aligned to the left under the name by default */}
-                <Box sx={{ mt: 1 }}> 
+                <Box sx={{ mt: 1 }}>
                   <Typography sx={{ color: '#555', fontSize: '0.9rem' }}>
-                    {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {new Date().toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
                   </Typography>
                 </Box>
               </Box>
             </Paper>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              No content is available or content is not in the expected format. Generate or edit the cover letter to add content.
+              No content is available or content is not in the expected format. Generate or edit the
+              cover letter to add content.
             </Typography>
           )}
         </Paper>
       </Box>
-      
+
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
-      >
+      <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -434,7 +523,7 @@ const CoverLetterViewPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={coverLetterTitle}
@@ -462,4 +551,4 @@ const CoverLetterViewPage: React.FC = () => {
   );
 };
 
-export default CoverLetterViewPage; 
+export default CoverLetterViewPage;

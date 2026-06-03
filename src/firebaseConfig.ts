@@ -24,14 +24,12 @@ const validateFirebaseEnv = () => {
     ['appId', env.firebase.appId],
   ] as const;
 
-  const missingFirebaseEnv = requiredFirebaseEnv
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+  const missingFirebaseEnv = requiredFirebaseEnv.filter(([, value]) => !value).map(([key]) => key);
 
   if (missingFirebaseEnv.length > 0) {
     throw new Error(
       `Missing Firebase environment variables: ${missingFirebaseEnv.join(', ')}. ` +
-        'Copy .env.example to .env.local and fill in your Firebase web app config.',
+        'Copy .env.example to .env.local and fill in your Firebase web app config.'
     );
   }
 };

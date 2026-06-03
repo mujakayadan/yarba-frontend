@@ -20,28 +20,31 @@ const UploadPortfolioPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!selectedFile) {
-      setError('Please select a file to upload.');
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!selectedFile) {
+        setError('Please select a file to upload.');
+        return;
+      }
 
-    setIsLoading(true);
-    setError(null);
-    setParsedData(null);
-    setIsConfirmed(false);
+      setIsLoading(true);
+      setError(null);
+      setParsedData(null);
+      setIsConfirmed(false);
 
-    try {
-      const data = await parsePortfolioDocument(selectedFile);
-      setParsedData(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to parse document. Please try again.');
-      console.error('Upload error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedFile]);
+      try {
+        const data = await parsePortfolioDocument(selectedFile);
+        setParsedData(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to parse document. Please try again.');
+        console.error('Upload error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [selectedFile]
+  );
 
   const handleConfirm = () => {
     setIsConfirmed(true);
@@ -72,21 +75,17 @@ const UploadPortfolioPage: React.FC = () => {
             Upload a PDF or DOCX file. We'll parse it and you can review the extracted information.
           </Typography>
           <Box sx={{ mb: 2 }}>
-            <input 
+            <input
               id="portfolio-file-input"
-              type="file" 
-              accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
-              onChange={handleFileChange} 
+              type="file"
+              accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleFileChange}
               disabled={isLoading}
               style={{ display: 'block', marginBottom: '10px' }}
             />
           </Box>
-          <Button 
-            type="submit" 
-            variant="contained" 
-            disabled={isLoading || !selectedFile}
-          >
-            {isLoading ? <CircularProgress size={24} sx={{ color: 'white'}} /> : 'Parse Document'}
+          <Button type="submit" variant="contained" disabled={isLoading || !selectedFile}>
+            {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Parse Document'}
           </Button>
         </form>
       )}
@@ -94,7 +93,7 @@ const UploadPortfolioPage: React.FC = () => {
       {isLoading && !parsedData && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 3 }}>
           <CircularProgress />
-          <Typography sx={{ml: 2}}>Parsing your document...</Typography>
+          <Typography sx={{ ml: 2 }}>Parsing your document...</Typography>
         </Box>
       )}
 
@@ -106,19 +105,31 @@ const UploadPortfolioPage: React.FC = () => {
 
       {parsedData && !isConfirmed && (
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" component="h2" gutterBottom>Review Parsed Information</Typography>
+          <Typography variant="h5" component="h2" gutterBottom>
+            Review Parsed Information
+          </Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
-            Please review the information extracted from your document. If it looks correct, confirm it. 
-            Otherwise, you can re-upload the document or a different one.
+            Please review the information extracted from your document. If it looks correct, confirm
+            it. Otherwise, you can re-upload the document or a different one.
           </Alert>
-          
+
           <ParsedPortfolioDisplay portfolioData={parsedData} />
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3 }}>
-            <Button variant="contained" color="primary" onClick={handleConfirm} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleConfirm}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
               Confirm Information is Correct
             </Button>
-            <Button variant="outlined" color="secondary" onClick={handleReUpload} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleReUpload}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
               Re-upload / Discard
             </Button>
           </Stack>
@@ -128,7 +139,8 @@ const UploadPortfolioPage: React.FC = () => {
       {isConfirmed && parsedData && (
         <Box sx={{ mt: 3 }}>
           <Alert severity="success">
-            Thank you for confirming! The data is now ready for the next step (e.g., creating or updating your portfolio).
+            Thank you for confirming! The data is now ready for the next step (e.g., creating or
+            updating your portfolio).
           </Alert>
           <ParsedPortfolioDisplay portfolioData={parsedData} />
         </Box>
@@ -137,4 +149,4 @@ const UploadPortfolioPage: React.FC = () => {
   );
 };
 
-export default UploadPortfolioPage; 
+export default UploadPortfolioPage;

@@ -12,12 +12,12 @@ import {
   Divider,
   Button,
   CircularProgress,
-  Alert
+  Alert,
 } from '@mui/material';
 import {
   Description as ResumeIcon,
   Mail as CoverLetterIcon,
-  Code as PreambleIcon
+  Code as PreambleIcon,
 } from '@mui/icons-material';
 import { useCoverLetterTemplates, usePreambles, useResumeTemplates } from '../hooks/useTemplates';
 import { Preamble, TexHeader } from '../types/models';
@@ -48,11 +48,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`templates-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -170,12 +166,11 @@ const TemplatesPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-
       <Paper elevation={1} sx={{ mb: 4 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={tabValue} 
-            onChange={handleTabChange} 
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
             aria-label="template tabs"
             variant="fullWidth"
           >
@@ -192,17 +187,17 @@ const TemplatesPage: React.FC = () => {
               Resume Templates
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             {resumeTemplates.length === 0 ? (
               <Typography>No resume templates available</Typography>
             ) : (
               <Stack direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
                 {resumeTemplates.map((template) => (
-                  <Box 
-                    key={template.id} 
-                    sx={{ 
-                      width: { xs: '100%', sm: '45%', md: '30%' }, 
-                      mb: 3 
+                  <Box
+                    key={template.id}
+                    sx={{
+                      width: { xs: '100%', sm: '45%', md: '30%' },
+                      mb: 3,
                     }}
                   >
                     <Card elevation={2}>
@@ -219,8 +214,8 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
                           {template.description}
                         </Typography>
-                        <Button 
-                          variant="contained" 
+                        <Button
+                          variant="contained"
                           color="primary"
                           onClick={() => handleUseTemplate(template.id, 'resume')}
                           fullWidth
@@ -243,17 +238,17 @@ const TemplatesPage: React.FC = () => {
               Cover Letter Templates
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             {coverLetterTemplates.length === 0 ? (
               <Typography>No cover letter templates available</Typography>
             ) : (
               <Stack direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
                 {coverLetterTemplates.map((template) => (
-                  <Box 
-                    key={template.id} 
-                    sx={{ 
-                      width: { xs: '100%', sm: '45%', md: '30%' }, 
-                      mb: 3 
+                  <Box
+                    key={template.id}
+                    sx={{
+                      width: { xs: '100%', sm: '45%', md: '30%' },
+                      mb: 3,
                     }}
                   >
                     <Card elevation={2}>
@@ -270,8 +265,8 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
                           {template.description}
                         </Typography>
-                        <Button 
-                          variant="contained" 
+                        <Button
+                          variant="contained"
                           color="primary"
                           onClick={() => handleUseTemplate(template.id, 'coverLetter')}
                           fullWidth
@@ -294,17 +289,17 @@ const TemplatesPage: React.FC = () => {
               LaTeX Preambles
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             {preambles.length === 0 ? (
               <Typography>No preambles available</Typography>
             ) : (
               <Stack direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
                 {preambles.map((preamble) => (
-                  <Box 
-                    key={preamble.id} 
-                    sx={{ 
-                      width: { xs: '100%', sm: '45%', md: '30%' }, 
-                      mb: 3 
+                  <Box
+                    key={preamble.id}
+                    sx={{
+                      width: { xs: '100%', sm: '45%', md: '30%' },
+                      mb: 3,
                     }}
                   >
                     <Card elevation={2}>
@@ -315,8 +310,8 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
                           {preamble.description}
                         </Typography>
-                        <Button 
-                          variant="contained" 
+                        <Button
+                          variant="contained"
                           color="primary"
                           onClick={() => handleUseTemplate(preamble.id, 'preamble')}
                           fullWidth
@@ -336,4 +331,4 @@ const TemplatesPage: React.FC = () => {
   );
 };
 
-export default TemplatesPage; 
+export default TemplatesPage;

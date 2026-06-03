@@ -23,9 +23,11 @@ GET /api/v1/resumes/{resume_id}/pdf
 ```
 
 Query parameters:
+
 - `timeout`: PDF generation timeout in seconds (default: 30, min: 5, max: 60)
 
 Response:
+
 - Content-Type: `application/pdf`
 - Body: Binary PDF data
 
@@ -36,9 +38,11 @@ GET /api/v1/cover-letters/{cover_letter_id}/pdf
 ```
 
 Query parameters:
+
 - `timeout`: PDF generation timeout in seconds (default: 30, min: 5, max: 60)
 
 Response:
+
 - Content-Type: `application/pdf`
 - Body: Binary PDF data
 
@@ -49,19 +53,19 @@ Response:
 ```typescript
 const generateResumePdf = async (resumeId: string, timeout: number = 30): Promise<Blob> => {
   const token = getToken();
-  
+
   if (!token) {
     throw new Error('No authentication token found');
   }
-  
+
   try {
     const response = await fetch(`/api/v1/resumes/${resumeId}/pdf?timeout=${timeout}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-    
+
     if (!response.ok) {
       if (response.headers.get('Content-Type')?.includes('application/json')) {
         const errorData = await response.json();
@@ -70,7 +74,7 @@ const generateResumePdf = async (resumeId: string, timeout: number = 30): Promis
         throw new Error(`PDF generation failed with status: ${response.status}`);
       }
     }
-    
+
     // Return the response as a blob for PDF data
     return await response.blob();
   } catch (error) {
@@ -80,7 +84,10 @@ const generateResumePdf = async (resumeId: string, timeout: number = 30): Promis
 };
 
 // Similar function for cover letters
-const generateCoverLetterPdf = async (coverLetterId: string, timeout: number = 30): Promise<Blob> => {
+const generateCoverLetterPdf = async (
+  coverLetterId: string,
+  timeout: number = 30
+): Promise<Blob> => {
   // Implementation similar to generateResumePdf but with different endpoint
 };
 ```
@@ -102,14 +109,14 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ resumeId }) => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const loadPdf = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const pdfBlob = await generateResumePdf(resumeId);
-      
+
       // Create a URL for the PDF blob
       const url = URL.createObjectURL(pdfBlob);
       setPdfUrl(url);
@@ -119,7 +126,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ resumeId }) => {
       setLoading(false);
     }
   };
-  
+
   // Clean up object URL when component unmounts
   React.useEffect(() => {
     return () => {
@@ -128,7 +135,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ resumeId }) => {
       }
     };
   }, [pdfUrl]);
-  
+
   return (
     <div className="pdf-viewer">
       {loading && <div className="loading">Loading PDF...</div>}
@@ -147,10 +154,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ resumeId }) => {
           </a>
         </div>
       )}
-      
-      {!loading && !pdfUrl && (
-        <button onClick={loadPdf}>Generate and View PDF</button>
-      )}
+
+      {!loading && !pdfUrl && <button onClick={loadPdf}>Generate and View PDF</button>}
     </div>
   );
 };
@@ -187,11 +192,11 @@ const PdfDocumentViewer: React.FC<PdfDocumentViewerProps> = ({ resumeId }) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const loadPdf = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const blob = await generateResumePdf(resumeId);
       setPdfBlob(blob);
@@ -201,17 +206,17 @@ const PdfDocumentViewer: React.FC<PdfDocumentViewerProps> = ({ resumeId }) => {
       setLoading(false);
     }
   };
-  
+
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
     setPageNumber(1);
   };
-  
+
   return (
     <div className="pdf-document-viewer">
       {loading && <div className="loading">Loading PDF...</div>}
       {error && <div className="error">{error}</div>}
-      
+
       {pdfBlob && (
         <div>
           <Document
@@ -221,15 +226,12 @@ const PdfDocumentViewer: React.FC<PdfDocumentViewerProps> = ({ resumeId }) => {
           >
             <Page pageNumber={pageNumber} />
           </Document>
-          
+
           <div className="pdf-controls">
             <p>
               Page {pageNumber} of {numPages}
             </p>
-            <button
-              disabled={pageNumber <= 1}
-              onClick={() => setPageNumber(pageNumber - 1)}
-            >
+            <button disabled={pageNumber <= 1} onClick={() => setPageNumber(pageNumber - 1)}>
               Previous
             </button>
             <button
@@ -239,7 +241,7 @@ const PdfDocumentViewer: React.FC<PdfDocumentViewerProps> = ({ resumeId }) => {
               Next
             </button>
           </div>
-          
+
           <a
             href={URL.createObjectURL(pdfBlob)}
             download={`resume-${resumeId}.pdf`}
@@ -249,10 +251,8 @@ const PdfDocumentViewer: React.FC<PdfDocumentViewerProps> = ({ resumeId }) => {
           </a>
         </div>
       )}
-      
-      {!loading && !pdfBlob && (
-        <button onClick={loadPdf}>Generate and View PDF</button>
-      )}
+
+      {!loading && !pdfBlob && <button onClick={loadPdf}>Generate and View PDF</button>}
     </div>
   );
 };
@@ -276,6 +276,7 @@ POST /api/v1/resumes/{resume_id}/debug-pdf
 ```
 
 Response:
+
 ```json
 {
   "success": false,
@@ -292,25 +293,25 @@ Implement a function to call this debugging endpoint:
 ```typescript
 const debugResumePdf = async (resumeId: string): Promise<any> => {
   const token = getToken();
-  
+
   if (!token) {
     throw new Error('No authentication token found');
   }
-  
+
   try {
     const response = await fetch(`/api/v1/resumes/${resumeId}/debug-pdf`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.detail || 'Debug request failed');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('PDF debug error:', error);
@@ -333,7 +334,7 @@ Use this function to show detailed error information to the user when PDF genera
 1. **Preview Button**: Separate PDF generation from the document editing workflow
 2. **Error Messages**: Show user-friendly error messages with potential solutions
 3. **Download Options**: Provide easy download buttons for generated PDFs
-4. **Mobile Support**: Ensure PDF viewing works on mobile devices 
+4. **Mobile Support**: Ensure PDF viewing works on mobile devices
 5. **Printing**: Include print options for generated PDFs
 
 ## Testing PDF Generation
@@ -342,4 +343,4 @@ Use this function to show detailed error information to the user when PDF genera
 2. Test with different content lengths and formats
 3. Test error scenarios and recovery
 4. Test on different browsers and devices
-5. Test download functionality 
+5. Test download functionality

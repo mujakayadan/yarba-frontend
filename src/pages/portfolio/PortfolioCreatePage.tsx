@@ -11,12 +11,12 @@ import {
   TextField,
   Stack,
   Chip,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import {
   Add as AddIcon,
   ArrowBack as ArrowBackIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { createPortfolio } from '../../services/portfolioService';
 import { useUserProfile } from '../../hooks/useUserProfile';
@@ -24,18 +24,23 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 const PortfolioCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { data: profile, isLoading: profileLoading, isError: profileIsError, error: profileQueryError } = useUserProfile();
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileIsError,
+    error: profileQueryError,
+  } = useUserProfile();
   const [error, setError] = useState<string | null>(null);
-  
+
   // Basic form state
   const [portfolioName, setPortfolioName] = useState('');
   const [skills, setSkills] = useState<Array<{ category: string; skills: string[] }>>([
     { category: 'Technical Skills', skills: [] },
-    { category: 'Soft Skills', skills: [] }
+    { category: 'Soft Skills', skills: [] },
   ]);
   const [newSkill, setNewSkill] = useState('');
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
-  
+
   useEffect(() => {
     if (profileIsError) {
       const err = profileQueryError as { response?: { status?: number } };
@@ -49,8 +54,8 @@ const PortfolioCreatePage: React.FC = () => {
 
   const handleAddSkill = () => {
     if (!newSkill.trim()) return;
-    
-    setSkills(prevSkills => {
+
+    setSkills((prevSkills) => {
       const updatedSkills = [...prevSkills];
       const category = updatedSkills[selectedCategoryIndex];
       if (category && !category.skills.includes(newSkill.trim())) {
@@ -58,12 +63,12 @@ const PortfolioCreatePage: React.FC = () => {
       }
       return updatedSkills;
     });
-    
+
     setNewSkill('');
   };
-  
+
   const handleDeleteSkill = (categoryIndex: number, skillIndex: number) => {
-    setSkills(prevSkills => {
+    setSkills((prevSkills) => {
       const updatedSkills = [...prevSkills];
       const category = updatedSkills[categoryIndex];
       if (category) {
@@ -72,47 +77,47 @@ const PortfolioCreatePage: React.FC = () => {
       return updatedSkills;
     });
   };
-  
+
   const handleNewCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const categoryIndex = parseInt(e.target.value);
     setSelectedCategoryIndex(categoryIndex);
   };
-  
+
   const handleAddCategory = () => {
-    setSkills(prev => [...prev, { category: `Category ${prev.length + 1}`, skills: [] }]);
+    setSkills((prev) => [...prev, { category: `Category ${prev.length + 1}`, skills: [] }]);
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!profile) {
       setError('You need a profile before creating a portfolio.');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       // Prepare portfolio data - start with minimal required data
       const portfolioData = {
         profile_id: profile._id,
         skills: skills
-          .filter(category => category.skills.length > 0)
-          .map(category => ({
+          .filter((category) => category.skills.length > 0)
+          .map((category) => ({
             category: category.category,
-            skills: category.skills
+            skills: category.skills,
           })),
         work_experience: [],
         education: [],
         projects: [],
         certifications: [],
         awards: [],
-        publications: []
+        publications: [],
       };
-      
+
       const response = await createPortfolio(portfolioData);
-      
+
       // Redirect to portfolio view page
       navigate(`/portfolio/${response._id}`);
     } catch (err: any) {
@@ -122,11 +127,11 @@ const PortfolioCreatePage: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   const handleCancel = () => {
     navigate('/portfolio');
   };
-  
+
   if (profileLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
@@ -134,7 +139,7 @@ const PortfolioCreatePage: React.FC = () => {
       </Box>
     );
   }
-  
+
   // If no profile exists, show message to create profile first
   if (!profile) {
     return (
@@ -143,17 +148,13 @@ const PortfolioCreatePage: React.FC = () => {
           <Typography variant="h5" gutterBottom>
             Create Portfolio
           </Typography>
-          
+
           <Alert severity="warning" sx={{ mb: 3 }}>
             You need to create a profile before creating a portfolio.
           </Alert>
-          
+
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate('/profile/create')}
-            >
+            <Button variant="contained" color="primary" onClick={() => navigate('/profile/create')}>
               Create Profile First
             </Button>
           </Box>
@@ -161,42 +162,38 @@ const PortfolioCreatePage: React.FC = () => {
       </Box>
     );
   }
-  
+
   return (
     <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto', p: 3 }}>
-      <Button 
-        startIcon={<ArrowBackIcon />} 
-        onClick={handleCancel} 
-        sx={{ mb: 2 }}
-      >
+      <Button startIcon={<ArrowBackIcon />} onClick={handleCancel} sx={{ mb: 2 }}>
         Back to Portfolio
       </Button>
-      
+
       <Paper elevation={3} sx={{ p: 4 }}>
-        
         <Typography variant="body1" color="text.secondary" paragraph>
-          Start by adding your skills. You can add more details like work experience, education, and projects later.
+          Start by adding your skills. You can add more details like work experience, education, and
+          projects later.
         </Typography>
-        
+
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
-        
+
         <Box component="form" onSubmit={handleSubmit}>
           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
             Skills
           </Typography>
           <Divider sx={{ mb: 3 }} />
-          
+
           <Box sx={{ mb: 4 }}>
             {skills.map((category, categoryIndex) => (
               <Box key={categoryIndex} sx={{ mb: 3 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   {category.category}
                 </Typography>
-                
+
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   {category.skills.map((skill, skillIndex) => (
                     <Chip
@@ -214,7 +211,7 @@ const PortfolioCreatePage: React.FC = () => {
                 </Box>
               </Box>
             ))}
-            
+
             <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
               <TextField
                 select
@@ -225,7 +222,7 @@ const PortfolioCreatePage: React.FC = () => {
                 size="small"
                 sx={{ width: 200, mr: 2 }}
                 SelectProps={{
-                  native: true
+                  native: true,
                 }}
               >
                 {skills.map((category, index) => (
@@ -234,7 +231,7 @@ const PortfolioCreatePage: React.FC = () => {
                   </option>
                 ))}
               </TextField>
-              
+
               <TextField
                 label="New Skill"
                 value={newSkill}
@@ -249,16 +246,12 @@ const PortfolioCreatePage: React.FC = () => {
                   }
                 }}
               />
-              
-              <Button
-                variant="outlined"
-                onClick={handleAddSkill}
-                disabled={!newSkill.trim()}
-              >
+
+              <Button variant="outlined" onClick={handleAddSkill} disabled={!newSkill.trim()}>
                 Add
               </Button>
             </Box>
-            
+
             <Button
               variant="text"
               startIcon={<AddIcon />}
@@ -268,32 +261,24 @@ const PortfolioCreatePage: React.FC = () => {
               Add New Category
             </Button>
           </Box>
-          
+
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-            <Button 
-              variant="outlined" 
-              onClick={handleCancel}
-              disabled={loading}
-            >
+            <Button variant="outlined" onClick={handleCancel} disabled={loading}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              color="primary"
-              disabled={loading}
-            >
+            <Button type="submit" variant="contained" color="primary" disabled={loading}>
               {loading ? <CircularProgress size={24} /> : 'Create Portfolio'}
             </Button>
           </Box>
         </Box>
       </Paper>
-      
+
       <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-        You'll be able to add work experience, education, and other details after creating your portfolio.
+        You'll be able to add work experience, education, and other details after creating your
+        portfolio.
       </Typography>
     </Box>
   );
 };
 
-export default PortfolioCreatePage; 
+export default PortfolioCreatePage;

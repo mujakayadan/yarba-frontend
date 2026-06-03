@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Paper, 
-  Typography, 
-  Box, 
-  Button, 
-  Card, 
-  CardContent, 
+import {
+  Paper,
+  Typography,
+  Box,
+  Button,
+  Card,
+  CardContent,
   CardActions,
   CircularProgress,
   Divider,
   Stack,
-  Alert
+  Alert,
 } from '@mui/material';
-import { 
-  Description as ResumeIcon, 
+import {
+  Description as ResumeIcon,
   Mail as CoverLetterIcon,
   Add as AddIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -129,10 +129,10 @@ const DashboardPage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
@@ -160,30 +160,37 @@ const DashboardPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, pl: 2, pt: 2 }}>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        mb: 5,
-        mt: 2 
-      }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: 5,
+          mt: 2,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
             textAlign: 'center',
-            fontWeight: 'normal'
+            fontWeight: 'normal',
           }}
         >
-          <Box component="span" sx={{ color: 'primary.main' }}>Welcome,</Box>
-          <Box 
-            component="span" 
-            sx={{ 
-              color: '#E05B49', 
-              ml: 1, 
-              fontWeight: 'bold' 
+          <Box component="span" sx={{ color: 'primary.main' }}>
+            Welcome,
+          </Box>
+          <Box
+            component="span"
+            sx={{
+              color: '#E05B49',
+              ml: 1,
+              fontWeight: 'bold',
             }}
           >
-            {profile?.personal_information?.full_name || user?.username?.replace(/_[0-9]+$/, '').replace(/_/g, ' ') || 'User'}!
+            {profile?.personal_information?.full_name ||
+              user?.username?.replace(/_[0-9]+$/, '').replace(/_/g, ' ') ||
+              'User'}
+            !
           </Box>
         </Typography>
       </Box>
@@ -195,23 +202,23 @@ const DashboardPage: React.FC = () => {
       )}
 
       {/* Document Summary */}
-      <Stack 
-        direction={{ xs: 'column', sm: 'row' }} 
-        spacing={3} 
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={3}
         sx={{ mb: 6 }}
         alignItems="stretch"
       >
         {/* Resume Card */}
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             flexGrow: 1,
             width: { xs: '100%', sm: '33%' },
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
           onClick={handleViewResumes}
         >
@@ -234,16 +241,16 @@ const DashboardPage: React.FC = () => {
         </Paper>
 
         {/* Cover Letter Card */}
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             flexGrow: 1,
             width: { xs: '100%', sm: '33%' },
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
           onClick={handleViewCoverLetters}
         >
@@ -266,29 +273,27 @@ const DashboardPage: React.FC = () => {
         </Paper>
 
         {/* Portfolio Card */}
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             flexGrow: 1,
             width: { xs: '100%', sm: '33%' },
-            bgcolor: portfolioComplete ? 'success.50' : 'warning.50'
+            bgcolor: portfolioComplete ? 'success.50' : 'warning.50',
           }}
         >
-          <PersonIcon 
-            fontSize="large" 
-            color={loading ? "disabled" : (portfolioComplete ? "success" : "warning")} 
-            sx={{ mb: 1 }} 
+          <PersonIcon
+            fontSize="large"
+            color={loading ? 'disabled' : portfolioComplete ? 'success' : 'warning'}
+            sx={{ mb: 1 }}
           />
           {loading ? (
             <CircularProgress size={30} sx={{ my: 1 }} />
           ) : (
-            <Typography variant="h5">
-              {portfolioComplete ? 'Complete' : 'Incomplete'}
-            </Typography>
+            <Typography variant="h5">{portfolioComplete ? 'Complete' : 'Incomplete'}</Typography>
           )}
           <Typography variant="subtitle1">Portfolio Status</Typography>
           <Button
@@ -306,23 +311,25 @@ const DashboardPage: React.FC = () => {
       <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
         Recent Activity
       </Typography>
-      
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
           <CircularProgress />
         </Box>
       ) : (
         <Box>
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { 
-              xs: '1fr', 
-              sm: 'repeat(2, 1fr)', 
-              md: 'repeat(3, 1fr)' 
-            },
-            gap: 2,
-            mb: 2
-          }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+              },
+              gap: 2,
+              mb: 2,
+            }}
+          >
             {recentItems.map((item) => (
               <Card key={item.id} sx={{ height: '100%' }}>
                 <CardContent>
@@ -332,9 +339,7 @@ const DashboardPage: React.FC = () => {
                   <Typography sx={{ mb: 1.5 }} color="text.secondary">
                     {item.type === 'resume' ? 'Resume' : 'Cover Letter'}
                   </Typography>
-                  <Typography variant="body2">
-                    Last modified: {formatDate(item.date)}
-                  </Typography>
+                  <Typography variant="body2">Last modified: {formatDate(item.date)}</Typography>
                 </CardContent>
                 <Divider />
                 <CardActions>
@@ -348,7 +353,7 @@ const DashboardPage: React.FC = () => {
               </Card>
             ))}
           </Box>
-          
+
           {recentItems.length === 0 && (
             <Typography variant="body1" sx={{ textAlign: 'center', py: 4 }}>
               No recent activity. Create your first document!
@@ -360,4 +365,4 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

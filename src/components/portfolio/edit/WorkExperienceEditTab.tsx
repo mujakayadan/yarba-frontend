@@ -20,7 +20,9 @@ export const WorkExperienceEditTab: React.FC<WorkExperienceEditTabProps> = ({ fo
 
       {workExperience.map((exp, expIndex) => (
         <Paper key={expIndex} variant="outlined" sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Typography variant="subtitle1" fontWeight="bold">
               {exp.job_title} at {exp.company}
             </Typography>
@@ -146,7 +148,9 @@ export const WorkExperienceEditTab: React.FC<WorkExperienceEditTabProps> = ({ fo
             <TextField
               label="New Responsibility"
               value={newResponsibility[expIndex] || ''}
-              onChange={(e) => setNewResponsibility((prev) => ({ ...prev, [expIndex]: e.target.value }))}
+              onChange={(e) =>
+                setNewResponsibility((prev) => ({ ...prev, [expIndex]: e.target.value }))
+              }
               variant="outlined"
               size="small"
               sx={{ flexGrow: 1, mr: 2 }}

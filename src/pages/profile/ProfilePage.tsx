@@ -32,12 +32,8 @@ const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
   const { data: profile, isLoading, isError, error: queryError } = useUserProfile();
-  const {
-    uploadPicture,
-    deletePicture,
-    uploadSignatureMutation,
-    deleteSignatureMutation,
-  } = useProfileMutations();
+  const { uploadPicture, deletePicture, uploadSignatureMutation, deleteSignatureMutation } =
+    useProfileMutations();
 
   const [error, setError] = useState<string | null>(null);
   const [uploadType, setUploadType] = useState<'profile' | 'signature' | null>(null);

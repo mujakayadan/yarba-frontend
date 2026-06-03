@@ -42,8 +42,7 @@ export const usePortfolioMutations = (portfolioId: string | undefined) => {
   });
 
   const updateProjectsMutation = useMutation({
-    mutationFn: (data: Parameters<typeof updateProjects>[1]) =>
-      updateProjects(portfolioId!, data),
+    mutationFn: (data: Parameters<typeof updateProjects>[1]) => updateProjects(portfolioId!, data),
     onSuccess: () => portfolioId && invalidatePortfolio(portfolioId),
   });
 

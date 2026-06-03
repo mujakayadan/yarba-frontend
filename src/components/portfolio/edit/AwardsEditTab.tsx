@@ -20,7 +20,9 @@ export const AwardsEditTab: React.FC<AwardsEditTabProps> = ({ form }) => {
 
       {awards.map((award, awardIndex) => (
         <Paper key={awardIndex} variant="outlined" sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Typography variant="subtitle1" fontWeight="bold">
               {award.name || 'Untitled Award'}
             </Typography>

@@ -1,9 +1,9 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Box, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
   IconButton,
   Drawer,
   List,
@@ -18,9 +18,9 @@ import {
   Fab,
   Menu,
   MenuItem,
-  Button
+  Button,
 } from '@mui/material';
-import { 
+import {
   Menu as MenuIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -37,7 +37,7 @@ import {
   Refresh as RefreshIcon,
   Info as InfoIcon,
   Login as LoginIcon,
-  Language as LanguageIcon
+  Language as LanguageIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
@@ -54,13 +54,13 @@ const navItems = [
   { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
   { text: 'Website', icon: <LanguageIcon />, path: '/website' },
   // To add nested navigation in the future, we could use this structure:
-  // { 
-  //   text: 'Settings', 
-  //   icon: <SettingsIcon />, 
+  // {
+  //   text: 'Settings',
+  //   icon: <SettingsIcon />,
   //   children: [
   //     { text: 'User Settings', icon: <AccountIcon />, path: '/user' },
   //     { text: 'Templates', icon: <TemplatesIcon />, path: '/templates' },
-  //   ] 
+  //   ]
   // },
 ];
 
@@ -107,7 +107,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
 
   const toggleDrawer = () => {
     if (!hideDrawer) {
-        setDrawerOpen(!drawerOpen);
+      setDrawerOpen(!drawerOpen);
     }
   };
 
@@ -131,9 +131,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
     <>
       <List sx={{ mt: 1 }}>
         {navItems.map((item, index) => (
-          <Tooltip 
-            title={!drawerOpen ? item.text : ""} 
-            placement="right" 
+          <Tooltip
+            title={!drawerOpen ? item.text : ''}
+            placement="right"
             key={item.text}
             TransitionProps={{ timeout: 0 }}
           >
@@ -179,14 +179,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   fontSize: '1.5rem',
                   '& .MuiSvgIcon-root': {
                     fontSize: '1.5rem',
-                  }
+                  },
                 }}
               >
                 {item.icon}
               </ListItemIcon>
               {drawerOpen && (
-                <ListItemText 
-                  primary={item.text} 
+                <ListItemText
+                  primary={item.text}
                   primaryTypographyProps={{
                     fontWeight: 600,
                     fontSize: item.text.length > 10 ? '0.85rem' : '1rem',
@@ -194,7 +194,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     fontFamily: "'Dreaming Outloud Pro', cursive",
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
                   }}
                   sx={{
                     opacity: 1,
@@ -204,7 +204,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     '& span': {
                       transition: 'none !important',
                     },
-                    maxWidth: '100%'
+                    maxWidth: '100%',
                   }}
                 />
               )}
@@ -212,17 +212,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           </Tooltip>
         ))}
       </List>
-      <Divider sx={{ 
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
-        my: 1, // 8dp padding above and below divider (1 = 8px in the default MUI theme)
-      }} />
+      <Divider
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          my: 1, // 8dp padding above and below divider (1 = 8px in the default MUI theme)
+        }}
+      />
       <List>
-        <Tooltip 
-          title={!drawerOpen ? "Logout" : ""} 
+        <Tooltip
+          title={!drawerOpen ? 'Logout' : ''}
           placement="right"
           TransitionProps={{ timeout: 0 }}
         >
-          <ListItemButton 
+          <ListItemButton
             onClick={() => {
               if (isMobile) {
                 setDrawerOpen(false);
@@ -255,13 +257,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 fontSize: '1.5rem',
                 '& .MuiSvgIcon-root': {
                   fontSize: '1.5rem',
-                }
+                },
               }}
             >
               <LogoutIcon />
             </ListItemIcon>
             {drawerOpen && (
-              <ListItemText 
+              <ListItemText
                 primary="Logout"
                 primaryTypographyProps={{
                   fontWeight: 600,
@@ -270,7 +272,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   fontFamily: "'Dreaming Outloud Pro', cursive",
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
                 }}
                 sx={{
                   color: '#ffffff',
@@ -278,7 +280,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   '& span': {
                     transition: 'none !important',
                   },
-                  maxWidth: '100%'
+                  maxWidth: '100%',
                 }}
               />
             )}
@@ -290,26 +292,26 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar 
-        position="fixed" 
-        sx={{ 
+      <AppBar
+        position="fixed"
+        sx={{
           width: '100%',
           ml: 0,
           backgroundImage: 'linear-gradient(to right,rgb(142, 92, 150),rgb(122, 172, 216))',
           zIndex: (theme) => theme.zIndex.drawer + 1,
           boxShadow: 3,
-          height: { 
+          height: {
             xs: '56px',
             sm: '56px',
-            md: '64px'
-          }
+            md: '64px',
+          },
         }}
       >
-        <Toolbar 
-          sx={{ 
-            minHeight: { xs: 56, sm: 56, md: 64 }, 
+        <Toolbar
+          sx={{
+            minHeight: { xs: 56, sm: 56, md: 64 },
             py: { xs: 0, md: 0.5 },
-            px: { xs: 1, sm: 2 } // Reduce horizontal padding on mobile for more space
+            px: { xs: 1, sm: 2 }, // Reduce horizontal padding on mobile for more space
           }}
         >
           {!hideDrawer && (
@@ -324,8 +326,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             </IconButton>
           )}
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            <RouterLink to="/dashboard" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
-              <img src="/logo.svg" alt="YARBA Icon" style={{ height: '40px', width: 'auto', marginRight: '10px' }} />
+            <RouterLink
+              to="/dashboard"
+              style={{
+                textDecoration: 'none',
+                color: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <img
+                src="/logo.svg"
+                alt="YARBA Icon"
+                style={{ height: '40px', width: 'auto', marginRight: '10px' }}
+              />
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Typography
                   variant="h5"
@@ -357,16 +371,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           </Typography>
           {user ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography 
-                sx={{ 
-                  mr: 2, 
+              <Typography
+                sx={{
+                  mr: 2,
                   opacity: 0.9,
                   display: { xs: 'none', sm: 'none', md: 'block' },
                   fontFamily: "'Dreaming Outloud Pro', cursive",
-                  fontSize: '1.1rem'
+                  fontSize: '1.1rem',
                 }}
               >
-                {profile?.personal_information?.full_name || user.username?.replace(/_[0-9]+$/, '').replace(/_/g, ' ') || 'User'}
+                {profile?.personal_information?.full_name ||
+                  user.username?.replace(/_[0-9]+$/, '').replace(/_/g, ' ') ||
+                  'User'}
               </Typography>
               {/* Avatar/Image that opens dropdown */}
               <Box
@@ -389,10 +405,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 }}
               >
                 {profile?.profile_picture_key && !imageError ? (
-                  <img 
+                  <img
                     src={`${env.cloudfrontUrl}${profile.profile_picture_key}?v=${imageVersion}`}
-                    alt={profile?.personal_information?.full_name || "User profile"}
-                    style={{ 
+                    alt={profile?.personal_information?.full_name || 'User profile'}
+                    style={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
@@ -406,20 +422,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     }}
                   />
                 ) : (
-                  <Avatar 
-                    sx={{ 
+                  <Avatar
+                    sx={{
                       bgcolor: 'secondary.main',
                       width: '100%',
                       height: '100%',
                       fontSize: 18,
                     }}
                   >
-                    {profile?.personal_information?.full_name?.charAt(0).toUpperCase() || 
-                     user?.username?.charAt(0).toUpperCase() || 'U'}
+                    {profile?.personal_information?.full_name?.charAt(0).toUpperCase() ||
+                      user?.username?.charAt(0).toUpperCase() ||
+                      'U'}
                   </Avatar>
                 )}
               </Box>
-              
+
               {/* Profile dropdown menu */}
               <Menu
                 id="profile-menu"
@@ -458,7 +475,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                     {profile?.personal_information?.full_name || user.username}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', wordBreak: 'break-all' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.secondary', wordBreak: 'break-all' }}
+                  >
                     {user.email || profile?.personal_information?.email || ''}
                   </Typography>
                 </Box>
@@ -479,7 +499,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               </Menu>
             </Box>
           ) : (
-            <Button 
+            <Button
               component={RouterLink}
               to="/login"
               variant="contained"
@@ -493,9 +513,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 boxShadow: 2,
                 '&:hover': {
                   boxShadow: 4,
-                  backgroundColor: 'secondary.dark'
+                  backgroundColor: 'secondary.dark',
                 },
-                textTransform: 'none'
+                textTransform: 'none',
               }}
             >
               Sign In
@@ -507,7 +527,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
       {/* Responsive drawer */}
       {!hideDrawer && user && (
         <Drawer
-          variant={isMobile ? "temporary" : "permanent"}
+          variant={isMobile ? 'temporary' : 'permanent'}
           open={isMobile ? drawerOpen : true}
           onClose={isMobile ? toggleDrawer : undefined}
           keepMounted={false}
@@ -522,14 +542,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             BackdropProps: {
               sx: {
                 backgroundColor: 'rgba(0, 0, 0, 0.5)', // Proper scrim opacity
-              }
-            }
+              },
+            },
           }}
           sx={{
             display: 'block',
             '& .MuiDrawer-paper': {
               position: 'fixed',
-              width: isMobile ? 240 : (drawerOpen ? drawerWidth : miniDrawerWidth),
+              width: isMobile ? 240 : drawerOpen ? drawerWidth : miniDrawerWidth,
               overflowX: 'hidden',
               transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
@@ -540,8 +560,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               marginTop: 0, // Ensure no additional margin
               height: '100%',
               backgroundColor: '#ffffff',
-              backgroundImage: 'linear-gradient(to bottom right, rgb(142, 92, 150), rgb(122, 172, 216))',
-              boxShadow: '0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)', // 16dp elevation
+              backgroundImage:
+                'linear-gradient(to bottom right, rgb(142, 92, 150), rgb(122, 172, 216))',
+              boxShadow:
+                '0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)', // 16dp elevation
               zIndex: theme.zIndex.drawer,
             },
           }}
@@ -551,24 +573,29 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
       )}
 
       {/* Main content */}
-      <Box 
-        component="main" 
+      <Box
+        component="main"
         className="fade-in"
-        sx={{ 
+        sx={{
           flexGrow: 1,
           p: 0,
-          width: { 
+          width: {
             xs: '100%',
-            md: (hideDrawer || !user) ? '100%' : (drawerOpen ? `calc(100% - ${drawerWidth}px)` : `calc(100% - ${miniDrawerWidth}px)`)
+            md:
+              hideDrawer || !user
+                ? '100%'
+                : drawerOpen
+                  ? `calc(100% - ${drawerWidth}px)`
+                  : `calc(100% - ${miniDrawerWidth}px)`,
           },
           marginTop: {
             xs: '56px', // Mobile header height
             sm: '56px', // Small tablets
-            md: '64px'  // Desktop header height
+            md: '64px', // Desktop header height
           },
           marginLeft: {
             xs: 0, // Mobile: no margin
-            md: (hideDrawer || !user) ? 0 : (drawerOpen ? `${drawerWidth}px` : `${miniDrawerWidth}px`)
+            md: hideDrawer || !user ? 0 : drawerOpen ? `${drawerWidth}px` : `${miniDrawerWidth}px`,
           },
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
@@ -581,9 +608,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           minHeight: 'calc(100vh - 64px)', // Subtract the header height
         }}
       >
-        <Box sx={{ flexGrow: 1 }}>
-          {children ?? <Outlet />}
-        </Box>
+        <Box sx={{ flexGrow: 1 }}>{children ?? <Outlet />}</Box>
         <Footer />
       </Box>
 
@@ -602,7 +627,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             transition: 'left 0.2s ease',
             '&:hover': {
               backgroundColor: '#2C5282',
-            }
+            },
           }}
         >
           {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -612,4 +637,4 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   );
 };
 
-export default MainLayout; 
+export default MainLayout;

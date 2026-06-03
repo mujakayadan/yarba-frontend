@@ -61,7 +61,8 @@ export interface PortfolioLLMSchema {
   awards: Award[];
   publications: Publication[];
   certifications: string[];
-  custom_sections?: { // Making custom_sections optional as per general practice
+  custom_sections?: {
+    // Making custom_sections optional as per general practice
     sections: CustomSection[];
   };
   professional_title?: string; // Added based on the note in the API doc
@@ -69,4 +70,4 @@ export interface PortfolioLLMSchema {
 
 // This type represents the data returned by the /api/v1/portfolios/parse-document endpoint
 // It's essentially PortfolioLLMSchema without database-generated fields.
-export type ParsedPortfolioData = PortfolioLLMSchema; 
+export type ParsedPortfolioData = PortfolioLLMSchema;

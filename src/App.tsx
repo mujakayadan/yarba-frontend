@@ -11,7 +11,7 @@ import AppRoutes from './routes/AppRoutes';
 import { isDev } from './config/env';
 
 const Analytics = lazy(() =>
-  import('@vercel/analytics/react').then((module) => ({ default: module.Analytics })),
+  import('@vercel/analytics/react').then((module) => ({ default: module.Analytics }))
 );
 
 const App: React.FC = () => {

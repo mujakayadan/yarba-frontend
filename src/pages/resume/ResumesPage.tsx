@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  TextField, 
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
   InputAdornment,
   IconButton,
   Menu,
@@ -33,7 +33,7 @@ import {
   TableHead,
   TableRow,
   ButtonGroup,
-  ListItemIcon
+  ListItemIcon,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -45,7 +45,7 @@ import {
   Edit as EditIcon,
   Visibility as VisibilityIcon,
   Link as LinkIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
@@ -174,7 +174,7 @@ const ResumesPage: React.FC = () => {
     setPage(value);
     window.scrollTo(0, 0); // Scroll to top when changing pages
   };
-  
+
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     const newPageSize = event.target.value as number;
     console.log(`Page size changing from ${pageSize} to ${newPageSize}`);
@@ -273,20 +273,20 @@ const ResumesPage: React.FC = () => {
       setSnackbarOpen(true);
     }
   };
-  
+
   const handlePortfolioChange = (event: SelectChangeEvent) => {
     setSelectedPortfolioId(event.target.value);
   };
-  
+
   const handleUpdateResumePortfolio = async () => {
     if (!selectedResumeId || !selectedPortfolioId) return;
-    
+
     setUpdatingResume(true);
     try {
       await updateResume(selectedResumeId, { portfolio_id: selectedPortfolioId });
 
       queryClient.invalidateQueries({ queryKey: resumeKeys.all });
-      
+
       setErrorMessage('Resume successfully updated with new portfolio');
       setSnackbarOpen(true);
     } catch (error) {
@@ -303,24 +303,26 @@ const ResumesPage: React.FC = () => {
     setGeneratingPdf(true);
     try {
       // Log the resume details before requesting PDF
-      const resume = resumes.find(r => r.id === resumeId);
+      const resume = resumes.find((r) => r.id === resumeId);
       console.log('Requesting PDF for resume:', resume);
-      
+
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
-        setErrorMessage('This resume has no associated portfolio. Please update the resume with a valid portfolio first.');
+        setErrorMessage(
+          'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
+        );
         setSnackbarOpen(true);
         handleOpenPortfolioDialog(resumeId);
         return;
       }
-      
+
       // Store resume name for the dialog title
       if (resume) {
         setSelectedResumeName(resume.title);
       }
-      
+
       const response = await getResumePdf(resumeId);
-      
+
       if (isPdfResponse(response)) {
         pdfPreview.openPreviewFromUrl(response.pdf_url);
       } else if (isBlob(response)) {
@@ -332,7 +334,7 @@ const ResumesPage: React.FC = () => {
       setSelectedResumeId(resumeId);
     } catch (error: any) {
       console.error('Failed to load PDF:', error);
-      
+
       let errorMsg = 'Failed to load PDF';
       if (error.response?.data instanceof Blob) {
         try {
@@ -344,7 +346,7 @@ const ResumesPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      
+
       setErrorMessage(errorMsg);
       setSnackbarOpen(true);
     } finally {
@@ -356,22 +358,24 @@ const ResumesPage: React.FC = () => {
     setGeneratingPdf(true);
     try {
       // Log the resume details before requesting PDF
-      const resume = resumes.find(r => r.id === resumeId);
+      const resume = resumes.find((r) => r.id === resumeId);
       console.log('Requesting PDF for resume:', resume);
-      
+
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
-        setErrorMessage('This resume has no associated portfolio. Please update the resume with a valid portfolio first.');
+        setErrorMessage(
+          'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
+        );
         setSnackbarOpen(true);
         handleOpenPortfolioDialog(resumeId);
         return;
       }
-      
+
       const response = await getResumePdf(resumeId);
-      
+
       // Find the resume title for the filename
       const filename = resume ? `${resume.title}.pdf` : `resume-${resumeId}.pdf`;
-      
+
       if (isPdfResponse(response)) {
         // Direct download from URL
         const link = document.createElement('a');
@@ -403,11 +407,12 @@ const ResumesPage: React.FC = () => {
           try {
             const errorText = await error.response.data.text();
             console.error('Blob error message:', errorText);
-            
+
             // Check for portfolio not found error
             if (errorText.includes('Portfolio with ID') && errorText.includes('not found')) {
-              errorMsg = 'The portfolio associated with this resume could not be found. Please update the resume with a valid portfolio.';
-              
+              errorMsg =
+                'The portfolio associated with this resume could not be found. Please update the resume with a valid portfolio.';
+
               // Offer to attach a valid portfolio
               handleOpenPortfolioDialog(resumeId);
             } else {
@@ -431,15 +436,16 @@ const ResumesPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      
+
       // Show specific message for common errors
       if (errorMsg.includes('Portfolio with ID') && errorMsg.includes('not found')) {
-        errorMsg = 'The portfolio associated with this resume could not be found. Please update the resume with a valid portfolio.';
-        
+        errorMsg =
+          'The portfolio associated with this resume could not be found. Please update the resume with a valid portfolio.';
+
         // Offer to attach a valid portfolio
         handleOpenPortfolioDialog(resumeId);
       }
-      
+
       setErrorMessage(errorMsg);
       setSnackbarOpen(true);
     } finally {
@@ -451,20 +457,20 @@ const ResumesPage: React.FC = () => {
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   // Format underscored text to capitalized format
   const formatUnderscoredText = (text: string | undefined | null): string => {
     if (!text) return '-';
-    
+
     return text
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
 
@@ -472,7 +478,7 @@ const ResumesPage: React.FC = () => {
   const getPersonalInfo = (resume: APIResume) => {
     const info = resume.content?.personal_information;
     if (!info) return null;
-    
+
     return info.full_name;
   };
 
@@ -480,7 +486,7 @@ const ResumesPage: React.FC = () => {
   const getJobTitle = (resume: APIResume) => {
     try {
       if (resume.job_title) return resume.job_title;
-      
+
       if (resume.content?.career_summary) {
         const summary = JSON.parse(resume.content.career_summary);
         return summary.job_title || '';
@@ -498,14 +504,16 @@ const ResumesPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
-      <Box sx={{ 
-        display: 'flex',
-        justifyContent: 'right',
-        alignItems: 'center',
-        mb: 3,
-        flexDirection: { xs: 'column', sm: 'row' },
-        gap: 2
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'right',
+          alignItems: 'center',
+          mb: 3,
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
         <Button
           variant="contained"
           color="primary"
@@ -541,8 +549,8 @@ const ResumesPage: React.FC = () => {
       ) : resumes.length === 0 ? (
         <Box sx={{ textAlign: 'center', my: 4 }}>
           <Typography variant="h6" color="textSecondary">
-            {searchTerm 
-              ? "No resumes found matching your search." 
+            {searchTerm
+              ? 'No resumes found matching your search.'
               : "You haven't created any resumes yet."}
           </Typography>
           <Button
@@ -561,48 +569,60 @@ const ResumesPage: React.FC = () => {
             <Table sx={{ minWidth: 650 }} aria-label="resumes table">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem'
-                  }}>Company</TableCell>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem'
-                  }}>Position</TableCell>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem'
-                  }}>Last Updated</TableCell>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem',
-                    textAlign: 'center'
-                  }}>Actions</TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Company
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Position
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Last Updated
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                      textAlign: 'center',
+                    }}
+                  >
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {resumes.map((resume) => (
-                  <TableRow 
+                  <TableRow
                     key={resume.id}
-                    sx={{ 
-                      '&:hover': { 
+                    sx={{
+                      '&:hover': {
                         backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
                       },
-                      height: '72px'
+                      height: '72px',
                     }}
                     onClick={() => handleViewResume(resume.id)}
                   >
-                    <TableCell>
-                      {formatUnderscoredText(resume.company_name)}
-                    </TableCell>
-                    <TableCell>
-                      {formatUnderscoredText(getJobTitle(resume))}
-                    </TableCell>
+                    <TableCell>{formatUnderscoredText(resume.company_name)}</TableCell>
+                    <TableCell>{formatUnderscoredText(getJobTitle(resume))}</TableCell>
                     <TableCell>
                       <Typography variant="body2" color="text.secondary">
                         {formatDate(resume.updated_at)}
@@ -610,35 +630,29 @@ const ResumesPage: React.FC = () => {
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                       <ButtonGroup size="small" variant="outlined">
-                        <Tooltip 
-                          title="View" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
+                        <Tooltip title="View" placement="top" TransitionProps={{ timeout: 0 }}>
                           <Button onClick={() => handleViewResume(resume.id)}>
                             <VisibilityIcon fontSize="small" />
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="See PDF" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
-                          <Button 
-                            variant="outlined" 
-                            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <PdfIcon />}
+                        <Tooltip title="See PDF" placement="top" TransitionProps={{ timeout: 0 }}>
+                          <Button
+                            variant="outlined"
+                            startIcon={
+                              generatingPdf && !pdfPreview.open ? (
+                                <CircularProgress size={16} />
+                              ) : (
+                                <PdfIcon />
+                              )
+                            }
                             onClick={() => handleViewPdf(resume.id)}
                             disabled={generatingPdf}
                           >
                             {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="Delete" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
-                          <Button 
+                        <Tooltip title="Delete" placement="top" TransitionProps={{ timeout: 0 }}>
+                          <Button
                             onClick={() => {
                               setSelectedResumeId(resume.id);
                               setDeleteDialogOpen(true);
@@ -648,8 +662,8 @@ const ResumesPage: React.FC = () => {
                             <DeleteIcon fontSize="small" />
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="More options" 
+                        <Tooltip
+                          title="More options"
                           placement="top"
                           TransitionProps={{ timeout: 0 }}
                         >
@@ -664,28 +678,32 @@ const ResumesPage: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', sm: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', sm: 'center' }, 
-            flexWrap: 'wrap',
-            gap: 2,
-            mb: 4
-          }}>
-            <Box sx={{ 
+
+          <Box
+            sx={{
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              flexWrap: 'wrap',
               gap: 2,
-              flexWrap: 'wrap'
-            }}>
+              mb: 4,
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                flexWrap: 'wrap',
+              }}
+            >
               <Typography variant="body2" color="text.secondary">
-                {totalResumes === 0 ? 'No results' : 
-                  `Showing ${startItem}-${endItem} of ${totalResumes} resume${totalResumes !== 1 ? 's' : ''}`
-                }
+                {totalResumes === 0
+                  ? 'No results'
+                  : `Showing ${startItem}-${endItem} of ${totalResumes} resume${totalResumes !== 1 ? 's' : ''}`}
               </Typography>
-              
+
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel id="page-size-select-label">Page Size</InputLabel>
                 <Select
@@ -696,15 +714,17 @@ const ResumesPage: React.FC = () => {
                   onChange={handlePageSizeChange}
                 >
                   {PAGE_SIZE_OPTIONS.map((size) => (
-                    <MenuItem key={size} value={size}>{size} per page</MenuItem>
+                    <MenuItem key={size} value={size}>
+                      {size} per page
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Box>
-            
-            <Pagination 
+
+            <Pagination
               count={Math.max(1, Math.ceil(totalResumes / pageSize))}
-              page={page} 
+              page={page}
               onChange={handlePageChange}
               color="primary"
               size="large"
@@ -713,7 +733,7 @@ const ResumesPage: React.FC = () => {
               sx={{
                 '& .MuiPaginationItem-root': {
                   fontSize: '1rem',
-                }
+                },
               }}
             />
           </Box>
@@ -721,11 +741,7 @@ const ResumesPage: React.FC = () => {
       )}
 
       {/* Resume Actions Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={() => selectedResumeId && handleViewResume(selectedResumeId)}>
           <ListItemIcon>
             <VisibilityIcon fontSize="small" sx={{ mr: 1 }} />
@@ -763,10 +779,7 @@ const ResumesPage: React.FC = () => {
           Attach Portfolio
         </MenuItem>
         <Divider />
-        <MenuItem 
-          onClick={handleDeleteClick}
-          sx={{ color: 'error.main' }}
-        >
+        <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
           <ListItemIcon sx={{ color: 'error.main' }}>
             <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
           </ListItemIcon>
@@ -775,10 +788,7 @@ const ResumesPage: React.FC = () => {
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-      >
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Resume</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -789,9 +799,9 @@ const ResumesPage: React.FC = () => {
           <Button onClick={handleDeleteCancel} disabled={deletingResume}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             disabled={deletingResume}
             startIcon={deletingResume ? <CircularProgress size={16} /> : <DeleteIcon />}
           >
@@ -812,7 +822,7 @@ const ResumesPage: React.FC = () => {
           <DialogContentText sx={{ mb: 2 }}>
             Select a portfolio to attach to this resume. This is required for PDF access.
           </DialogContentText>
-          
+
           {loadingPortfolios ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
               <CircularProgress size={24} />
@@ -844,10 +854,7 @@ const ResumesPage: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={() => setPortfolioDialogOpen(false)} 
-            disabled={updatingResume}
-          >
+          <Button onClick={() => setPortfolioDialogOpen(false)} disabled={updatingResume}>
             Cancel
           </Button>
           <Button
@@ -869,7 +876,7 @@ const ResumesPage: React.FC = () => {
         severity={errorMessage?.includes('success') ? 'success' : 'error'}
         onClose={() => setSnackbarOpen(false)}
       />
-      
+
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={`${selectedResumeName || 'Resume'} PDF Preview`}
@@ -892,7 +899,9 @@ const ResumesPage: React.FC = () => {
               onClick={() => {
                 if (pdfPreview.pdfUrl?.startsWith('http')) {
                   const resume = resumes.find((r) => r.id === selectedResumeId);
-                  const filename = resume ? `${resume.title}.pdf` : `resume-${selectedResumeId}.pdf`;
+                  const filename = resume
+                    ? `${resume.title}.pdf`
+                    : `resume-${selectedResumeId}.pdf`;
                   const link = document.createElement('a');
                   link.href = pdfPreview.pdfUrl;
                   link.setAttribute('download', filename);
@@ -914,4 +923,4 @@ const ResumesPage: React.FC = () => {
   );
 };
 
-export default ResumesPage; 
+export default ResumesPage;

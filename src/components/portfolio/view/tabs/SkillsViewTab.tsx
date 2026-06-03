@@ -10,7 +10,12 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
           // Create a deterministic color based on index
           const colorIndex = index % 5;
           const colors = ['primary', 'secondary', 'success', 'info', 'warning'];
-          const color = colors[colorIndex] as 'primary' | 'secondary' | 'success' | 'info' | 'warning';
+          const color = colors[colorIndex] as
+            | 'primary'
+            | 'secondary'
+            | 'success'
+            | 'info'
+            | 'warning';
 
           // Get skills directly from the skills property since that's what the API returns
           const skillsArray: string[] = skillCategory.skills || [];
@@ -26,7 +31,7 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
                   pb: 0.5,
                   borderBottom: 1,
                   borderColor: `${color}.light`,
-                  display: 'inline-block'
+                  display: 'inline-block',
                 }}
               >
                 {skillCategory.category}
@@ -55,7 +60,9 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
         })}
       </Box>
     ) : (
-      <Typography variant="body2" color="text.secondary">No skills added yet</Typography>
+      <Typography variant="body2" color="text.secondary">
+        No skills added yet
+      </Typography>
     )}
   </>
 );

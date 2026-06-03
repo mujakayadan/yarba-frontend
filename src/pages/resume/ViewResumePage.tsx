@@ -1,7 +1,32 @@
 import Grid from '../../mui/Grid';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Divider, Button, CircularProgress, Chip, Stack, Alert, Breadcrumbs, Link, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText, Card, CardContent, Avatar, IconButton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  Button,
+  CircularProgress,
+  Chip,
+  Stack,
+  Alert,
+  Breadcrumbs,
+  Link,
+  Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+  Card,
+  CardContent,
+  Avatar,
+  IconButton,
+} from '@mui/material';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,
@@ -22,9 +47,14 @@ import {
   Visibility as VisibilityIcon,
   Close as CloseIcon,
   Refresh as RefreshIcon,
-  AutoFixHigh as AutoFixHighIcon
+  AutoFixHigh as AutoFixHighIcon,
 } from '@mui/icons-material';
-import { getResumeById, getResumePdf, deleteResume, regenerateResumeContent } from '../../services/resumeService';
+import {
+  getResumeById,
+  getResumePdf,
+  deleteResume,
+  regenerateResumeContent,
+} from '../../services/resumeService';
 import { Resume } from '../../types/models';
 import { Toast, PdfPreviewDialog } from '../../components/common';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
@@ -56,7 +86,9 @@ const ViewResumePage: React.FC = () => {
   const [regeneratingContent, setRegeneratingContent] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
+    'success'
+  );
   const [generationErrorDialogOpen, setGenerationErrorDialogOpen] = useState(false);
   const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
   const pdfPreview = usePdfPreview();
@@ -64,7 +96,7 @@ const ViewResumePage: React.FC = () => {
   useEffect(() => {
     const fetchResume = async () => {
       if (!id) return;
-      
+
       setLoading(true);
       try {
         const data = await getResumeById(id);
@@ -93,16 +125,18 @@ const ViewResumePage: React.FC = () => {
 
   const handleViewPdf = async () => {
     if (!id || !resume) return;
-    
+
     if (!resume.portfolio_id) {
-      setError('This resume has no associated portfolio. Please update the resume with a valid portfolio first.');
+      setError(
+        'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
+      );
       return;
     }
-    
+
     setGeneratingPdf(true);
     try {
       const response = await getResumePdf(id);
-      
+
       // Check if response has pdf_url property (new format)
       if (isPdfResponse(response)) {
         pdfPreview.openPreviewFromUrl(response.pdf_url);
@@ -113,15 +147,16 @@ const ViewResumePage: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Failed to load PDF:', err);
-      
-      let errorMsg = 'Failed to load PDF. Please try again later or contact support if the issue persists.';
+
+      let errorMsg =
+        'Failed to load PDF. Please try again later or contact support if the issue persists.';
       if (err.response?.data instanceof Blob) {
         try {
           const errorText = await err.response.data.text();
           // Avoid showing very long or unhelpful backend HTML error pages directly
           if (errorText && errorText.length < 500 && !errorText.toLowerCase().includes('<html')) {
             errorMsg = `Failed to load PDF: ${errorText}`;
-          }          
+          }
         } catch (blobError) {
           // If we can't read the blob as text, use the default message
           console.warn('Could not parse error response blob:', blobError);
@@ -129,10 +164,10 @@ const ViewResumePage: React.FC = () => {
       } else if (err.message) {
         // Avoid showing generic Axios messages if possible
         if (!err.message.toLowerCase().includes('request failed')) {
-            errorMsg = err.message;
+          errorMsg = err.message;
         }
       }
-      
+
       setGenerationErrorMessage(errorMsg);
       setGenerationErrorDialogOpen(true);
       setError(null); // Clear any previous generic errors if we're showing the dialog
@@ -143,18 +178,20 @@ const ViewResumePage: React.FC = () => {
 
   const handleDownloadPdf = async () => {
     if (!id || !resume) return;
-    
+
     setGeneratingPdf(true);
     try {
       if (!resume.portfolio_id) {
-        setError('This resume has no associated portfolio. Please update the resume with a valid portfolio first.');
+        setError(
+          'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
+        );
         setGeneratingPdf(false); // Ensure loading state is reset
         return;
       }
-      
+
       const response = await getResumePdf(id);
       const filename = `${resume.title}.pdf`;
-      
+
       let blobToDownload: Blob;
 
       if (isPdfResponse(response)) {
@@ -169,7 +206,7 @@ const ViewResumePage: React.FC = () => {
       } else {
         throw new Error('Unexpected response format from PDF service when downloading');
       }
-      
+
       // Common blob download logic
       const url = window.URL.createObjectURL(blobToDownload);
       const link = document.createElement('a');
@@ -179,10 +216,10 @@ const ViewResumePage: React.FC = () => {
       link.click();
       link.remove(); // Modern way to remove the element
       window.URL.revokeObjectURL(url);
-
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
-      let downloadErrorMsg = 'Failed to download PDF. Please try again later or contact support if the issue persists.';
+      let downloadErrorMsg =
+        'Failed to download PDF. Please try again later or contact support if the issue persists.';
       if (err.response?.data instanceof Blob) {
         try {
           const errorText = await err.response.data.text();
@@ -194,7 +231,7 @@ const ViewResumePage: React.FC = () => {
         }
       } else if (err.message) {
         if (!err.message.toLowerCase().includes('request failed')) {
-            downloadErrorMsg = err.message;
+          downloadErrorMsg = err.message;
         }
       }
       setGenerationErrorMessage(downloadErrorMsg);
@@ -211,7 +248,7 @@ const ViewResumePage: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!id) return;
-    
+
     setDeletingResume(true);
     try {
       await deleteResume(id);
@@ -260,18 +297,23 @@ const ViewResumePage: React.FC = () => {
       setToastOpen(true);
     } catch (err: any) {
       console.error('Failed to regenerate content:', err);
-      let regenerationErrorMsg = 'Failed to regenerate content. Please try again or contact support.';
+      let regenerationErrorMsg =
+        'Failed to regenerate content. Please try again or contact support.';
       // Check if the error message indicates a PDF generation issue
-      if (err.message && (err.message.toLowerCase().includes('pdf') || err.message.toLowerCase().includes('latex'))) {
-        regenerationErrorMsg = 'Content was regenerated, but an error occurred during PDF creation. You can view the updated content, but PDF generation may fail until the issue is resolved.';
+      if (
+        err.message &&
+        (err.message.toLowerCase().includes('pdf') || err.message.toLowerCase().includes('latex'))
+      ) {
+        regenerationErrorMsg =
+          'Content was regenerated, but an error occurred during PDF creation. You can view the updated content, but PDF generation may fail until the issue is resolved.';
       } else if (err.message && !err.message.toLowerCase().includes('request failed')) {
-        regenerationErrorMsg = err.message; 
+        regenerationErrorMsg = err.message;
       }
 
       setGenerationErrorMessage(regenerationErrorMsg);
       setGenerationErrorDialogOpen(true);
       // Keep existing toast for partial success/alternative error display if not a PDF issue handled by dialog
-      // setError(err.message || 'Failed to regenerate content'); 
+      // setError(err.message || 'Failed to regenerate content');
       // setToastMessage('Failed to regenerate content. Please try again.');
       // setToastSeverity('error');
       // setToastOpen(true);
@@ -283,26 +325,26 @@ const ViewResumePage: React.FC = () => {
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   // Format date range for display (YYYY-MM format)
   const formatDateRange = (startDate?: string, endDate?: string, current?: boolean) => {
     if (!startDate) return '';
-    
+
     const formatYearMonth = (dateStr: string) => {
       const [year, month] = dateStr.split('-');
       const date = new Date(parseInt(year), parseInt(month) - 1);
       return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
     };
-    
+
     const start = formatYearMonth(startDate);
     const end = current ? 'Present' : endDate ? formatYearMonth(endDate) : '';
-    
+
     return `${start} - ${end}`;
   };
 
@@ -321,26 +363,32 @@ const ViewResumePage: React.FC = () => {
   // Specialized renderers for each section type
   const renderPersonalInformation = (data: any) => {
     const info = parseJsonContent(data);
-    
+
     return (
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {info.full_name && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Full Name</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Full Name
+                </Typography>
                 <Typography variant="body2">{info.full_name}</Typography>
               </Box>
             )}
             {info.email && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Email</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Email
+                </Typography>
                 <Typography variant="body2">{info.email}</Typography>
               </Box>
             )}
             {info.phone && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Phone</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Phone
+                </Typography>
                 <Typography variant="body2">{info.phone}</Typography>
               </Box>
             )}
@@ -350,13 +398,17 @@ const ViewResumePage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {info.address && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Address</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Address
+                </Typography>
                 <Typography variant="body2">{info.address}</Typography>
               </Box>
             )}
             {info.website && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Website</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Website
+                </Typography>
                 <Typography variant="body2">
                   <Link href={info.website} target="_blank" rel="noopener noreferrer">
                     {info.website}
@@ -366,24 +418,26 @@ const ViewResumePage: React.FC = () => {
             )}
             {(info.linkedin || info.github) && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Profiles</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Profiles
+                </Typography>
                 <Stack direction="row" spacing={1}>
                   {info.linkedin && (
-                    <Chip 
-                      size="small" 
-                      label="LinkedIn" 
-                      component="a" 
-                      href={info.linkedin} 
+                    <Chip
+                      size="small"
+                      label="LinkedIn"
+                      component="a"
+                      href={info.linkedin}
                       target="_blank"
                       clickable
                     />
                   )}
                   {info.github && (
-                    <Chip 
-                      size="small" 
-                      label="GitHub" 
-                      component="a" 
-                      href={info.github} 
+                    <Chip
+                      size="small"
+                      label="GitHub"
+                      component="a"
+                      href={info.github}
                       target="_blank"
                       clickable
                     />
@@ -395,7 +449,9 @@ const ViewResumePage: React.FC = () => {
         </Grid>
         {info.summary && (
           <Grid item xs={12}>
-            <Typography variant="subtitle2" color="text.secondary">Summary</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Summary
+            </Typography>
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
               {info.summary}
             </Typography>
@@ -430,54 +486,71 @@ const ViewResumePage: React.FC = () => {
       console.error('Error parsing career summary:', e);
       summary = data;
     }
-    
+
     // Determine job title to use - first check for explicitly set default_job_title
-    const jobTitle = summary.default_job_title || summary.job_title || (summary.job_titles && summary.job_titles.length > 0 ? summary.job_titles[0] : '');
-    
+    const jobTitle =
+      summary.default_job_title ||
+      summary.job_title ||
+      (summary.job_titles && summary.job_titles.length > 0 ? summary.job_titles[0] : '');
+
     // If we have all the necessary parts, display as a single sentence
     if (jobTitle && summary.years_of_experience && summary.default_summary) {
       return (
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-          A <Typography component="span" variant="body1" fontWeight="bold" display="inline">
+          A{' '}
+          <Typography component="span" variant="body1" fontWeight="bold" display="inline">
             {jobTitle}
-          </Typography> with <Typography component="span" variant="body1" fontWeight="bold" display="inline">
+          </Typography>{' '}
+          with{' '}
+          <Typography component="span" variant="body1" fontWeight="bold" display="inline">
             {summary.years_of_experience} years
-          </Typography> of experience {summary.default_summary}
+          </Typography>{' '}
+          of experience {summary.default_summary}
         </Typography>
       );
     }
-    
+
     // Fallback to the original display if we don't have all parts
     return (
       <Box>
         {summary.job_title && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Job Title</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Job Title
+            </Typography>
             <Typography variant="body2">{summary.job_title}</Typography>
           </Box>
         )}
-        
-        {summary.job_titles && Array.isArray(summary.job_titles) && summary.job_titles.length > 0 && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Professional Titles</Typography>
-            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-              {summary.job_titles.map((title: string, index: number) => (
-                <Chip key={index} label={title} size="small" />
-              ))}
-            </Stack>
-          </Box>
-        )}
-        
+
+        {summary.job_titles &&
+          Array.isArray(summary.job_titles) &&
+          summary.job_titles.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Professional Titles
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+                {summary.job_titles.map((title: string, index: number) => (
+                  <Chip key={index} label={title} size="small" />
+                ))}
+              </Stack>
+            </Box>
+          )}
+
         {summary.years_of_experience && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Experience</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Experience
+            </Typography>
             <Typography variant="body2">{summary.years_of_experience} years</Typography>
           </Box>
         )}
-        
+
         {summary.default_summary && (
           <Box>
-            <Typography variant="subtitle2" color="text.secondary">Professional Summary</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Professional Summary
+            </Typography>
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
               {summary.default_summary}
             </Typography>
@@ -518,20 +591,25 @@ const ViewResumePage: React.FC = () => {
         skills = [];
       }
     }
-    
+
     if (!Array.isArray(skills) || skills.length === 0) {
       return <Typography variant="body2">No skills information available</Typography>;
     }
-    
+
     // Filter out empty skill categories or ones without valid skills arrays
     const validSkillCategories = skills.filter(
-      category => category && category.category && category.skills && Array.isArray(category.skills) && category.skills.length > 0
+      (category) =>
+        category &&
+        category.category &&
+        category.skills &&
+        Array.isArray(category.skills) &&
+        category.skills.length > 0
     );
-    
+
     if (validSkillCategories.length === 0) {
       return <Typography variant="body2">No skills information available</Typography>;
     }
-    
+
     return (
       <Grid container spacing={2}>
         {validSkillCategories.map((skillCategory, index) => (
@@ -543,12 +621,7 @@ const ViewResumePage: React.FC = () => {
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {skillCategory.skills.map((skill: string, skillIndex: number) => (
-                    <Chip 
-                      key={skillIndex} 
-                      label={skill} 
-                      size="small"
-                      sx={{ margin: '2px' }}
-                    />
+                    <Chip key={skillIndex} label={skill} size="small" sx={{ margin: '2px' }} />
                   ))}
                 </Box>
               </CardContent>
@@ -585,20 +658,20 @@ const ViewResumePage: React.FC = () => {
         experiences = [];
       }
     }
-    
+
     if (!Array.isArray(experiences) || experiences.length === 0) {
       return <Typography variant="body2">No work experience information available</Typography>;
     }
-    
+
     // Filter out empty or invalid work experiences
     const validExperiences = experiences.filter(
-      job => job && (job.position || job.job_title) && job.company
+      (job) => job && (job.position || job.job_title) && job.company
     );
-    
+
     if (validExperiences.length === 0) {
       return <Typography variant="body2">No work experience information available</Typography>;
     }
-    
+
     return (
       <Box>
         {validExperiences.map((job, index) => (
@@ -609,7 +682,7 @@ const ViewResumePage: React.FC = () => {
                 {job.time || formatDateRange(job.start_date, job.end_date, job.current)}
               </Typography>
             </Box>
-            
+
             {/* Connector line */}
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pr: 2 }}>
               <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
@@ -619,7 +692,7 @@ const ViewResumePage: React.FC = () => {
                 <Box sx={{ width: '2px', bgcolor: 'divider', height: '100%', mt: '4px' }} />
               )}
             </Box>
-            
+
             {/* Content */}
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle2" component="span" color="primary">
@@ -637,31 +710,36 @@ const ViewResumePage: React.FC = () => {
                   </Box>
                 )}
               </Typography>
-              
+
               {job.description && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                   {job.description}
                 </Typography>
               )}
-              
-              {(job.achievements || job.responsibilities) && 
-               (job.achievements?.length > 0 || job.responsibilities?.length > 0) && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary" gutterBottom>
-                    Key Achievements:
-                  </Typography>
-                  <List dense sx={{ pl: 2, mt: 0.5 }}>
-                    {(job.achievements || job.responsibilities || []).map((achievement: string, achievementIndex: number) => (
-                      <ListItem key={achievementIndex} sx={{ py: 0, display: 'list-item', listStyleType: 'disc' }}>
-                        <ListItemText 
-                          primary={achievement} 
-                          primaryTypographyProps={{ variant: 'body2' }}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Box>
-              )}
+
+              {(job.achievements || job.responsibilities) &&
+                (job.achievements?.length > 0 || job.responsibilities?.length > 0) && (
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                      Key Achievements:
+                    </Typography>
+                    <List dense sx={{ pl: 2, mt: 0.5 }}>
+                      {(job.achievements || job.responsibilities || []).map(
+                        (achievement: string, achievementIndex: number) => (
+                          <ListItem
+                            key={achievementIndex}
+                            sx={{ py: 0, display: 'list-item', listStyleType: 'disc' }}
+                          >
+                            <ListItemText
+                              primary={achievement}
+                              primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                          </ListItem>
+                        )
+                      )}
+                    </List>
+                  </Box>
+                )}
             </Box>
           </Box>
         ))}
@@ -695,20 +773,20 @@ const ViewResumePage: React.FC = () => {
         education = [];
       }
     }
-    
+
     if (!Array.isArray(education) || education.length === 0) {
       return <Typography variant="body2">No education information available</Typography>;
     }
-    
+
     // Filter out empty or invalid education entries
     const validEducation = education.filter(
-      edu => edu && (edu.institution || edu.university_name) && (edu.degree || edu.field_of_study)
+      (edu) => edu && (edu.institution || edu.university_name) && (edu.degree || edu.field_of_study)
     );
-    
+
     if (validEducation.length === 0) {
       return <Typography variant="body2">No education information available</Typography>;
     }
-    
+
     return (
       <Box>
         {validEducation.map((edu, index) => (
@@ -719,7 +797,7 @@ const ViewResumePage: React.FC = () => {
                 {edu.time || formatDateRange(edu.start_date, edu.end_date, edu.current)}
               </Typography>
             </Box>
-            
+
             {/* Connector line */}
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pr: 2 }}>
               <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
@@ -729,13 +807,15 @@ const ViewResumePage: React.FC = () => {
                 <Box sx={{ width: '2px', bgcolor: 'divider', height: '100%', mt: '4px' }} />
               )}
             </Box>
-            
+
             {/* Content */}
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle2" component="span" color="primary">
-                {edu.degree_type ? `${edu.degree_type} in ${edu.degree}` : 
-                 edu.degree ? edu.degree : 
-                 `${edu.degree || edu.field_of_study || ''}`}
+                {edu.degree_type
+                  ? `${edu.degree_type} in ${edu.degree}`
+                  : edu.degree
+                    ? edu.degree
+                    : `${edu.degree || edu.field_of_study || ''}`}
               </Typography>
               <Typography variant="body2" component="div">
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
@@ -750,29 +830,34 @@ const ViewResumePage: React.FC = () => {
                 )}
                 {edu.GPA && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                    <Typography variant="body2" color="text.secondary">GPA: {edu.GPA}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      GPA: {edu.GPA}
+                    </Typography>
                   </Box>
                 )}
               </Typography>
-              
+
               {edu.description && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                   {edu.description}
                 </Typography>
               )}
-              
-              {(edu.courses || edu.transcript) && (edu.courses?.length > 0 || edu.transcript?.length > 0) && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary" gutterBottom>
-                    Relevant Courses:
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                    {(edu.courses || edu.transcript || []).map((course: string, courseIndex: number) => (
-                      <Chip key={courseIndex} label={course} size="small" variant="outlined" />
-                    ))}
+
+              {(edu.courses || edu.transcript) &&
+                (edu.courses?.length > 0 || edu.transcript?.length > 0) && (
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                      Relevant Courses:
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                      {(edu.courses || edu.transcript || []).map(
+                        (course: string, courseIndex: number) => (
+                          <Chip key={courseIndex} label={course} size="small" variant="outlined" />
+                        )
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-              )}
+                )}
             </Box>
           </Box>
         ))}
@@ -785,7 +870,7 @@ const ViewResumePage: React.FC = () => {
       return <Typography variant="body2">No project information available.</Typography>;
     }
 
-    const validProjects = data.filter(project => project && project.name);
+    const validProjects = data.filter((project) => project && project.name);
 
     if (validProjects.length === 0) {
       return <Typography variant="body2">No project information available</Typography>;
@@ -799,17 +884,35 @@ const ViewResumePage: React.FC = () => {
             <Grid item xs={12} key={index}>
               <Card variant="outlined">
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      mb: 1,
+                    }}
+                  >
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Typography variant="subtitle1" component="div" color="primary" sx={{ fontWeight: 'bold' }}>
+                      <Typography
+                        variant="subtitle1"
+                        component="div"
+                        color="primary"
+                        sx={{ fontWeight: 'bold' }}
+                      >
                         {project.name}
                       </Typography>
                       {projectLink && (
-                        <Tooltip title={projectLink.startsWith('http') ? "View Project" : projectLink}>
-                          <IconButton 
-                            size="small" 
-                            component="a" 
-                            href={projectLink.startsWith('http') ? projectLink : `https://${projectLink}`}
+                        <Tooltip
+                          title={projectLink.startsWith('http') ? 'View Project' : projectLink}
+                        >
+                          <IconButton
+                            size="small"
+                            component="a"
+                            href={
+                              projectLink.startsWith('http')
+                                ? projectLink
+                                : `https://${projectLink}`
+                            }
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{ ml: 1 }}
@@ -821,17 +924,18 @@ const ViewResumePage: React.FC = () => {
                     </Box>
                     {(project.date || project.start_date) && (
                       <Typography variant="caption" color="text.secondary">
-                        {project.date || formatDateRange(project.start_date, project.end_date, project.current)}
+                        {project.date ||
+                          formatDateRange(project.start_date, project.end_date, project.current)}
                       </Typography>
                     )}
                   </Box>
-                  
+
                   {project.description && (
                     <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-line' }}>
                       {project.description}
                     </Typography>
                   )}
-                  
+
                   {project.bullet_points && project.bullet_points.length > 0 && (
                     <Box sx={{ mt: 1 }}>
                       <Typography variant="caption" color="text.secondary" gutterBottom>
@@ -839,7 +943,16 @@ const ViewResumePage: React.FC = () => {
                       </Typography>
                       <List dense sx={{ pl: 2 }}>
                         {project.bullet_points.map((point: string, pointIdx: number) => (
-                          <ListItem key={pointIdx} sx={{ display: 'list-item', pl: 0, py: 0.2, listStyleType: 'disc', listStylePosition: 'inside' }}>
+                          <ListItem
+                            key={pointIdx}
+                            sx={{
+                              display: 'list-item',
+                              pl: 0,
+                              py: 0.2,
+                              listStyleType: 'disc',
+                              listStylePosition: 'inside',
+                            }}
+                          >
                             <Typography component="span" variant="body2">
                               {point}
                             </Typography>
@@ -851,7 +964,7 @@ const ViewResumePage: React.FC = () => {
 
                   {project.technologies && project.technologies.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                       <Typography variant="caption" color="text.secondary" gutterBottom>
+                      <Typography variant="caption" color="text.secondary" gutterBottom>
                         Technologies Used:
                       </Typography>
                       <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
@@ -872,20 +985,18 @@ const ViewResumePage: React.FC = () => {
 
   const renderCertifications = (data: any) => {
     const certifications = parseJsonContent(data);
-    
+
     if (!Array.isArray(certifications)) {
       return <Typography variant="body2">No certification information available</Typography>;
     }
-    
+
     // Filter out empty certifications
-    const validCertifications = certifications.filter(
-      cert => cert && cert.name && cert.issuer
-    );
-    
+    const validCertifications = certifications.filter((cert) => cert && cert.name && cert.issuer);
+
     if (validCertifications.length === 0) {
       return <Typography variant="body2">No certification information available</Typography>;
     }
-    
+
     return (
       <Grid container spacing={2}>
         {validCertifications.map((cert, index) => (
@@ -903,16 +1014,16 @@ const ViewResumePage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <CalendarIcon fontSize="small" color="action" />
                     <Typography variant="body2">
-                      {new Date(cert.date).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'short'
+                      {new Date(cert.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
                       })}
                     </Typography>
                   </Box>
                   {cert.url && (
-                    <Link 
-                      href={cert.url} 
-                      target="_blank" 
+                    <Link
+                      href={cert.url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}
                     >
@@ -937,7 +1048,7 @@ const ViewResumePage: React.FC = () => {
   const renderAwards = (data: any) => {
     // Awards may come in various formats
     let awards = [];
-    
+
     try {
       if (Array.isArray(data)) {
         // Handle the nested array format shown in the example data
@@ -970,20 +1081,18 @@ const ViewResumePage: React.FC = () => {
       console.error('Error parsing awards:', e);
       awards = [];
     }
-    
+
     if (!Array.isArray(awards) || awards.length === 0) {
       return <Typography variant="body2">No awards information available</Typography>;
     }
-    
+
     // Filter out empty awards
-    const validAwards = awards.filter(
-      award => award && (award.title || award.name)
-    );
-    
+    const validAwards = awards.filter((award) => award && (award.title || award.name));
+
     if (validAwards.length === 0) {
       return <Typography variant="body2">No awards information available</Typography>;
     }
-    
+
     return (
       <List disablePadding>
         {validAwards.map((award, index) => (
@@ -1002,11 +1111,12 @@ const ViewResumePage: React.FC = () => {
                     <>
                       {' — '}
                       <Typography component="span" variant="body2">
-                        {typeof award.date === 'string' && award.date.length > 4 ? 
-                         new Date(award.date).toLocaleDateString('en-US', { 
-                           year: 'numeric', 
-                           month: 'short'
-                         }) : award.date}
+                        {typeof award.date === 'string' && award.date.length > 4
+                          ? new Date(award.date).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                            })
+                          : award.date}
                       </Typography>
                     </>
                   )}
@@ -1027,7 +1137,7 @@ const ViewResumePage: React.FC = () => {
   const renderPublications = (data: any) => {
     // Publications may come in various formats
     let publications = [];
-    
+
     try {
       if (Array.isArray(data)) {
         // Handle the nested array format shown in the example data
@@ -1060,20 +1170,20 @@ const ViewResumePage: React.FC = () => {
       console.error('Error parsing publications:', e);
       publications = [];
     }
-    
+
     if (!Array.isArray(publications) || publications.length === 0) {
       return <Typography variant="body2">No publications information available</Typography>;
     }
-    
+
     // Filter out empty publications
     const validPublications = publications.filter(
-      pub => pub && (pub.title || pub.name) && pub.publisher
+      (pub) => pub && (pub.title || pub.name) && pub.publisher
     );
-    
+
     if (validPublications.length === 0) {
       return <Typography variant="body2">No publications information available</Typography>;
     }
-    
+
     return (
       <List disablePadding>
         {validPublications.map((pub, index) => (
@@ -1086,10 +1196,10 @@ const ViewResumePage: React.FC = () => {
                 <Typography variant="subtitle2">
                   {pub.title || pub.name}
                   {(pub.url || pub.link) && (
-                    <IconButton 
-                      size="small" 
-                      component="a" 
-                      href={pub.url || pub.link} 
+                    <IconButton
+                      size="small"
+                      component="a"
+                      href={pub.url || pub.link}
                       target="_blank"
                       sx={{ ml: 1 }}
                     >
@@ -1107,11 +1217,13 @@ const ViewResumePage: React.FC = () => {
                     <>
                       {' — '}
                       <Typography component="span" variant="body2">
-                        {typeof (pub.date || pub.time) === 'string' && (pub.date || pub.time).length > 4 ? 
-                         new Date(pub.date || pub.time).toLocaleDateString('en-US', { 
-                           year: 'numeric', 
-                           month: 'short'
-                         }) : (pub.date || pub.time)}
+                        {typeof (pub.date || pub.time) === 'string' &&
+                        (pub.date || pub.time).length > 4
+                          ? new Date(pub.date || pub.time).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                            })
+                          : pub.date || pub.time}
                       </Typography>
                     </>
                   )}
@@ -1137,41 +1249,59 @@ const ViewResumePage: React.FC = () => {
   // Render sections based on content type
   const renderSection = (title: string, content: any) => {
     if (!content) return null;
-    
+
     return (
       <Paper elevation={0} sx={{ mb: 2, p: 2, backgroundColor: '#f9f9f9' }}>
-        <Typography variant="h6" component="div" gutterBottom color="primary" sx={{ fontSize: '1.1rem' }}>
+        <Typography
+          variant="h6"
+          component="div"
+          gutterBottom
+          color="primary"
+          sx={{ fontSize: '1.1rem' }}
+        >
           {title}
         </Typography>
         <Divider sx={{ mb: 1.5 }} />
 
         {/* Render the content based on section type */}
-        {title === 'Personal Information' ? renderPersonalInformation(content) :
-         title === 'Career Summary' ? renderCareerSummary(content) :
-         title === 'Skills' ? renderSkills(content) :
-         title === 'Work Experience' ? renderWorkExperience(content) :
-         title === 'Education' ? renderEducation(content) :
-         title === 'Projects' ? renderProjects(content) :
-         title === 'Certifications' ? renderCertifications(content) :
-         title === 'Awards' ? renderAwards(content) :
-         title === 'Publications' ? renderPublications(content) :
-         // Fallback to the original JSON display if no specialized renderer exists
-         typeof content === 'string' ? (
+        {title === 'Personal Information' ? (
+          renderPersonalInformation(content)
+        ) : title === 'Career Summary' ? (
+          renderCareerSummary(content)
+        ) : title === 'Skills' ? (
+          renderSkills(content)
+        ) : title === 'Work Experience' ? (
+          renderWorkExperience(content)
+        ) : title === 'Education' ? (
+          renderEducation(content)
+        ) : title === 'Projects' ? (
+          renderProjects(content)
+        ) : title === 'Certifications' ? (
+          renderCertifications(content)
+        ) : title === 'Awards' ? (
+          renderAwards(content)
+        ) : title === 'Publications' ? (
+          renderPublications(content)
+        ) : // Fallback to the original JSON display if no specialized renderer exists
+        typeof content === 'string' ? (
           <Typography variant="body2" whiteSpace="pre-wrap">
             {content}
           </Typography>
-         ) : (
-          <Box component="pre" sx={{ 
-            overflow: 'auto', 
-            maxHeight: '250px',
-            backgroundColor: '#f5f5f5',
-            p: 1,
-            borderRadius: 1,
-            fontSize: '0.8rem'
-          }}>
+        ) : (
+          <Box
+            component="pre"
+            sx={{
+              overflow: 'auto',
+              maxHeight: '250px',
+              backgroundColor: '#f5f5f5',
+              p: 1,
+              borderRadius: 1,
+              fontSize: '0.8rem',
+            }}
+          >
             {JSON.stringify(parseJsonContent(content), null, 2)}
           </Box>
-         )}
+        )}
       </Paper>
     );
   };
@@ -1209,86 +1339,70 @@ const ViewResumePage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ 
-      width: '100%', 
-      p: 3, 
-      pl: { xs: 2, md: 3 },
-      pt: 2
-    }}>
+    <Box
+      sx={{
+        width: '100%',
+        p: 3,
+        pl: { xs: 2, md: 3 },
+        pt: 2,
+      }}
+    >
       {/* Breadcrumbs Navigation */}
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link 
-          underline="hover" 
-          color="inherit" 
-          onClick={handleBack} 
-          sx={{ cursor: 'pointer' }}
-        >
+        <Link underline="hover" color="inherit" onClick={handleBack} sx={{ cursor: 'pointer' }}>
           Resumes
         </Link>
         <Typography color="text.primary">{resume.title}</Typography>
       </Breadcrumbs>
-      
+
       {/* Header with Title and Actions */}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'flex-start', 
-        mb: 3,
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          mb: 3,
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+        }}
+      >
         <Box sx={{ maxWidth: { xs: '100%', md: '60%' } }}>
           <Typography variant="h4" component="h1" gutterBottom>
             {resume.title}
           </Typography>
           <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap', gap: 0.5 }}>
             {resume.job_title && (
-              <Chip 
-                label={resume.job_title} 
-                color="primary" 
-                variant="outlined" 
-                size="small" 
-              />
+              <Chip label={resume.job_title} color="primary" variant="outlined" size="small" />
             )}
-            {resume.company_name && (
-              <Chip 
-                label={resume.company_name} 
-                size="small" 
-              />
-            )}
+            {resume.company_name && <Chip label={resume.company_name} size="small" />}
           </Stack>
           <Typography variant="body2" color="text.secondary">
             Last updated: {formatDate(resume.updated_at)}
           </Typography>
         </Box>
-        
-        <Stack 
-          direction={{ xs: 'row', sm: 'row' }} 
-          spacing={1} 
-          sx={{ 
-            flexWrap: 'wrap', 
+
+        <Stack
+          direction={{ xs: 'row', sm: 'row' }}
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
             gap: 1,
             width: { xs: '100%', md: 'auto' },
-            justifyContent: { xs: 'flex-start', md: 'flex-end' }
+            justifyContent: { xs: 'flex-start', md: 'flex-end' },
           }}
         >
-          <Button 
-            variant="outlined" 
-            startIcon={<ArrowBackIcon />} 
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
             onClick={handleBack}
             size="small"
           >
             Back
           </Button>
-          <Button 
-            variant="outlined" 
-            startIcon={<EditIcon />} 
-            onClick={handleEdit}
-            size="small"
-          >
+          <Button variant="outlined" startIcon={<EditIcon />} onClick={handleEdit} size="small">
             Edit
           </Button>
-          <Button 
+          <Button
             variant="outlined"
             startIcon={regeneratingContent ? <CircularProgress size={16} /> : <AutoFixHighIcon />}
             onClick={handleRegenerateContent}
@@ -1297,26 +1411,32 @@ const ViewResumePage: React.FC = () => {
           >
             {regeneratingContent ? 'Regenerating...' : 'Regenerate Content'}
           </Button>
-          <Button 
+          <Button
             variant="outlined"
-            color="error" 
-            startIcon={<DeleteIcon />} 
+            color="error"
+            startIcon={<DeleteIcon />}
             onClick={handleDeleteClick}
             size="small"
           >
             Delete
           </Button>
-          <Button 
-            variant="outlined" 
-            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <VisibilityIcon />}
+          <Button
+            variant="outlined"
+            startIcon={
+              generatingPdf && !pdfPreview.open ? (
+                <CircularProgress size={16} />
+              ) : (
+                <VisibilityIcon />
+              )
+            }
             onClick={handleViewPdf}
             disabled={generatingPdf}
             size="small"
           >
             {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             startIcon={generatingPdf ? <CircularProgress size={16} /> : <PdfIcon />}
             onClick={handleDownloadPdf}
             disabled={generatingPdf}
@@ -1326,7 +1446,7 @@ const ViewResumePage: React.FC = () => {
           </Button>
         </Stack>
       </Box>
-      
+
       {/* Main Content */}
       <Box sx={{ width: '100%' }}>
         {/* Resume Details */}
@@ -1335,102 +1455,112 @@ const ViewResumePage: React.FC = () => {
             Resume Details
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' },
-            gap: 2
-          }}>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' },
+              gap: 2,
+            }}
+          >
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">Template</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Template
+              </Typography>
               <Typography variant="body2">{resume.template_id}</Typography>
             </Box>
-            
+
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">Created</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Created
+              </Typography>
               <Typography variant="body2">{formatDate(resume.created_at)}</Typography>
             </Box>
-            
+
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">Updated</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Updated
+              </Typography>
               <Typography variant="body2">{formatDate(resume.updated_at)}</Typography>
             </Box>
           </Box>
-              
+
           {resume.job_description_url && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Job Description URL</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Job Description URL
+              </Typography>
               <Link href={resume.job_description_url} target="_blank" rel="noopener noreferrer">
                 {resume.job_description_url}
               </Link>
             </Box>
           )}
-              
+
           {resume.job_description && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Job Description</Typography>
-              <Box sx={{ 
-                maxHeight: jobDescriptionExpanded ? 'none' : '100px',
-                overflow: jobDescriptionExpanded ? 'visible' : 'hidden',
-                position: 'relative',
-                pr: jobDescriptionExpanded ? 0 : '20px',
-                '&:after': {
-                  content: '""',
-                  position: jobDescriptionExpanded ? 'static' : 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  height: jobDescriptionExpanded ? 0 : '30px',
-                  background: jobDescriptionExpanded ? 'none' : 'linear-gradient(to bottom, rgba(249,249,249,0), rgba(249,249,249,1))'
-                }
-              }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Job Description
+              </Typography>
+              <Box
+                sx={{
+                  maxHeight: jobDescriptionExpanded ? 'none' : '100px',
+                  overflow: jobDescriptionExpanded ? 'visible' : 'hidden',
+                  position: 'relative',
+                  pr: jobDescriptionExpanded ? 0 : '20px',
+                  '&:after': {
+                    content: '""',
+                    position: jobDescriptionExpanded ? 'static' : 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    height: jobDescriptionExpanded ? 0 : '30px',
+                    background: jobDescriptionExpanded
+                      ? 'none'
+                      : 'linear-gradient(to bottom, rgba(249,249,249,0), rgba(249,249,249,1))',
+                  },
+                }}
+              >
                 <ReactMarkdown>{resume.job_description}</ReactMarkdown>
               </Box>
-              <Button 
-                size="small" 
-                sx={{ mt: 0.5 }} 
+              <Button
+                size="small"
+                sx={{ mt: 0.5 }}
                 onClick={handleToggleJobDescription}
-                endIcon={jobDescriptionExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                endIcon={
+                  jobDescriptionExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
+                }
               >
                 {jobDescriptionExpanded ? 'Show less' : 'View full description'}
               </Button>
             </Box>
           )}
         </Paper>
-        
-        {resume.content?.personal_information && 
+
+        {resume.content?.personal_information &&
           renderSection('Personal Information', resume.content.personal_information)}
-          
-        {resume.content?.career_summary && 
+
+        {resume.content?.career_summary &&
           renderSection('Career Summary', resume.content.career_summary)}
-          
-        {resume.content?.skills && 
-          renderSection('Skills', resume.content.skills)}
-          
-        {resume.content?.work_experience && 
+
+        {resume.content?.skills && renderSection('Skills', resume.content.skills)}
+
+        {resume.content?.work_experience &&
           renderSection('Work Experience', resume.content.work_experience)}
-          
-        {resume.content?.education && 
-          renderSection('Education', resume.content.education)}
-          
-        {resume.content?.projects && 
-          renderSection('Projects', resume.content.projects)}
-          
-        {resume.content?.certifications && 
+
+        {resume.content?.education && renderSection('Education', resume.content.education)}
+
+        {resume.content?.projects && renderSection('Projects', resume.content.projects)}
+
+        {resume.content?.certifications &&
           renderSection('Certifications', resume.content.certifications)}
-          
-        {resume.content?.awards && 
-          renderSection('Awards', resume.content.awards)}
-          
-        {resume.content?.publications && 
-          renderSection('Publications', resume.content.publications)}
+
+        {resume.content?.awards && renderSection('Awards', resume.content.awards)}
+
+        {resume.content?.publications && renderSection('Publications', resume.content.publications)}
       </Box>
-      
+
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-      >
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Resume</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -1441,9 +1571,9 @@ const ViewResumePage: React.FC = () => {
           <Button onClick={handleDeleteCancel} disabled={deletingResume}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             disabled={deletingResume}
             startIcon={deletingResume ? <CircularProgress size={16} /> : <DeleteIcon />}
           >
@@ -1451,7 +1581,7 @@ const ViewResumePage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={`${resume?.title || 'Resume'} PDF Preview`}
@@ -1474,9 +1604,13 @@ const ViewResumePage: React.FC = () => {
                   if (pdfPreview.pdfUrl?.startsWith('http')) {
                     const fetchedResponse = await fetch(pdfPreview.pdfUrl);
                     if (!fetchedResponse.ok) {
-                      setGenerationErrorMessage(`Failed to fetch PDF for download: ${fetchedResponse.statusText}`);
+                      setGenerationErrorMessage(
+                        `Failed to fetch PDF for download: ${fetchedResponse.statusText}`
+                      );
                       setGenerationErrorDialogOpen(true);
-                      throw new Error(`Failed to fetch PDF from URL: ${fetchedResponse.statusText}`);
+                      throw new Error(
+                        `Failed to fetch PDF from URL: ${fetchedResponse.statusText}`
+                      );
                     }
                     const blob = await fetchedResponse.blob();
                     const objectUrl = window.URL.createObjectURL(blob);
@@ -1493,7 +1627,8 @@ const ViewResumePage: React.FC = () => {
                 } catch (e: unknown) {
                   console.error('Error downloading PDF from modal:', e);
                   if (!generationErrorDialogOpen) {
-                    const message = e instanceof Error ? e.message : 'Error downloading PDF from modal.';
+                    const message =
+                      e instanceof Error ? e.message : 'Error downloading PDF from modal.';
                     setGenerationErrorMessage(message);
                     setGenerationErrorDialogOpen(true);
                   }
@@ -1518,24 +1653,19 @@ const ViewResumePage: React.FC = () => {
       />
 
       {/* PDF Generation Error Dialog */}
-      <Dialog
-        open={generationErrorDialogOpen}
-        onClose={() => setGenerationErrorDialogOpen(false)}
-      >
+      <Dialog open={generationErrorDialogOpen} onClose={() => setGenerationErrorDialogOpen(false)}>
         <DialogTitle>Resume Generation Error</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {generationErrorMessage || "An unexpected error occurred while generating the resume."}
+            {generationErrorMessage || 'An unexpected error occurred while generating the resume.'}
           </DialogContentText>
           <DialogContentText sx={{ mt: 2 }}>
             If the problem persists, please contact support.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setGenerationErrorDialogOpen(false)}>
-            Close
-          </Button>
-          <Button 
+          <Button onClick={() => setGenerationErrorDialogOpen(false)}>Close</Button>
+          <Button
             href="mailto:admin@yarba.app?subject=Resume%20Generation%20Error"
             variant="contained"
           >
@@ -1547,4 +1677,4 @@ const ViewResumePage: React.FC = () => {
   );
 };
 
-export default ViewResumePage; 
+export default ViewResumePage;

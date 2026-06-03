@@ -24,16 +24,20 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 import { createCoverLetter } from '../../services/coverLetterService';
 import { useResumesForSelection } from '../../hooks/useResumes';
 import { ResumeForSelection } from '../../types/models';
-import { Refresh as RefreshIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+  Refresh as RefreshIcon,
+  Search as SearchIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
 
 const CoverLetterNewPage: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // State
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,9 +72,7 @@ const CoverLetterNewPage: React.FC = () => {
     if (!modalSearchTerm) {
       return items;
     }
-    return items.filter((r) =>
-      r.resume_name.toLowerCase().includes(modalSearchTerm.toLowerCase())
-    );
+    return items.filter((r) => r.resume_name.toLowerCase().includes(modalSearchTerm.toLowerCase()));
   }, [modalResumesData?.resumes, modalSearchTerm]);
 
   const modalError =
@@ -88,39 +90,39 @@ const CoverLetterNewPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: { resumeId?: string } = {};
-    
+
     if (!selectedResumeId) {
       newErrors.resumeId = 'Please select a resume using the button above.';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       // Create the request based on the API specification
       const coverLetterData = {
         resume_id: selectedResumeId,
-        generate_pdf: generatePdf
+        generate_pdf: generatePdf,
       };
-      
+
       const newCoverLetter = await createCoverLetter(coverLetterData);
-      
+
       // Navigate to the cover letter view page
       navigate(`/cover-letters/${newCoverLetter.id}`);
     } catch (err: any) {
       console.error('Failed to create cover letter:', err);
-      
+
       // Extract error message from response
       let errorMsg = 'Failed to create cover letter. Please try again.';
       if (err.response?.data?.detail) {
@@ -130,7 +132,7 @@ const CoverLetterNewPage: React.FC = () => {
       } else if (err.message) {
         errorMsg = err.message;
       }
-      
+
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -148,7 +150,7 @@ const CoverLetterNewPage: React.FC = () => {
     setIsModalOpen(false); // Close modal on selection
     setModalSearchTerm(''); // Reset modal search
     if (errors.resumeId) {
-      setErrors(prev => ({ ...prev, resumeId: undefined })); // Clear validation error
+      setErrors((prev) => ({ ...prev, resumeId: undefined })); // Clear validation error
     }
   };
 
@@ -158,17 +160,17 @@ const CoverLetterNewPage: React.FC = () => {
         <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
           Create New Cover Letter
         </Typography>
-        
+
         <Divider sx={{ mb: 4 }} />
-        
+
         {error && !resumesLoading && (
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             sx={{ mb: 3 }}
             action={
-              <Button 
-                color="inherit" 
-                size="small" 
+              <Button
+                color="inherit"
+                size="small"
                 onClick={() => refetchResumes()}
                 startIcon={<RefreshIcon />}
               >
@@ -179,64 +181,68 @@ const CoverLetterNewPage: React.FC = () => {
             {error}
           </Alert>
         )}
-        
+
         {resumesLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px', mb: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100px',
+              mb: 3,
+            }}
+          >
             <CircularProgress />
             <Typography sx={{ ml: 2 }}>Loading Resumes...</Typography>
           </Box>
         )}
-        
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: resumesLoading || (error && resumes.length === 0) ? 'none' : 'block' }}>
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: resumesLoading || (error && resumes.length === 0) ? 'none' : 'block' }}
+        >
           <Typography variant="subtitle1" gutterBottom>
             Base your cover letter on an existing resume
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Select a resume to use as the basis for your cover letter. The job details, your profile, and portfolio information will be automatically extracted.
+            Select a resume to use as the basis for your cover letter. The job details, your
+            profile, and portfolio information will be automatically extracted.
           </Typography>
-          
+
           <FormControl fullWidth margin="normal" required error={!!errors.resumeId}>
-             <InputLabel shrink htmlFor="selected-resume-display">Selected Resume</InputLabel>
-             <Box
-                id="selected-resume-display"
-                sx={{
-                    p: 2,
-                    border: 1,
-                    borderColor: errors.resumeId ? 'error.main' : 'grey.400',
-                    borderRadius: 1,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    minHeight: '56px', // Match TextField height
-                    mt: 3 // Adjust margin to align with label
-                }}
-             >
-                <Typography variant="body1" sx={{ color: selectedResume ? 'text.primary' : 'text.disabled' }}>
-                    {selectedResume ? selectedResume.resume_name : 'None selected'}
-                </Typography>
-                <Button
-                    variant="outlined"
-                    onClick={() => setIsModalOpen(true)}
-                    size="small"
-                >
-                    Select Resume
-                </Button>
-             </Box>
-             {errors.resumeId && <FormHelperText>{errors.resumeId}</FormHelperText>}
-          </FormControl>
-          
-          <Stack 
-            direction="row" 
-            spacing={2} 
-            justifyContent="flex-end"
-            sx={{ mt: 4 }}
-          >
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleCancel}
-              disabled={loading}
+            <InputLabel shrink htmlFor="selected-resume-display">
+              Selected Resume
+            </InputLabel>
+            <Box
+              id="selected-resume-display"
+              sx={{
+                p: 2,
+                border: 1,
+                borderColor: errors.resumeId ? 'error.main' : 'grey.400',
+                borderRadius: 1,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                minHeight: '56px', // Match TextField height
+                mt: 3, // Adjust margin to align with label
+              }}
             >
+              <Typography
+                variant="body1"
+                sx={{ color: selectedResume ? 'text.primary' : 'text.disabled' }}
+              >
+                {selectedResume ? selectedResume.resume_name : 'None selected'}
+              </Typography>
+              <Button variant="outlined" onClick={() => setIsModalOpen(true)} size="small">
+                Select Resume
+              </Button>
+            </Box>
+            {errors.resumeId && <FormHelperText>{errors.resumeId}</FormHelperText>}
+          </FormControl>
+
+          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 4 }}>
+            <Button variant="outlined" color="secondary" onClick={handleCancel} disabled={loading}>
               Cancel
             </Button>
             <Button
@@ -253,7 +259,9 @@ const CoverLetterNewPage: React.FC = () => {
 
       {/* Resume Selection Modal */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle
+          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
           Select Resume
           <IconButton onClick={() => setIsModalOpen(false)} size="small">
             <CloseIcon />
@@ -303,13 +311,20 @@ const CoverLetterNewPage: React.FC = () => {
             <List dense>
               {modalResumes.length > 0 ? (
                 modalResumes.map((resume) => (
-                  <ListItemButton key={resume.id} onClick={() => handleSelectResumeFromModal(resume)}>
+                  <ListItemButton
+                    key={resume.id}
+                    onClick={() => handleSelectResumeFromModal(resume)}
+                  >
                     <ListItemText primary={resume.resume_name} />
                   </ListItemButton>
                 ))
               ) : (
                 <ListItem>
-                  <ListItemText primary={modalSearchTerm ? "No resumes match your search." : "No resumes found."} />
+                  <ListItemText
+                    primary={
+                      modalSearchTerm ? 'No resumes match your search.' : 'No resumes found.'
+                    }
+                  />
                 </ListItem>
               )}
             </List>
@@ -319,9 +334,8 @@ const CoverLetterNewPage: React.FC = () => {
           <Button onClick={() => setIsModalOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
-
     </Box>
   );
 };
 
-export default CoverLetterNewPage; 
+export default CoverLetterNewPage;

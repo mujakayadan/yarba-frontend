@@ -1,6 +1,18 @@
 import Grid from '../../mui/Grid';
 import React, { useState, useCallback, useEffect } from 'react';
-import { Box, Button, Divider, Link, Paper, TextField, Typography, CircularProgress, Alert, InputAdornment, IconButton } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  Link,
+  Paper,
+  TextField,
+  Typography,
+  CircularProgress,
+  Alert,
+  InputAdornment,
+  IconButton,
+} from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -29,20 +41,20 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const [showPassword, setShowPassword] = useState(false);
 
   // Auth context
-  const { 
-    login, 
-    register, 
+  const {
+    login,
+    register,
     signInWithGoogleFlow,
-    error: contextError, 
+    error: contextError,
     setError,
     isOfflineMode,
     isAuthenticated,
-    getRedirectPathForUser
+    getRedirectPathForUser,
   } = useAuth();
 
   // Navigation
   const navigate = useNavigate();
-  
+
   // Get offline state from location if passed
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
@@ -81,19 +93,19 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     setLocalError(null);
     setError(null);
   }, [setError]);
-  
+
   // Handle form submission for login or register
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
     setError(null);
-    
+
     // Check for offline mode first
     if (isOffline) {
       setLocalError('Cannot authenticate while offline. Please check your internet connection.');
       return;
     }
-    
+
     if (!email || !password) {
       setLocalError('Please fill in all required fields');
       return;
@@ -114,7 +126,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         debug.log('Attempting to log in');
         await login(email, password);
         debug.log('Login successful');
-        
+
         // Navigate to the appropriate route based on user state
         const redirectPath = getRedirectPathForUser();
         debug.log(`Navigating to ${redirectPath} after login`);
@@ -123,7 +135,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         debug.log('Attempting to register');
         const { setupRoute } = await register(email, password);
         debug.log('Registration successful');
-        
+
         // Navigate directly to the setup route or dashboard
         debug.log(`Navigating to ${setupRoute} after registration`);
         navigate(setupRoute, { replace: true });
@@ -140,19 +152,21 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   // Handle Google sign-in
   const handleGoogleSignIn = async () => {
     if (isOffline) {
-      setLocalError('Cannot authenticate with Google while offline. Please check your internet connection.');
+      setLocalError(
+        'Cannot authenticate with Google while offline. Please check your internet connection.'
+      );
       return;
     }
-    
+
     debug.log('Attempting Google sign-in');
     setLocalError(null);
     setError(null);
     setIsSubmitting(true);
-    
+
     try {
       const { isNewUser, setupRoute } = await signInWithGoogleFlow();
       debug.log('Google sign-in successful. isNewUser:', isNewUser);
-      
+
       // Navigate to the appropriate route
       const navigateTo = setupRoute || getRedirectPathForUser();
       debug.log(`Navigating to ${navigateTo} after Google sign-in`);
@@ -184,7 +198,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
 
   // Show error if exists
   const errorMessage = localError || contextError;
-  
+
   // Display offline mode message
   if (isOffline) {
     return (
@@ -192,96 +206,107 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         <Typography variant="h5" component="h1" align="center" gutterBottom>
           {mode === 'login' ? 'Sign In' : 'Create an Account'}
         </Typography>
-        
+
         <Alert severity="warning" sx={{ mb: 2 }}>
           You appear to be offline. Authentication requires an internet connection.
         </Alert>
-        
+
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Please check your internet connection and try again. If you believe this is an error, 
-          try refreshing the page once your connection is restored.
+          Please check your internet connection and try again. If you believe this is an error, try
+          refreshing the page once your connection is restored.
         </Typography>
       </Paper>
     );
   }
 
   return (
-    <Grid container spacing={0} sx={{ maxWidth: 900, mx: 'auto', boxShadow: 3, borderRadius: 1, overflow: 'hidden' }}>
-      <Grid 
-        item 
-        xs={12} 
+    <Grid
+      container
+      spacing={0}
+      sx={{ maxWidth: 900, mx: 'auto', boxShadow: 3, borderRadius: 1, overflow: 'hidden' }}
+    >
+      <Grid
+        item
+        xs={12}
         md={6}
-        sx={{ 
+        sx={{
           display: 'block',
-          order: { xs: 2, md: 1 }
+          order: { xs: 2, md: 1 },
         }}
       >
-        <Box sx={{ 
-          aspectRatio: mode === 'login' ? '1/1' : '2/3',
-          borderRight: { xs: 'none', md: '1px solid rgba(0, 0, 0, 0.12)' },
-          borderTop: { xs: '1px solid rgba(0, 0, 0, 0.12)', md: 'none' },
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          width: '100%',
-          minHeight: { xs: '200px', sm: '300px', md: 'auto' },
-          height: { md: '100%' },
-          p: 0
-        }}>
-          <img 
-            src={mode === 'login' ? "/login_resume.webp" : "/register_cover_letter.webp"} 
-            alt={mode === 'login' ? "Login" : "Register"} 
-            style={{ 
+        <Box
+          sx={{
+            aspectRatio: mode === 'login' ? '1/1' : '2/3',
+            borderRight: { xs: 'none', md: '1px solid rgba(0, 0, 0, 0.12)' },
+            borderTop: { xs: '1px solid rgba(0, 0, 0, 0.12)', md: 'none' },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            width: '100%',
+            minHeight: { xs: '200px', sm: '300px', md: 'auto' },
+            height: { md: '100%' },
+            p: 0,
+          }}
+        >
+          <img
+            src={mode === 'login' ? '/login_resume.webp' : '/register_cover_letter.webp'}
+            alt={mode === 'login' ? 'Login' : 'Register'}
+            style={{
               maxWidth: '100%',
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              display: 'block'
+              display: 'block',
             }}
           />
         </Box>
       </Grid>
-      <Grid 
-        item 
-        xs={12} 
-        md={6} 
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'stretch',
-          order: { xs: 1, md: 2 }
-        }}
-      >
-        <Box sx={{ 
-          width: '100%',
+      <Grid
+        item
+        xs={12}
+        md={6}
+        sx={{
           display: 'flex',
           alignItems: 'stretch',
-          height: '100%'
-        }}>
-          <Paper elevation={0} sx={{ 
-            p: 4, 
-            width: '100%', 
-            borderRadius: 0,
+          order: { xs: 1, md: 2 },
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start'
-          }}>
+            alignItems: 'stretch',
+            height: '100%',
+          }}
+        >
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              width: '100%',
+              borderRadius: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+            }}
+          >
             <Typography variant="h5" component="h1" align="center" gutterBottom>
               {mode === 'login' ? 'Sign In' : 'Create an Account'}
             </Typography>
 
             {errorMessage && (
               <Box sx={{ mb: 2, width: '100%' }}>
-                <Alert 
-                  severity="error" 
+                <Alert
+                  severity="error"
                   icon={<ErrorOutlineIcon fontSize="inherit" />}
-                  sx={{ 
+                  sx={{
                     width: '100%',
                     '.MuiAlert-message': {
-                      width: '100%', 
+                      width: '100%',
                       textAlign: 'center',
-                      fontWeight: 500
-                    }
+                      fontWeight: 500,
+                    },
                   }}
                 >
                   {errorMessage}
@@ -306,7 +331,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                     error={!!localError && email === ''}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -362,12 +387,16 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                           ),
                         }}
                         error={confirmPassword !== '' && password !== confirmPassword}
-                        helperText={confirmPassword !== '' && password !== confirmPassword ? 'Passwords do not match' : ''}
+                        helperText={
+                          confirmPassword !== '' && password !== confirmPassword
+                            ? 'Passwords do not match'
+                            : ''
+                        }
                       />
                     </Grid>
                   </>
                 )}
-                
+
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -405,12 +434,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
               </Button>
 
               <Box sx={{ textAlign: 'right', mt: 1 }}>
-                <Link
-                  component="button"
-                  variant="body2"
-                  onClick={toggleMode}
-                  type="button"
-                >
+                <Link component="button" variant="body2" onClick={toggleMode} type="button">
                   {mode === 'login'
                     ? "Don't have an account? Sign Up"
                     : 'Already have an account? Sign In'}
@@ -436,4 +460,4 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   );
 };
 
-export default FirebaseAuth; 
+export default FirebaseAuth;

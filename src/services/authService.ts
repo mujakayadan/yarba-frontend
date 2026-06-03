@@ -57,7 +57,9 @@ export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | nul
   const now = Date.now();
   if (lastTokenExchangeError && now - lastTokenExchangeTime < TOKEN_RETRY_DELAY) {
     const timeRemaining = Math.round((TOKEN_RETRY_DELAY - (now - lastTokenExchangeTime)) / 1000);
-    debug.warn(`Token exchange recently failed, waiting before retry (${timeRemaining}s remaining)`);
+    debug.warn(
+      `Token exchange recently failed, waiting before retry (${timeRemaining}s remaining)`
+    );
     throw lastTokenExchangeError;
   }
 
@@ -82,7 +84,11 @@ export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | nul
     debug.error('Error exchanging Firebase token:', error);
 
     lastTokenExchangeError =
-      error instanceof Error ? error : new Error(error instanceof Object && 'message' in error ? String(error.message) : 'Unknown error');
+      error instanceof Error
+        ? error
+        : new Error(
+            error instanceof Object && 'message' in error ? String(error.message) : 'Unknown error'
+          );
 
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(`Backend error: ${error.response.data?.detail || error.message}`);
@@ -220,8 +226,12 @@ export const getCurrentUser = async (): Promise<User> => {
   return response.data;
 };
 
-export const changePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
-  const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import('firebase/auth');
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<void> => {
+  const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } =
+    await import('firebase/auth');
   const auth = await getFirebaseAuth();
   const user = auth.currentUser;
 

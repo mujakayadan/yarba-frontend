@@ -1,12 +1,26 @@
 import Grid from '../../mui/Grid';
 import React from 'react';
-import { Container, Typography, Box, Card, CardContent, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, Button, TextField } from '@mui/material';
-import { 
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  TextField,
+} from '@mui/material';
+import {
   Email as EmailIcon,
   Help as HelpIcon,
   QuestionAnswer as FaqIcon,
   Chat as ChatIcon,
-  PhoneCallback as CallbackIcon
+  PhoneCallback as CallbackIcon,
 } from '@mui/icons-material';
 
 const SupportPage: React.FC = () => {
@@ -35,8 +49,8 @@ const SupportPage: React.FC = () => {
                 <ListItemIcon>
                   <EmailIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Email Support" 
+                <ListItemText
+                  primary="Email Support"
                   secondary="Send us an email at support@yarba.ai for assistance"
                 />
               </ListItem>
@@ -44,8 +58,8 @@ const SupportPage: React.FC = () => {
                 <ListItemIcon>
                   <ChatIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Live Chat" 
+                <ListItemText
+                  primary="Live Chat"
                   secondary="Chat with our support team during business hours"
                 />
               </ListItem>
@@ -53,17 +67,11 @@ const SupportPage: React.FC = () => {
                 <ListItemIcon>
                   <FaqIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="FAQ Section" 
+                <ListItemText
+                  primary="FAQ Section"
                   secondary="Check our frequently asked questions for quick answers"
                 />
-                <Button 
-                  variant="outlined" 
-                  color="primary" 
-                  href="/faq"
-                  size="small"
-                  sx={{ ml: 2 }}
-                >
+                <Button variant="outlined" color="primary" href="/faq" size="small" sx={{ ml: 2 }}>
                   View FAQs
                 </Button>
               </ListItem>
@@ -71,15 +79,15 @@ const SupportPage: React.FC = () => {
                 <ListItemIcon>
                   <CallbackIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Request a Callback" 
+                <ListItemText
+                  primary="Request a Callback"
                   secondary="Leave your number and we'll call you back"
                 />
               </ListItem>
             </List>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 4, height: '100%' }}>
             <Typography variant="h5" component="h2" gutterBottom>
@@ -114,12 +122,7 @@ const SupportPage: React.FC = () => {
                 multiline
                 rows={4}
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Send Message
               </Button>
             </Box>
@@ -155,4 +158,4 @@ const SupportPage: React.FC = () => {
   );
 };
 
-export default SupportPage; 
+export default SupportPage;

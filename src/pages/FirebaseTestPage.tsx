@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Button, Paper, CircularProgress, Alert, Divider, Stack, TextField } from '@mui/material';
-import { verifyFirebaseToken, getFirebaseIdToken, loginWithGoogle, loginWithEmail, getCurrentFirebaseUser } from '../services/authService';
+import {
+  Container,
+  Typography,
+  Box,
+  Button,
+  Paper,
+  CircularProgress,
+  Alert,
+  Divider,
+  Stack,
+  TextField,
+} from '@mui/material';
+import {
+  verifyFirebaseToken,
+  getFirebaseIdToken,
+  loginWithGoogle,
+  loginWithEmail,
+  getCurrentFirebaseUser,
+} from '../services/authService';
 import { useAuth } from '../contexts/AuthContext';
 import { Google as GoogleIcon } from '@mui/icons-material';
 import api from '../services/api';
@@ -29,7 +46,7 @@ const FirebaseTestPage: React.FC = () => {
         console.error('Error fetching token:', err);
       }
     };
-    
+
     fetchToken();
   }, []);
 
@@ -45,7 +62,7 @@ const FirebaseTestPage: React.FC = () => {
     setLoading(true);
     setError(null);
     setResult(null);
-    
+
     try {
       const response = await verifyFirebaseToken();
       setResult(response);
@@ -60,7 +77,7 @@ const FirebaseTestPage: React.FC = () => {
     setLoading(true);
     setError(null);
     setFirebaseUser(null);
-    
+
     try {
       // This directly tests Firebase Google auth without involving the backend
       await loginWithGoogle();
@@ -73,7 +90,7 @@ const FirebaseTestPage: React.FC = () => {
           displayName: fbUser.displayName,
           photoURL: fbUser.photoURL,
         });
-        
+
         // Get the Firebase token to display
         const token = await fbUser.getIdToken();
         setIdToken(token);
@@ -93,37 +110,37 @@ const FirebaseTestPage: React.FC = () => {
       setError('No Firebase ID token available');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
     setResult(null);
-    
+
     try {
       console.log(`Sending token to backend with parameter name: ${paramName}`);
-      
+
       // Create a payload with the user-specified parameter name
       const payload = {
-        [paramName]: idToken
+        [paramName]: idToken,
       };
-      
+
       console.log('Payload:', payload);
-      
+
       // Send the token to the backend
       const response = await api.post('/auth/login', payload);
-      
+
       console.log('Backend response:', response.data);
       setResult(response.data);
     } catch (err: any) {
       console.error('Token exchange error:', err);
-      
+
       let errorMessage = err.message || 'Failed to exchange token';
-      
+
       if (err.response) {
         console.error('Backend error details:', {
           status: err.response.status,
           data: err.response.data,
         });
-        
+
         if (err.response.data) {
           if (typeof err.response.data === 'string') {
             errorMessage += ` - ${err.response.data}`;
@@ -136,7 +153,7 @@ const FirebaseTestPage: React.FC = () => {
           }
         }
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -148,13 +165,13 @@ const FirebaseTestPage: React.FC = () => {
       setError('Please enter both email and password');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
     setFirebaseUser(null);
-    
+
     try {
-      // This directly tests Firebase email/password auth 
+      // This directly tests Firebase email/password auth
       await loginWithEmail(testEmail, testPassword);
       // Get the actual Firebase user after login
       const fbUser = await getCurrentFirebaseUser();
@@ -165,7 +182,7 @@ const FirebaseTestPage: React.FC = () => {
           displayName: fbUser.displayName,
           photoURL: fbUser.photoURL,
         });
-        
+
         // Get the Firebase token to display
         const token = await fbUser.getIdToken();
         setIdToken(token);
@@ -185,22 +202,27 @@ const FirebaseTestPage: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Firebase Authentication Test
       </Typography>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Configuration
         </Typography>
         <Box>
-          <Typography><strong>API URL:</strong> {apiUrl}</Typography>
-          <Typography><strong>Tenant ID:</strong> {tenantId === null ? "null (correct)" : tenantId || "undefined"}</Typography>
+          <Typography>
+            <strong>API URL:</strong> {apiUrl}
+          </Typography>
+          <Typography>
+            <strong>Tenant ID:</strong>{' '}
+            {tenantId === null ? 'null (correct)' : tenantId || 'undefined'}
+          </Typography>
         </Box>
       </Paper>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Email/Password Login Test
         </Typography>
-        
+
         <Stack spacing={2} sx={{ mb: 2 }}>
           <TextField
             label="Test Email"
@@ -224,19 +246,19 @@ const FirebaseTestPage: React.FC = () => {
             {loading ? <CircularProgress size={24} /> : 'Test Email/Password Login'}
           </Button>
         </Stack>
-        
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
       </Paper>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Direct Firebase Auth Test
         </Typography>
-        
+
         <Button
           variant="contained"
           color="primary"
@@ -247,30 +269,37 @@ const FirebaseTestPage: React.FC = () => {
         >
           {loading ? <CircularProgress size={24} /> : 'Test Google Sign-in Directly'}
         </Button>
-        
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
-        
+
         {firebaseUser && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6">Firebase User:</Typography>
             <Paper sx={{ p: 2, bgcolor: 'success.light', color: 'success.contrastText' }}>
-              <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
+              <pre
+                style={{
+                  margin: 0,
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
                 {JSON.stringify(firebaseUser, null, 2)}
               </pre>
             </Paper>
           </Box>
         )}
       </Paper>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           User Information
         </Typography>
-        
+
         {user ? (
           <Box>
             <Typography>
@@ -287,80 +316,88 @@ const FirebaseTestPage: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <Typography color="error">
-            Not logged in or user information not available
-          </Typography>
+          <Typography color="error">Not logged in or user information not available</Typography>
         )}
       </Paper>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Firebase ID Token
         </Typography>
-        
+
         {idToken ? (
           <Box>
-            <Typography variant="body2" sx={{ 
-              maxHeight: '100px', 
-              overflowY: 'auto', 
-              p: 1, 
-              bgcolor: 'grey.100',
-              borderRadius: 1,
-              fontFamily: 'monospace',
-              fontSize: '0.8rem',
-              wordBreak: 'break-all'
-            }}>
+            <Typography
+              variant="body2"
+              sx={{
+                maxHeight: '100px',
+                overflowY: 'auto',
+                p: 1,
+                bgcolor: 'grey.100',
+                borderRadius: 1,
+                fontFamily: 'monospace',
+                fontSize: '0.8rem',
+                wordBreak: 'break-all',
+              }}
+            >
               {idToken}
             </Typography>
           </Box>
         ) : (
-          <Typography color="error">
-            No Firebase ID token available
-          </Typography>
+          <Typography color="error">No Firebase ID token available</Typography>
         )}
-        
+
         <Divider sx={{ my: 2 }} />
-        
-        <Button 
-          variant="contained" 
-          color="primary" 
+
+        <Button
+          variant="contained"
+          color="primary"
           onClick={handleTestVerification}
           disabled={loading || !idToken}
         >
           {loading ? <CircularProgress size={24} /> : 'Test Token Verification'}
         </Button>
-        
+
         {error && (
           <Alert severity="error" sx={{ mt: 2 }}>
             {error}
           </Alert>
         )}
-        
+
         {result && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6" gutterBottom>
               Verification Result:
             </Typography>
-            <Paper sx={{ 
-              p: 2, 
-              bgcolor: 'info.light', 
-              color: 'info.contrastText',
-              maxHeight: '200px',
-              overflowY: 'auto'
-            }}>
-              <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
+            <Paper
+              sx={{
+                p: 2,
+                bgcolor: 'info.light',
+                color: 'info.contrastText',
+                maxHeight: '200px',
+                overflowY: 'auto',
+              }}
+            >
+              <pre
+                style={{
+                  margin: 0,
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
                 {JSON.stringify(result, null, 2)}
               </pre>
             </Paper>
           </Box>
         )}
       </Paper>
-      
+
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Manual Token Exchange Testing
         </Typography>
-        
+
         <Box sx={{ mb: 2 }}>
           <TextField
             label="Parameter Name"
@@ -371,7 +408,7 @@ const FirebaseTestPage: React.FC = () => {
             helperText="The parameter name to use when sending the token to the backend"
             margin="normal"
           />
-          
+
           <Button
             variant="contained"
             color="secondary"
@@ -382,26 +419,35 @@ const FirebaseTestPage: React.FC = () => {
             {loading ? <CircularProgress size={24} /> : 'Send Token to Backend'}
           </Button>
         </Box>
-        
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
-        
+
         {result && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6" gutterBottom>
               Backend Response:
             </Typography>
-            <Paper sx={{ 
-              p: 2, 
-              bgcolor: 'success.light', 
-              color: 'success.contrastText',
-              maxHeight: '200px',
-              overflowY: 'auto'
-            }}>
-              <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
+            <Paper
+              sx={{
+                p: 2,
+                bgcolor: 'success.light',
+                color: 'success.contrastText',
+                maxHeight: '200px',
+                overflowY: 'auto',
+              }}
+            >
+              <pre
+                style={{
+                  margin: 0,
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
                 {JSON.stringify(result, null, 2)}
               </pre>
             </Paper>
@@ -412,4 +458,4 @@ const FirebaseTestPage: React.FC = () => {
   );
 };
 
-export default FirebaseTestPage; 
+export default FirebaseTestPage;

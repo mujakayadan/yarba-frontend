@@ -99,7 +99,13 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
 
       <DialogContent
         dividers
-        sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
         {pdfUrl && Document && Page ? (
           <Box sx={{ border: '1px solid black', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
@@ -128,7 +134,12 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
           {numPages ? `Page ${pageNumber} of ${numPages}` : 'Loading pages...'}
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Button onClick={onPrevious} disabled={pageNumber <= 1 || !numPages} variant="outlined" size="small">
+          <Button
+            onClick={onPrevious}
+            disabled={pageNumber <= 1 || !numPages}
+            variant="outlined"
+            size="small"
+          >
             Previous
           </Button>
           <Button

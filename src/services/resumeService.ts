@@ -16,54 +16,56 @@ export interface JobExtractionDetails {
 
 // Get all resumes
 export const getResumes = async (
-  skip: number = 0, 
+  skip: number = 0,
   limit: number = 10,
   search_term?: string,
   template_id?: string,
   sort_by: string = 'updated_desc'
-): Promise<{ items: Resume[], total: number }> => {
+): Promise<{ items: Resume[]; total: number }> => {
   const params = new URLSearchParams();
   params.append('skip', skip.toString());
   params.append('limit', limit.toString());
-  
+
   if (search_term) params.append('search_term', search_term);
   if (template_id) params.append('template_id', template_id);
-  
+
   // Add sorting parameter
   params.append('sort_by', sort_by);
   if (isDev) {
     console.log(`Adding sort_by=${sort_by}`);
   }
-  
+
   const requestUrl = `/resumes?${params.toString()}`;
   if (isDev) {
     console.log(`API Call: GET ${requestUrl}`);
     console.log(`Full URL would be: ${env.apiUrl}${requestUrl}`);
   }
   const response = await api.get(requestUrl);
-  
+
   // Backend now returns properly formatted paginated response
   if (response.data && response.data.items && typeof response.data.total === 'number') {
     if (isDev) {
-      console.log(`API returned ${response.data.items.length} items, total: ${response.data.total}`);
+      console.log(
+        `API returned ${response.data.items.length} items, total: ${response.data.total}`
+      );
     }
     return response.data;
   }
-  
+
   // Fallback for backward compatibility or unexpected response format
   if (Array.isArray(response.data)) {
     console.warn('API returned array format instead of pagination object');
-    return { 
-      items: response.data, 
-      total: response.data.length 
+    return {
+      items: response.data,
+      total: response.data.length,
     };
   }
-  
+
   // Fallback for other unexpected formats
   console.warn('Unexpected API response format:', response.data);
-  return { 
-    items: Array.isArray(response.data) ? response.data : [], 
-    total: Array.isArray(response.data) ? response.data.length : 0 
+  return {
+    items: Array.isArray(response.data) ? response.data : [],
+    total: Array.isArray(response.data) ? response.data.length : 0,
   };
 };
 
@@ -97,22 +99,25 @@ export const deleteResume = async (id: string): Promise<void> => {
 };
 
 // Generate PDF for a resume
-export const getResumePdf = async (id: string, timeout: number = 30): Promise<Blob | { pdf_url: string }> => {
+export const getResumePdf = async (
+  id: string,
+  timeout: number = 30
+): Promise<Blob | { pdf_url: string }> => {
   if (isDev) {
     console.log(`Requesting PDF for resume ID: ${id} with timeout: ${timeout}`);
   }
   try {
     // First try without responseType: 'blob' to check if we get the new JSON response
     const response = await api.get(`/resumes/${id}/pdf?timeout=${timeout}`);
-    
+
     // If we got JSON with pdf_url, return it
     if (response.data && response.data.pdf_url) {
       return response.data;
     }
-    
+
     // If we didn't get a pdf_url, try the old approach with blob response type
     const blobResponse = await api.get(`/resumes/${id}/pdf?timeout=${timeout}`, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
     return blobResponse.data;
   } catch (error: any) {
@@ -141,13 +146,13 @@ export const getResumePdf = async (id: string, timeout: number = 30): Promise<Bl
 
 // Generate resume content based on job description
 export const generateResumeContent = async (
-  id: string, 
-  jobDescription: string, 
+  id: string,
+  jobDescription: string,
   sections: string[]
 ): Promise<Resume> => {
   const response = await api.post(`/resumes/${id}/generate`, {
     job_description: jobDescription,
-    selected_sections: sections
+    selected_sections: sections,
   });
   return response.data;
 };
@@ -160,20 +165,22 @@ export const deleteResumePdf = async (resumeId: string): Promise<{ pdf_url: null
 
 // Regenerate Resume Content (and optionally PDF)
 export const regenerateResumeContent = async (
-  resumeId: string, 
+  resumeId: string,
   generatePdf: boolean = false
 ): Promise<Resume> => {
   const response = await api.post(`/resumes/${resumeId}/regenerate`, null, {
-    params: { generate_pdf: generatePdf }
+    params: { generate_pdf: generatePdf },
   });
   return response.data;
 };
 
 // Get Cover Letters For Resume
-// ... existing code ... 
+// ... existing code ...
 
 // Get lightweight list of resumes for selection dropdowns
-export const getResumesForSelection = async (sortBy?: string): Promise<ResumesForSelectionResponse> => {
+export const getResumesForSelection = async (
+  sortBy?: string
+): Promise<ResumesForSelectionResponse> => {
   let requestUrl = '/resumes/list-for-selection';
   if (sortBy) {
     requestUrl += `?sort_by=${encodeURIComponent(sortBy)}`;
@@ -183,7 +190,7 @@ export const getResumesForSelection = async (sortBy?: string): Promise<ResumesFo
 };
 
 // Get resume by ID
-// ... existing code ... 
+// ... existing code ...
 
 // Extract job details from URL
 export const extractJobDetails = async (url: string): Promise<JobExtractionDetails> => {

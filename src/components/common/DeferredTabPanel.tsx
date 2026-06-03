@@ -29,7 +29,14 @@ export const DeferredTabPanel: React.FC<DeferredTabPanelProps> = ({
       aria-labelledby={`${idPrefix}-tab-${tabIndex}`}
       aria-busy={isPending}
     >
-      <Box sx={{ p: padding, minHeight: 80, opacity: isPending ? 0.6 : 1, transition: 'opacity 150ms' }}>
+      <Box
+        sx={{
+          p: padding,
+          minHeight: 80,
+          opacity: isPending ? 0.6 : 1,
+          transition: 'opacity 150ms',
+        }}
+      >
         {children}
       </Box>
     </div>

@@ -4,10 +4,10 @@ Frontend for **Yarba** — an AI-powered resume, cover letter, and portfolio pla
 
 ## Related repositories
 
-| Repo | URL |
-|------|-----|
+| Repo                 | URL                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------- |
 | Frontend (this repo) | [github.com/mucahitkayadan/yarba-frontend](https://github.com/mucahitkayadan/yarba-frontend) |
-| Backend | [github.com/mucahitkayadan/yarba-backend](https://github.com/mucahitkayadan/yarba-backend) |
+| Backend              | [github.com/mucahitkayadan/yarba-backend](https://github.com/mucahitkayadan/yarba-backend)   |
 
 ```bash
 # Frontend
@@ -39,13 +39,15 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm start` / `npm run dev` | Vite dev server (port 3000) |
-| `npm run build` | Type-check + production build |
-| `npm run preview` | Preview production build locally |
-| `npm test` | Run Vitest tests |
-| `npm run lint` | ESLint |
+| Command                     | Description                      |
+| --------------------------- | -------------------------------- |
+| `npm start` / `npm run dev` | Vite dev server (port 3000)      |
+| `npm run build`             | Type-check + production build    |
+| `npm run preview`           | Preview production build locally |
+| `npm test`                  | Run Vitest tests                 |
+| `npm run lint`              | ESLint                           |
+| `npm run format`            | Prettier (write)                 |
+| `npm run format:check`      | Prettier (check only)            |
 
 ## Stack
 
@@ -102,25 +104,25 @@ sequenceDiagram
 
 ### Core libraries
 
-| Layer | Technology | Notes |
-|-------|------------|--------|
-| UI | React 19, TypeScript 5 | Functional components; strict typing |
-| Build | Vite 8 | Dev server on port 3000; `tsc --noEmit` on build |
-| Components | Material UI 7, Emotion | MUI only for UI; use `Grid` from `src/mui/Grid.tsx` |
-| Routing | React Router 7 | Pages under `src/pages/` |
-| Server state | TanStack Query 5 | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts` |
-| HTTP | Axios | All API calls via `src/services/` — not raw axios in components |
-| Auth | Firebase 12 | Google + email/password; backend validates tokens |
-| PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview |
-| Env | `VITE_*` | Loaded via `src/config/env.ts` |
+| Layer          | Technology                   | Notes                                                           |
+| -------------- | ---------------------------- | --------------------------------------------------------------- |
+| UI             | React 19, TypeScript 5       | Functional components; strict typing                            |
+| Build          | Vite 8                       | Dev server on port 3000; `tsc --noEmit` on build                |
+| Components     | Material UI 7, Emotion       | MUI only for UI; use `Grid` from `src/mui/Grid.tsx`             |
+| Routing        | React Router 7               | Pages under `src/pages/`                                        |
+| Server state   | TanStack Query 5             | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts`           |
+| HTTP           | Axios                        | All API calls via `src/services/` — not raw axios in components |
+| Auth           | Firebase 12                  | Google + email/password; backend validates tokens               |
+| PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview                                     |
+| Env            | `VITE_*`                     | Loaded via `src/config/env.ts`                                  |
 
 ### Backend & related repos
 
-| Piece | Stack | Role |
-|-------|--------|------|
-| [yarba-backend](https://github.com/mucahitkayadan/yarba-backend) | FastAPI | REST API (`VITE_API_URL`); JWT after Firebase login |
-| API contracts | `src/types/models.ts` | TypeScript shapes aligned with backend schemas |
-| Docs | `docs/api_documentation.md` | Endpoint reference |
+| Piece                                                            | Stack                       | Role                                                |
+| ---------------------------------------------------------------- | --------------------------- | --------------------------------------------------- |
+| [yarba-backend](https://github.com/mucahitkayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after Firebase login |
+| API contracts                                                    | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas      |
+| Docs                                                             | `docs/api_documentation.md` | Endpoint reference                                  |
 
 ### State management
 
@@ -155,14 +157,42 @@ src/
   utils/        # auth helpers, formatters, …
 ```
 
-### Quality & tooling
+### Lint & format
 
-| Tool | Command / usage |
-|------|------------------|
-| ESLint | `npm run lint` — `eslint-config-react-app` |
-| TypeScript | `npm run build` runs `tsc --noEmit` |
-| Tests | `npm test` — Vitest + Testing Library |
-| Formatter | Not configured — no Prettier/Biome in repo |
+**Stack: ESLint + Prettier** (separate tools). TypeScript types stay on `tsc` (`npm run build`), not ESLint.
+
+```mermaid
+flowchart LR
+  TSC["tsc --noEmit<br/>types"]
+  ESLint["ESLint<br/>logic & React rules"]
+  Prettier["Prettier<br/>formatting"]
+  Hook["Husky pre-commit<br/>lint-staged"]
+
+  TSC --> Build["npm run build"]
+  ESLint --> Lint["npm run lint"]
+  Prettier --> Format["npm run format"]
+  Hook --> ESLint
+  Hook --> Prettier
+```
+
+| Tool                    | Config                                                               | Role                                                       |
+| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **ESLint**              | `.eslintrc.cjs`, `eslint-config-react-app`, `eslint-config-prettier` | `npm run lint`                                             |
+| **Prettier**            | `.prettierrc`, `.prettierignore`                                     | `npm run format` / `npm run format:check`                  |
+| **Husky + lint-staged** | `.husky/pre-commit`                                                  | On `git commit`: format and `eslint --fix` on staged files |
+
+After `npm install`, the `prepare` script registers Git hooks automatically.
+
+**Editor:** ESLint extension for diagnostics; Prettier as default formatter with format-on-save.
+
+**CI (optional):** `npm run lint && npm run format:check && npm run build`
+
+### Other quality tooling
+
+| Tool       | Command / usage                       |
+| ---------- | ------------------------------------- |
+| TypeScript | `npm run build` runs `tsc --noEmit`   |
+| Tests      | `npm test` — Vitest + Testing Library |
 
 Forms: [`.cursorrules`](./.cursorrules) recommends **Formik + Yup** for new forms; adopt when adding complex validation (not currently in `package.json`).
 

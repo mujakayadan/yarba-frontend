@@ -12,7 +12,7 @@ export const getFirebaseErrorMessage = (error: any): string => {
 
   // Extract standard error message
   let errorMessage = error.message || 'An error occurred';
-  
+
   // Extract Firebase error code
   const errorCode = error.code || '';
 
@@ -60,4 +60,4 @@ export const getFirebaseErrorMessage = (error: any): string => {
       // If we don't have a specific handler, return the error message
       return errorMessage;
   }
-}; 
+};

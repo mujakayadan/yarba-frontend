@@ -14,11 +14,15 @@ const ParsedSkillsDisplay: React.FC<ParsedSkillsDisplayProps> = ({ skills }) => 
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Skills</Typography>
+      <Typography variant="h6" gutterBottom>
+        Skills
+      </Typography>
       <Grid container spacing={2}>
         {skills.map((skillCategory, categoryIndex) => (
           <Grid item xs={12} sm={6} md={4} key={categoryIndex}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{skillCategory.category}</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              {skillCategory.category}
+            </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
               {skillCategory.skills && skillCategory.skills.length > 0 ? (
                 skillCategory.skills.map((skill, skillIndex) => (
@@ -35,4 +39,4 @@ const ParsedSkillsDisplay: React.FC<ParsedSkillsDisplayProps> = ({ skills }) => 
   );
 };
 
-export default ParsedSkillsDisplay; 
+export default ParsedSkillsDisplay;

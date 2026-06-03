@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  TextField, 
-  Paper, 
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Paper,
   Container,
   Tab,
   Tabs,
@@ -12,10 +12,14 @@ import {
   Alert,
   Divider,
   Card,
-  CardContent
+  CardContent,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { createResume, extractJobDetails, JobExtractionDetails } from '../../services/resumeService';
+import {
+  createResume,
+  extractJobDetails,
+  JobExtractionDetails,
+} from '../../services/resumeService';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { ResumeCreateRequest } from '../../types/models';
 import { Toast } from '../../components/common';
@@ -39,11 +43,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`resume-creation-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: '0 3px 3px 3px' }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: '0 3px 3px 3px' }}>{children}</Box>}
     </div>
   );
 }
@@ -58,7 +58,9 @@ const CreateResumePage: React.FC = () => {
   const [jobDescriptionUrl, setJobDescriptionUrl] = useState('');
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
+    'success'
+  );
   const [extractedJobDetails, setExtractedJobDetails] = useState<JobExtractionDetails | null>(null);
   const [isJobExtracted, setIsJobExtracted] = useState(false);
   const [extractionError, setExtractionError] = useState<string | null>(null);
@@ -86,7 +88,9 @@ const CreateResumePage: React.FC = () => {
       if (details.description && details.description.trim() !== '') {
         setJobDescription(details.description);
         setIsJobExtracted(true);
-        setToastMessage('Job details extracted successfully! Review below or switch to "Job Description" tab to edit.');
+        setToastMessage(
+          'Job details extracted successfully! Review below or switch to "Job Description" tab to edit.'
+        );
         setToastSeverity('success');
       } else {
         setIsJobExtracted(false);
@@ -98,7 +102,8 @@ const CreateResumePage: React.FC = () => {
       setToastOpen(true);
     } catch (err: any) {
       console.error('Failed to extract job details:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to extract job details.';
+      const errorMessage =
+        err.response?.data?.detail || err.message || 'Failed to extract job details.';
       setExtractionError(errorMessage);
       setIsJobExtracted(false);
       setToastMessage(errorMessage);
@@ -127,7 +132,9 @@ const CreateResumePage: React.FC = () => {
       }
     } else if (tabValue === 1) {
       if (!isJobExtracted || !extractedJobDetails?.description) {
-        setError('Extracted job description is not available. Please extract again or enter manually.');
+        setError(
+          'Extracted job description is not available. Please extract again or enter manually.'
+        );
         setToastMessage('Extracted job description is not available.');
         setToastSeverity('error');
         setToastOpen(true);
@@ -145,17 +152,17 @@ const CreateResumePage: React.FC = () => {
       setLoading(false);
       return;
     }
-    
+
     try {
       const resumeData: ResumeCreateRequest = {
-        job_description: jobDescToUse
+        job_description: jobDescToUse,
       };
-      
+
       // Add job_description_url if creating from URL tab
       if (tabValue === 1 && jobDescriptionUrl) {
         resumeData.job_description_url = jobDescriptionUrl;
       }
-      
+
       const response = await createResume(resumeData);
       setToastMessage('Resume created successfully!');
       setToastSeverity('success');
@@ -165,7 +172,8 @@ const CreateResumePage: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Failed to create resume:', err);
-      const errorMsg = err.response?.data?.detail || err.message || 'Failed to create resume. Please try again.';
+      const errorMsg =
+        err.response?.data?.detail || err.message || 'Failed to create resume. Please try again.';
       setError(errorMsg);
       setToastMessage(errorMsg);
       setToastSeverity('error');
@@ -202,7 +210,7 @@ const CreateResumePage: React.FC = () => {
             value={jobDescription}
             onChange={(e) => {
               setJobDescription(e.target.value);
-              if(isJobExtracted) {
+              if (isJobExtracted) {
                 setIsJobExtracted(false);
                 setExtractedJobDetails(null);
               }
@@ -248,7 +256,11 @@ const CreateResumePage: React.FC = () => {
                   onClick={handleExtractJobDetails}
                   disabled={loading || !jobDescriptionUrl.trim()}
                 >
-                  {loading && !extractionError ? <CircularProgress size={24} /> : 'Extract Job Details'}
+                  {loading && !extractionError ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    'Extract Job Details'
+                  )}
                 </Button>
               </Box>
               {extractionError && (
@@ -267,10 +279,20 @@ const CreateResumePage: React.FC = () => {
                   <strong>Title:</strong> {extractedJobDetails.title}
                 </Typography>
               )}
-              <Paper elevation={1} sx={{ p: 2, my: 2, maxHeight: '300px', overflowY: 'auto', backgroundColor: '#f9f9f9', border: '1px solid #e0e0e0' }}>
+              <Paper
+                elevation={1}
+                sx={{
+                  p: 2,
+                  my: 2,
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  backgroundColor: '#f9f9f9',
+                  border: '1px solid #e0e0e0',
+                }}
+              >
                 <ReactMarkdown>{extractedJobDetails!.description!}</ReactMarkdown>
               </Paper>
-              
+
               <Box sx={{ mt: 3, mb: 2 }}>
                 <Button
                   variant="contained"
@@ -280,7 +302,11 @@ const CreateResumePage: React.FC = () => {
                   onClick={handleCreateResume}
                   disabled={loading}
                 >
-                  {loading && tabValue === 1 ? <CircularProgress size={24} /> : 'Create Resume with this Description'}
+                  {loading && tabValue === 1 ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    'Create Resume with this Description'
+                  )}
                 </Button>
               </Box>
 
@@ -326,11 +352,13 @@ const CreateResumePage: React.FC = () => {
       {!loading && (
         <Card elevation={1} sx={{ mb: 3 }}>
           <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+            >
               <Typography variant="h6">Resume Preferences</Typography>
-              <Button 
-                variant="outlined" 
-                startIcon={<SettingsIcon />} 
+              <Button
+                variant="outlined"
+                startIcon={<SettingsIcon />}
                 onClick={handleEditPreferences}
                 size="small"
               >
@@ -338,90 +366,138 @@ const CreateResumePage: React.FC = () => {
               </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
-            
+
             {profileLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
                 <CircularProgress size={24} />
               </Box>
             ) : (
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+              <Box
+                sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}
+              >
                 <Box>
-                  <Typography variant="subtitle2" gutterBottom color="primary">Content Limits</Typography>
-                  
+                  <Typography variant="subtitle2" gutterBottom color="primary">
+                    Content Limits
+                  </Typography>
+
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Career Summary:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Career Summary:
+                      </Typography>
                       <Typography variant="body2">
-                        {profile?.prompt_preferences?.career_summary?.min_words || 'Not set'} - {profile?.prompt_preferences?.career_summary?.max_words || 'Not set'} words
+                        {profile?.prompt_preferences?.career_summary?.min_words || 'Not set'} -{' '}
+                        {profile?.prompt_preferences?.career_summary?.max_words || 'Not set'} words
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Work Experience:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Work Experience:
+                      </Typography>
                       <Typography variant="body2">
-                        Max {profile?.prompt_preferences?.work_experience?.max_jobs || 'Not set'} jobs, {profile?.prompt_preferences?.work_experience?.bullet_points_per_job || 'Not set'} bullets each
+                        Max {profile?.prompt_preferences?.work_experience?.max_jobs || 'Not set'}{' '}
+                        jobs,{' '}
+                        {profile?.prompt_preferences?.work_experience?.bullet_points_per_job ||
+                          'Not set'}{' '}
+                        bullets each
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Projects:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Projects:
+                      </Typography>
                       <Typography variant="body2">
-                        Max {profile?.prompt_preferences?.project?.max_projects || 'Not set'} projects, {profile?.prompt_preferences?.project?.bullet_points_per_project || 'Not set'} bullets each
+                        Max {profile?.prompt_preferences?.project?.max_projects || 'Not set'}{' '}
+                        projects,{' '}
+                        {profile?.prompt_preferences?.project?.bullet_points_per_project ||
+                          'Not set'}{' '}
+                        bullets each
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Skills:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Skills:
+                      </Typography>
                       <Typography variant="body2">
-                        {profile?.prompt_preferences?.skills?.max_categories || 'Not set'} categories, {profile?.prompt_preferences?.skills?.min_per_category || 'Not set'}-{profile?.prompt_preferences?.skills?.max_per_category || 'Not set'} skills each
+                        {profile?.prompt_preferences?.skills?.max_categories || 'Not set'}{' '}
+                        categories,{' '}
+                        {profile?.prompt_preferences?.skills?.min_per_category || 'Not set'}-
+                        {profile?.prompt_preferences?.skills?.max_per_category || 'Not set'} skills
+                        each
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Education:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Education:
+                      </Typography>
                       <Typography variant="body2">
-                        Max {profile?.prompt_preferences?.education?.max_entries || 'Not set'} entries, {profile?.prompt_preferences?.education?.max_courses || 'Not set'} courses
+                        Max {profile?.prompt_preferences?.education?.max_entries || 'Not set'}{' '}
+                        entries, {profile?.prompt_preferences?.education?.max_courses || 'Not set'}{' '}
+                        courses
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Awards:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Awards:
+                      </Typography>
                       <Typography variant="body2">
                         Max {profile?.prompt_preferences?.awards?.max_awards || 'Not set'} awards
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Publications:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Publications:
+                      </Typography>
                       <Typography variant="body2">
-                        Max {profile?.prompt_preferences?.publications?.max_publications || 'Not set'} publications
+                        Max{' '}
+                        {profile?.prompt_preferences?.publications?.max_publications || 'Not set'}{' '}
+                        publications
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Cover Letter:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Cover Letter:
+                      </Typography>
                       <Typography variant="body2">
-                        {profile?.prompt_preferences?.cover_letter?.paragraphs || 'Not set'} paragraphs, age {profile?.prompt_preferences?.cover_letter?.target_age || 'Not set'}
+                        {profile?.prompt_preferences?.cover_letter?.paragraphs || 'Not set'}{' '}
+                        paragraphs, age{' '}
+                        {profile?.prompt_preferences?.cover_letter?.target_age || 'Not set'}
                       </Typography>
                     </Box>
                   </Box>
                 </Box>
-                
+
                 <Box>
-                  <Typography variant="subtitle2" gutterBottom color="primary">System Settings</Typography>
-                  
+                  <Typography variant="subtitle2" gutterBottom color="primary">
+                    System Settings
+                  </Typography>
+
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Security Check:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Security Check:
+                      </Typography>
                       <Typography variant="body2">
-                        {profile?.system_preferences?.features?.check_clearance ? 'Enabled' : 'Disabled'}
+                        {profile?.system_preferences?.features?.check_clearance
+                          ? 'Enabled'
+                          : 'Disabled'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Model:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Model:
+                      </Typography>
                       <Typography variant="body2">
-                        {profile?.system_preferences?.llm?.model_name || 'Not set'} (Temperature: {profile?.system_preferences?.llm?.temperature || 'Default'})
+                        {profile?.system_preferences?.llm?.model_name || 'Not set'} (Temperature:{' '}
+                        {profile?.system_preferences?.llm?.temperature || 'Default'})
                       </Typography>
                     </Box>
                   </Box>
@@ -431,7 +507,7 @@ const CreateResumePage: React.FC = () => {
           </CardContent>
         </Card>
       )}
-      
+
       <Toast
         open={toastOpen}
         message={toastMessage}
@@ -442,4 +518,4 @@ const CreateResumePage: React.FC = () => {
   );
 };
 
-export default CreateResumePage; 
+export default CreateResumePage;

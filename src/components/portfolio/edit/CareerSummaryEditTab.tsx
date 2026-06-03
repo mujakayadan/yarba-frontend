@@ -1,6 +1,24 @@
 import Grid from '../../../mui/Grid';
 import React from 'react';
-import { Box, Typography, Divider, Chip, FormControl, InputLabel, Select, MenuItem, FormHelperText, TextField, InputAdornment, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Divider,
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  TextField,
+  InputAdornment,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import type { PortfolioEditForm } from '../../../hooks/usePortfolioEditForm';
 
@@ -28,7 +46,10 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: 'rgba(0, 0, 0, 0.02)', borderRadius: 1 }}>
+          <Paper
+            elevation={0}
+            sx={{ p: 2, mb: 3, bgcolor: 'rgba(0, 0, 0, 0.02)', borderRadius: 1 }}
+          >
             <Typography variant="subtitle2" gutterBottom color="text.secondary">
               Preview:
             </Typography>
@@ -37,7 +58,9 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
               <Chip
                 label={
                   careerSummary.default_job_title ||
-                  (careerSummary.job_titles.length > 0 ? careerSummary.job_titles[0] : 'Your Job Title')
+                  (careerSummary.job_titles.length > 0
+                    ? careerSummary.job_titles[0]
+                    : 'Your Job Title')
                 }
                 size="small"
                 sx={{

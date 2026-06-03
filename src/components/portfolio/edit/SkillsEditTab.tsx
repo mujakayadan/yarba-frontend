@@ -1,6 +1,22 @@
 import Grid from '../../../mui/Grid';
 import React from 'react';
-import { Typography, Divider, Paper, Box, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import {
+  Typography,
+  Divider,
+  Paper,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import type { PortfolioEditForm } from '../../../hooks/usePortfolioEditForm';
 
@@ -38,7 +54,14 @@ export const SkillsEditTab: React.FC<SkillsEditTabProps> = ({ form }) => {
         {skills.map((category, categoryIndex) => (
           <Grid item xs={12} key={categoryIndex}>
             <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 2,
+                }}
+              >
                 <Typography variant="subtitle1">{category.category}</Typography>
 
                 <Button
@@ -83,7 +106,9 @@ export const SkillsEditTab: React.FC<SkillsEditTabProps> = ({ form }) => {
       </Grid>
 
       <Dialog open={skillDialogOpen} onClose={() => setSkillDialogOpen(false)}>
-        <DialogTitle>Add New Skill to {skills[selectedCategoryIndex]?.category || 'Category'}</DialogTitle>
+        <DialogTitle>
+          Add New Skill to {skills[selectedCategoryIndex]?.category || 'Category'}
+        </DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mb: 2, mt: 1 }}>
             <InputLabel id="skill-category-label">Category</InputLabel>

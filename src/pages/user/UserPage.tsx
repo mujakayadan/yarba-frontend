@@ -1,12 +1,19 @@
 import Grid from '../../mui/Grid';
 import React, { useState } from 'react';
-import { Box, Typography, Paper, TextField, Button, Divider, Alert, CircularProgress, Stack, IconButton, InputAdornment } from '@mui/material';
-import { 
-  Visibility, 
-  VisibilityOff,
-  Key as KeyIcon,
-  Save as SaveIcon
-} from '@mui/icons-material';
+import {
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  Button,
+  Divider,
+  Alert,
+  CircularProgress,
+  Stack,
+  IconButton,
+  InputAdornment,
+} from '@mui/material';
+import { Visibility, VisibilityOff, Key as KeyIcon, Save as SaveIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { changePassword } from '../../services/authService';
 import { Toast } from '../../components/common';
@@ -57,7 +64,7 @@ const UserPage: React.FC = () => {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validatePasswords()) {
       return;
     }
@@ -86,7 +93,6 @@ const UserPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -95,7 +101,7 @@ const UserPage: React.FC = () => {
               <Typography variant="h6">Change Password</Typography>
             </Box>
             <Divider sx={{ mb: 3 }} />
-            
+
             {error && (
               <Alert severity="error" sx={{ mb: 3 }}>
                 {error}
@@ -114,17 +120,14 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleCurrentPasswordVisibility}
-                          edge="end"
-                        >
+                        <IconButton onClick={handleToggleCurrentPasswordVisibility} edge="end">
                           {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />
-                
+
                 <TextField
                   label="New Password"
                   type={showNewPassword ? 'text' : 'password'}
@@ -135,18 +138,15 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleNewPasswordVisibility}
-                          edge="end"
-                        >
+                        <IconButton onClick={handleToggleNewPasswordVisibility} edge="end">
                           {showNewPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                   helperText="Password must be at least 6 characters long"
                 />
-                
+
                 <TextField
                   label="Confirm New Password"
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -157,19 +157,20 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleConfirmPasswordVisibility}
-                          edge="end"
-                        >
+                        <IconButton onClick={handleToggleConfirmPasswordVisibility} edge="end">
                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                   error={newPassword !== confirmPassword && confirmPassword !== ''}
-                  helperText={newPassword !== confirmPassword && confirmPassword !== '' ? "Passwords don't match" : ""}
+                  helperText={
+                    newPassword !== confirmPassword && confirmPassword !== ''
+                      ? "Passwords don't match"
+                      : ''
+                  }
                 />
-                
+
                 <Button
                   type="submit"
                   variant="contained"
@@ -183,32 +184,28 @@ const UserPage: React.FC = () => {
             </form>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Account Information
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" color="text.secondary">
                 Email
               </Typography>
-              <Typography variant="body1">
-                {user?.email || 'Not available'}
-              </Typography>
+              <Typography variant="body1">{user?.email || 'Not available'}</Typography>
             </Box>
-            
+
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" color="text.secondary">
                 Username
               </Typography>
-              <Typography variant="body1">
-                {user?.username || 'Not available'}
-              </Typography>
+              <Typography variant="body1">{user?.username || 'Not available'}</Typography>
             </Box>
-            
+
             <Box>
               <Typography variant="subtitle2" color="text.secondary">
                 Last Login
@@ -231,4 +228,4 @@ const UserPage: React.FC = () => {
   );
 };
 
-export default UserPage; 
+export default UserPage;

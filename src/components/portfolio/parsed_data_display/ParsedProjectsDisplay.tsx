@@ -1,5 +1,14 @@
 import React from 'react';
-import { Typography, Box, Paper, List, ListItem, ListItemText, Divider, Link as MuiLink } from '@mui/material';
+import {
+  Typography,
+  Box,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Link as MuiLink,
+} from '@mui/material';
 import { Project } from '../../../types/portfolio';
 
 interface ParsedProjectsDisplayProps {
@@ -13,29 +22,50 @@ const ParsedProjectsDisplay: React.FC<ParsedProjectsDisplayProps> = ({ projects 
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Projects</Typography>
+      <Typography variant="h6" gutterBottom>
+        Projects
+      </Typography>
       <List disablePadding>
         {projects.map((project, index) => (
           <React.Fragment key={index}>
             <ListItem alignItems="flex-start" sx={{ flexDirection: 'column', pl: 0 }}>
               <ListItemText
-                primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{project.name || 'N/A'}</Typography>}
+                primary={
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    {project.name || 'N/A'}
+                  </Typography>
+                }
                 secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
-                    {project.date && <Typography variant="body2" color="text.secondary">Date: {project.date}</Typography>}
-                    {project.link && 
+                    {project.date && (
                       <Typography variant="body2" color="text.secondary">
-                        Link: <MuiLink href={project.link} target="_blank" rel="noopener noreferrer">{project.link}</MuiLink>
+                        Date: {project.date}
                       </Typography>
-                    }
+                    )}
+                    {project.link && (
+                      <Typography variant="body2" color="text.secondary">
+                        Link:{' '}
+                        <MuiLink href={project.link} target="_blank" rel="noopener noreferrer">
+                          {project.link}
+                        </MuiLink>
+                      </Typography>
+                    )}
                     {project.bullet_points && project.bullet_points.length > 0 && (
                       <Box mt={1}>
-                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>Details:</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                          Details:
+                        </Typography>
                         <List dense disablePadding sx={{ pl: 2 }}>
                           {project.bullet_points.map((point, pIndex) => (
-                            <ListItem key={pIndex} sx={{ display: 'list-item', listStyleType: 'disc', p: 0 }}>
-                              <ListItemText primary={<Typography variant="body2">{point}</Typography>} sx={{m:0}}/>
+                            <ListItem
+                              key={pIndex}
+                              sx={{ display: 'list-item', listStyleType: 'disc', p: 0 }}
+                            >
+                              <ListItemText
+                                primary={<Typography variant="body2">{point}</Typography>}
+                                sx={{ m: 0 }}
+                              />
                             </ListItem>
                           ))}
                         </List>
@@ -53,4 +83,4 @@ const ParsedProjectsDisplay: React.FC<ParsedProjectsDisplayProps> = ({ projects 
   );
 };
 
-export default ParsedProjectsDisplay; 
+export default ParsedProjectsDisplay;

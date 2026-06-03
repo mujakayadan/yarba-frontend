@@ -181,4 +181,4 @@ The frontend application should provide a user-friendly interface for resume and
 
 - Configure CI/CD pipeline
 - Set up environment-specific configurations (dev, staging, prod)
-- Implement error tracking and monitoring 
+- Implement error tracking and monitoring

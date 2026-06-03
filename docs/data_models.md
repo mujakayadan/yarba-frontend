@@ -238,7 +238,7 @@ interface TexHeader {
   id: string;
   name: string;
   description?: string;
-  template_type: "resume" | "cover_letter";
+  template_type: 'resume' | 'cover_letter';
   template_id: string;
   content: string; // LaTeX header content
   created_at: Date;
@@ -270,4 +270,4 @@ The application uses MongoDB as its primary database. The following collections 
 
 ## Required Frontend Models
 
-Frontend development should include TypeScript interfaces that match these models for type safety and consistency. Additional frontend-specific models may be needed for form state management, UI components, and API request/response handling. 
+Frontend development should include TypeScript interfaces that match these models for type safety and consistency. Additional frontend-specific models may be needed for form state management, UI components, and API request/response handling.

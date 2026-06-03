@@ -21,7 +21,7 @@ export const CenteredToast: React.FC = () => {
     setPosition('bottom');
     setOpen(true);
   };
-  
+
   const handleShowTopMessage = () => {
     setMessage('This notification is centered at the top of the screen.');
     setSeverity('info');
@@ -36,20 +36,20 @@ export const CenteredToast: React.FC = () => {
   return (
     <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Typography variant="h6">Toast Position Demo</Typography>
-      
+
       <Button variant="contained" color="success" onClick={handleShowSuccess}>
         Show Success Toast (Bottom)
       </Button>
-      
+
       <Button variant="contained" color="error" onClick={handleShowError}>
         Show Error Toast (Bottom)
       </Button>
-      
+
       <Button variant="contained" color="info" onClick={handleShowTopMessage}>
         Show Info Toast (Top)
       </Button>
-      
-      <Toast 
+
+      <Toast
         open={open}
         message={message}
         severity={severity}
@@ -60,4 +60,4 @@ export const CenteredToast: React.FC = () => {
   );
 };
 
-export default CenteredToast; 
+export default CenteredToast;

@@ -35,8 +35,12 @@ const ContactPage = lazy(() => import('../pages/footer/ContactPage'));
 const UploadPortfolioPage = lazy(() => import('../pages/portfolio/UploadPortfolioPage'));
 const WebsitePage = lazy(() => import('../pages/WebsitePage'));
 const PersonalInfoSetupPage = lazy(() => import('../pages/user/setup/PersonalInfoSetupPage'));
-const PromptPreferencesSetupPage = lazy(() => import('../pages/user/setup/PromptPreferencesSetupPage'));
-const SystemPreferencesSetupPage = lazy(() => import('../pages/user/setup/SystemPreferencesSetupPage'));
+const PromptPreferencesSetupPage = lazy(
+  () => import('../pages/user/setup/PromptPreferencesSetupPage')
+);
+const SystemPreferencesSetupPage = lazy(
+  () => import('../pages/user/setup/SystemPreferencesSetupPage')
+);
 const LifeStorySetupPage = lazy(() => import('../pages/user/setup/LifeStorySetupPage'));
 const PortfolioUploadPage = lazy(() => import('../pages/user/setup/PortfolioUploadPage'));
 const PortfolioReviewPage = lazy(() => import('../pages/user/setup/PortfolioReviewPage'));

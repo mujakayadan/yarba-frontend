@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { 
-  Box, 
-  Typography, 
-  Tabs, 
-  Tab, 
-  Paper, 
-  Button, 
-  CircularProgress, 
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  Paper,
+  Button,
+  CircularProgress,
   Alert,
   Divider,
   Chip,
@@ -22,7 +22,7 @@ import {
   EmojiEvents as AwardsIcon,
   MenuBook as PublicationsIcon,
   Badge as CertificationsIcon,
-  VerifiedUser as Badge
+  VerifiedUser as Badge,
 } from '@mui/icons-material';
 import { getUserPortfolio, createPortfolio } from '../../services/portfolioService';
 import { Portfolio } from '../../types/models';
@@ -102,11 +102,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`portfolio-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -137,7 +133,10 @@ const PortfolioPage: React.FC = () => {
         const portfolioData = portfolio as unknown as ApiPortfolio;
         console.log('Portfolio data:', portfolioData);
         console.log('Career summary job titles:', portfolioData.career_summary?.job_titles);
-        console.log('Skills categories:', portfolioData.skills?.map(s => s.category));
+        console.log(
+          'Skills categories:',
+          portfolioData.skills?.map((s) => s.category)
+        );
         setPortfolio(portfolioData);
       } catch (error: any) {
         // If portfolio doesn't exist or other error, create one
@@ -184,26 +183,15 @@ const PortfolioPage: React.FC = () => {
   if (!portfolio) {
     return (
       <Box sx={{ my: 2 }}>
-        <Typography variant="h6">
-          No portfolio found. Please create your portfolio.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          sx={{ mt: 2 }}
-          onClick={fetchPortfolio}
-        >
+        <Typography variant="h6">No portfolio found. Please create your portfolio.</Typography>
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={fetchPortfolio}>
           Retry
         </Button>
       </Box>
     );
   }
 
-  return (
-    <div>
-      {/* Rest of the component content */}
-    </div>
-  );
+  return <div>{/* Rest of the component content */}</div>;
 };
 
-export default PortfolioPage; 
+export default PortfolioPage;

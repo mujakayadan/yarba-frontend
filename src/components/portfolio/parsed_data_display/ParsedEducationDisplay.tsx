@@ -13,27 +13,56 @@ const ParsedEducationDisplay: React.FC<ParsedEducationDisplayProps> = ({ educati
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Education</Typography>
+      <Typography variant="h6" gutterBottom>
+        Education
+      </Typography>
       <List disablePadding>
         {education.map((edu, index) => (
           <React.Fragment key={index}>
             <ListItem alignItems="flex-start" sx={{ flexDirection: 'column', pl: 0 }}>
               <ListItemText
-                primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{edu.degree || 'N/A'}{edu.degree_type ? ` (${edu.degree_type})` : ''}</Typography>}
+                primary={
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    {edu.degree || 'N/A'}
+                    {edu.degree_type ? ` (${edu.degree_type})` : ''}
+                  </Typography>
+                }
                 secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
-                    <Typography variant="body2" color="text.secondary">{edu.university_name || 'N/A'}</Typography>
-                    {edu.location && <Typography variant="body2" color="text.secondary">Location: {edu.location}</Typography>}
-                    {edu.time && <Typography variant="body2" color="text.secondary">Time: {edu.time}</Typography>}
-                    {edu.GPA && <Typography variant="body2" color="text.secondary">GPA: {edu.GPA}</Typography>}
+                    <Typography variant="body2" color="text.secondary">
+                      {edu.university_name || 'N/A'}
+                    </Typography>
+                    {edu.location && (
+                      <Typography variant="body2" color="text.secondary">
+                        Location: {edu.location}
+                      </Typography>
+                    )}
+                    {edu.time && (
+                      <Typography variant="body2" color="text.secondary">
+                        Time: {edu.time}
+                      </Typography>
+                    )}
+                    {edu.GPA && (
+                      <Typography variant="body2" color="text.secondary">
+                        GPA: {edu.GPA}
+                      </Typography>
+                    )}
                     {edu.transcript && edu.transcript.length > 0 && (
                       <Box mt={1}>
-                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>Transcript/Notes:</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                          Transcript/Notes:
+                        </Typography>
                         <List dense disablePadding sx={{ pl: 2 }}>
                           {edu.transcript.map((item, tIndex) => (
-                            <ListItem key={tIndex} sx={{ display: 'list-item', listStyleType: 'disc', p: 0 }}>
-                              <ListItemText primary={<Typography variant="body2">{item}</Typography>} sx={{m:0}}/>
+                            <ListItem
+                              key={tIndex}
+                              sx={{ display: 'list-item', listStyleType: 'disc', p: 0 }}
+                            >
+                              <ListItemText
+                                primary={<Typography variant="body2">{item}</Typography>}
+                                sx={{ m: 0 }}
+                              />
                             </ListItem>
                           ))}
                         </List>
@@ -51,4 +80,4 @@ const ParsedEducationDisplay: React.FC<ParsedEducationDisplayProps> = ({ educati
   );
 };
 
-export default ParsedEducationDisplay; 
+export default ParsedEducationDisplay;

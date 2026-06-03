@@ -21,7 +21,8 @@ export const resumeKeys = {
   all: ['resumes'] as const,
   list: (params: ResumeListParams = {}) => [...resumeKeys.all, 'list', params] as const,
   detail: (id: string) => [...resumeKeys.all, 'detail', id] as const,
-  selection: (sortBy?: string) => [...resumeKeys.all, 'selection', sortBy ?? 'updated_desc'] as const,
+  selection: (sortBy?: string) =>
+    [...resumeKeys.all, 'selection', sortBy ?? 'updated_desc'] as const,
 };
 
 export type CoverLetterListParams = {

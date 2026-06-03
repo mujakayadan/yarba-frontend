@@ -5,4 +5,4 @@ const RegisterPage: React.FC = () => {
   return <LoginPage authMode="register" />;
 };
 
-export default RegisterPage; 
+export default RegisterPage;

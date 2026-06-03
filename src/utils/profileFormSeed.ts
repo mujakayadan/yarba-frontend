@@ -43,16 +43,13 @@ export const seedPreferencesFromProfile = (profileData: Profile): ProfilePrefere
     profileData.prompt_preferences?.cover_letter?.paragraphs?.toString() || '',
   cover_letter_target_age:
     profileData.prompt_preferences?.cover_letter?.target_age?.toString() || '',
-  skills_max_categories:
-    profileData.prompt_preferences?.skills?.max_categories?.toString() || '',
+  skills_max_categories: profileData.prompt_preferences?.skills?.max_categories?.toString() || '',
   skills_min_per_category:
     profileData.prompt_preferences?.skills?.min_per_category?.toString() || '',
   skills_max_per_category:
     profileData.prompt_preferences?.skills?.max_per_category?.toString() || '',
-  education_max_entries:
-    profileData.prompt_preferences?.education?.max_entries?.toString() || '',
-  education_max_courses:
-    profileData.prompt_preferences?.education?.max_courses?.toString() || '',
+  education_max_entries: profileData.prompt_preferences?.education?.max_entries?.toString() || '',
+  education_max_courses: profileData.prompt_preferences?.education?.max_courses?.toString() || '',
   awards_max_awards: profileData.prompt_preferences?.awards?.max_awards?.toString() || '',
   publications_max_publications:
     profileData.prompt_preferences?.publications?.max_publications?.toString() || '',

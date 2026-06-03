@@ -1,13 +1,5 @@
 import React from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Divider,
-  Paper,
-  List,
-  ListItem
-} from '@mui/material';
+import { Container, Typography, Box, Divider, Paper, List, ListItem } from '@mui/material';
 
 const PrivacyPage: React.FC = () => {
   return (
@@ -30,10 +22,13 @@ const PrivacyPage: React.FC = () => {
             1. Introduction
           </Typography>
           <Typography variant="body1" paragraph>
-            At YARBA, we respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.
+            At YARBA, we respect your privacy and are committed to protecting your personal data.
+            This privacy policy will inform you about how we look after your personal data when you
+            visit our website and tell you about your privacy rights and how the law protects you.
           </Typography>
           <Typography variant="body1" paragraph>
-            This privacy policy applies to all users of YARBA's services, including our website, resume builder, cover letter generator, and other related tools.
+            This privacy policy applies to all users of YARBA's services, including our website,
+            resume builder, cover letter generator, and other related tools.
           </Typography>
         </Box>
 
@@ -67,9 +62,7 @@ const PrivacyPage: React.FC = () => {
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                Device and browser information
-              </Typography>
+              <Typography variant="body1">Device and browser information</Typography>
             </ListItem>
           </List>
         </Box>
@@ -84,14 +77,10 @@ const PrivacyPage: React.FC = () => {
           </Typography>
           <List sx={{ pl: 2, listStyleType: 'disc' }}>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                Provide, maintain, and improve our services
-              </Typography>
+              <Typography variant="body1">Provide, maintain, and improve our services</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                Process and complete transactions
-              </Typography>
+              <Typography variant="body1">Process and complete transactions</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
@@ -104,9 +93,7 @@ const PrivacyPage: React.FC = () => {
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                Develop new products and services
-              </Typography>
+              <Typography variant="body1">Develop new products and services</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
@@ -122,27 +109,32 @@ const PrivacyPage: React.FC = () => {
             4. Data Sharing and Disclosure
           </Typography>
           <Typography variant="body1" paragraph>
-            We do not sell your personal information. We may share your personal information in the following situations:
+            We do not sell your personal information. We may share your personal information in the
+            following situations:
           </Typography>
           <List sx={{ pl: 2, listStyleType: 'disc' }}>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                <strong>Service Providers:</strong> We may share your information with third-party vendors, service providers, and contractors who perform services for us.
+                <strong>Service Providers:</strong> We may share your information with third-party
+                vendors, service providers, and contractors who perform services for us.
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                <strong>Legal Requirements:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities.
+                <strong>Legal Requirements:</strong> We may disclose your information if required to
+                do so by law or in response to valid requests by public authorities.
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                <strong>Business Transfers:</strong> We may share or transfer your information in connection with a merger, acquisition, or sale of all or a portion of our assets.
+                <strong>Business Transfers:</strong> We may share or transfer your information in
+                connection with a merger, acquisition, or sale of all or a portion of our assets.
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                <strong>With Your Consent:</strong> We may disclose your personal information for any other purpose with your consent.
+                <strong>With Your Consent:</strong> We may disclose your personal information for
+                any other purpose with your consent.
               </Typography>
             </ListItem>
           </List>
@@ -154,7 +146,9 @@ const PrivacyPage: React.FC = () => {
             5. Data Security
           </Typography>
           <Typography variant="body1" paragraph>
-            We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, please also remember that we cannot guarantee that the internet itself is 100% secure.
+            We have implemented appropriate technical and organizational security measures designed
+            to protect the security of any personal information we process. However, please also
+            remember that we cannot guarantee that the internet itself is 100% secure.
           </Typography>
         </Box>
 
@@ -164,7 +158,9 @@ const PrivacyPage: React.FC = () => {
             6. Data Retention
           </Typography>
           <Typography variant="body1" paragraph>
-            We will only retain your personal information for as long as necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements.
+            We will only retain your personal information for as long as necessary to fulfill the
+            purposes we collected it for, including for the purposes of satisfying any legal,
+            accounting, or reporting requirements.
           </Typography>
         </Box>
 
@@ -174,18 +170,15 @@ const PrivacyPage: React.FC = () => {
             7. Your Rights
           </Typography>
           <Typography variant="body1" paragraph>
-            Depending on your location, you may have various rights regarding your personal information, including:
+            Depending on your location, you may have various rights regarding your personal
+            information, including:
           </Typography>
           <List sx={{ pl: 2, listStyleType: 'disc' }}>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                The right to access your personal information
-              </Typography>
+              <Typography variant="body1">The right to access your personal information</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                The right to correct inaccurate information
-              </Typography>
+              <Typography variant="body1">The right to correct inaccurate information</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
@@ -198,13 +191,12 @@ const PrivacyPage: React.FC = () => {
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">
-                The right to data portability
-              </Typography>
+              <Typography variant="body1">The right to data portability</Typography>
             </ListItem>
           </List>
           <Typography variant="body1" paragraph sx={{ mt: 2 }}>
-            To exercise these rights, please contact us using the details provided in the "Contact Us" section.
+            To exercise these rights, please contact us using the details provided in the "Contact
+            Us" section.
           </Typography>
         </Box>
 
@@ -214,7 +206,10 @@ const PrivacyPage: React.FC = () => {
             8. Updates to This Policy
           </Typography>
           <Typography variant="body1" paragraph>
-            We may update this privacy policy from time to time. The updated version will be indicated by an updated "Last Updated" date and the updated version will be effective as soon as it is accessible. We encourage you to review this privacy policy frequently to be informed of how we are protecting your information.
+            We may update this privacy policy from time to time. The updated version will be
+            indicated by an updated "Last Updated" date and the updated version will be effective as
+            soon as it is accessible. We encourage you to review this privacy policy frequently to
+            be informed of how we are protecting your information.
           </Typography>
         </Box>
 
@@ -238,4 +233,4 @@ const PrivacyPage: React.FC = () => {
   );
 };
 
-export default PrivacyPage; 
+export default PrivacyPage;

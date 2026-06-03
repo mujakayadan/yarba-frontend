@@ -24,25 +24,25 @@ export const Toast: React.FC<ToastProps> = ({
       autoHideDuration={autoHideDuration}
       onClose={onClose}
       anchorOrigin={{ vertical: anchorVertical, horizontal: 'center' }}
-      sx={{ 
+      sx={{
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 9999
+        zIndex: 9999,
       }}
     >
-      <Alert 
-        onClose={onClose} 
+      <Alert
+        onClose={onClose}
         severity={severity}
         variant="filled"
-        sx={{ 
+        sx={{
           minWidth: '250px',
           width: 'auto',
           maxWidth: '80%',
           boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
           mb: anchorVertical === 'bottom' ? 2 : 0,
-          mt: anchorVertical === 'top' ? 2 : 0
+          mt: anchorVertical === 'top' ? 2 : 0,
         }}
       >
         {message}
@@ -51,4 +51,4 @@ export const Toast: React.FC<ToastProps> = ({
   );
 };
 
-export default Toast; 
+export default Toast;

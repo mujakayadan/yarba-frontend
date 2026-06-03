@@ -37,4 +37,4 @@ export const isAuthenticated = (): boolean => {
   const hasToken = !!getToken();
   debug.log(`Authentication check: ${hasToken ? 'Authenticated' : 'Not authenticated'}`);
   return hasToken;
-}; 
+};

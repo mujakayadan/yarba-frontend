@@ -13,15 +13,27 @@ const ParsedAwardsDisplay: React.FC<ParsedAwardsDisplayProps> = ({ awards }) => 
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Awards</Typography>
+      <Typography variant="h6" gutterBottom>
+        Awards
+      </Typography>
       <List disablePadding>
         {awards.map((award, index) => (
           <React.Fragment key={index}>
             <ListItem alignItems="flex-start" sx={{ flexDirection: 'column', pl: 0 }}>
               <ListItemText
-                primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{award.name || 'N/A'}</Typography>}
+                primary={
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    {award.name || 'N/A'}
+                  </Typography>
+                }
                 secondaryTypographyProps={{ component: 'div' }}
-                secondary={award.explanation && <Typography variant="body2" color="text.secondary">{award.explanation}</Typography>}
+                secondary={
+                  award.explanation && (
+                    <Typography variant="body2" color="text.secondary">
+                      {award.explanation}
+                    </Typography>
+                  )
+                }
               />
             </ListItem>
             {index < awards.length - 1 && <Divider component="li" sx={{ my: 1 }} />}
@@ -32,4 +44,4 @@ const ParsedAwardsDisplay: React.FC<ParsedAwardsDisplayProps> = ({ awards }) => 
   );
 };
 
-export default ParsedAwardsDisplay; 
+export default ParsedAwardsDisplay;

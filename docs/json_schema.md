@@ -41,22 +41,22 @@ When enabled, the LLM service will:
 
 The following schema models are available in `core.schemas` and match the corresponding database models:
 
-| Schema | Description | Database Equivalent |
-|--------|-------------|---------------------|
-| `PersonalInformationSchema` | Personal contact information | `PersonalInformation` |
-| `AwardSchema` | Single award entry | `Award` |
-| `AwardsListSchema` | List of awards | `List[Award]` |
-| `ProjectSchema` | Single project entry | `Project` |
-| `ProjectsListSchema` | List of projects | `List[Project]` |
-| `SkillSchema` | Skill category with skills | `Skill` |
-| `SkillsListSchema` | List of skill categories | `List[Skill]` |
-| `WorkExperienceSchema` | Single work experience entry | `WorkExperience` |
-| `WorkExperienceListSchema` | List of work experiences | `List[WorkExperience]` |
-| `EducationSchema` | Single education entry | `Education` |
-| `EducationListSchema` | List of education entries | `List[Education]` |
-| `PublicationSchema` | Single publication entry | `Publication` |
-| `PublicationsListSchema` | List of publications | `List[Publication]` |
-| `CareerSummarySchema` | Career summary information | `CareerSummary` |
+| Schema                      | Description                  | Database Equivalent    |
+| --------------------------- | ---------------------------- | ---------------------- |
+| `PersonalInformationSchema` | Personal contact information | `PersonalInformation`  |
+| `AwardSchema`               | Single award entry           | `Award`                |
+| `AwardsListSchema`          | List of awards               | `List[Award]`          |
+| `ProjectSchema`             | Single project entry         | `Project`              |
+| `ProjectsListSchema`        | List of projects             | `List[Project]`        |
+| `SkillSchema`               | Skill category with skills   | `Skill`                |
+| `SkillsListSchema`          | List of skill categories     | `List[Skill]`          |
+| `WorkExperienceSchema`      | Single work experience entry | `WorkExperience`       |
+| `WorkExperienceListSchema`  | List of work experiences     | `List[WorkExperience]` |
+| `EducationSchema`           | Single education entry       | `Education`            |
+| `EducationListSchema`       | List of education entries    | `List[Education]`      |
+| `PublicationSchema`         | Single publication entry     | `Publication`          |
+| `PublicationsListSchema`    | List of publications         | `List[Publication]`    |
+| `CareerSummarySchema`       | Career summary information   | `CareerSummary`        |
 
 ## Schema Mapping Utility
 
@@ -202,6 +202,7 @@ The following models are known to support JSON schema output:
 - Mistral: Mistral Large
 
 Some models only support basic JSON mode (not full schema):
+
 - Anthropic: Claude 3 Haiku
 - OpenAI: Some older GPT-3.5 models
 
@@ -319,5 +320,6 @@ except ValueError as e:
 The feature uses LiteLLM's JSON mode support. For models that don't support JSON output natively, client-side validation can be enabled with `litellm.enable_json_schema_validation = True`.
 
 See the full examples in:
+
 - `examples/portfolio_json_schema.py` - For portfolio section generation
 - `examples/personal_info_json_schema.py` - For personal information generation

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  TextField, 
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
   InputAdornment,
   IconButton,
   Menu,
@@ -33,7 +33,7 @@ import {
   TableHead,
   TableRow,
   ButtonGroup,
-  ListItemIcon
+  ListItemIcon,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -45,7 +45,7 @@ import {
   Edit as EditIcon,
   Visibility as VisibilityIcon,
   Link as LinkIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
@@ -122,9 +122,9 @@ const CoverLettersPage: React.FC = () => {
       const items = coverLettersData?.items ?? [];
       const resumeIds = items.map((cl) => cl.resume_id);
       const uniqueResumeIds = Array.from(new Set(resumeIds));
-      
+
       const newResumeTitles: Record<string, string> = {};
-      
+
       await Promise.all(
         uniqueResumeIds.map(async (resumeId) => {
           try {
@@ -136,10 +136,10 @@ const CoverLettersPage: React.FC = () => {
           }
         })
       );
-      
+
       setResumeTitles(newResumeTitles);
     };
-    
+
     if ((coverLettersData?.items ?? []).length > 0) {
       fetchResumeTitles();
     }
@@ -155,7 +155,7 @@ const CoverLettersPage: React.FC = () => {
     setPage(value);
     window.scrollTo(0, 0); // Scroll to top when changing pages
   };
-  
+
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     const newPageSize = event.target.value as number;
     console.log(`Page size changing from ${pageSize} to ${newPageSize}`);
@@ -246,8 +246,10 @@ const CoverLettersPage: React.FC = () => {
     setGeneratingPdf(true);
     try {
       const pdfResponse = await getCoverLetterPdf(coverLetterId);
-      const coverLetter = coverLetters.find(cl => cl.id === coverLetterId);
-      const filename = coverLetter ? `${getCoverLetterTitle(coverLetter)}.pdf` : `cover-letter-${coverLetterId}.pdf`;
+      const coverLetter = coverLetters.find((cl) => cl.id === coverLetterId);
+      const filename = coverLetter
+        ? `${getCoverLetterTitle(coverLetter)}.pdf`
+        : `cover-letter-${coverLetterId}.pdf`;
 
       const link = document.createElement('a');
       link.href = pdfResponse.pdf_url;
@@ -255,7 +257,6 @@ const CoverLettersPage: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       let errorMsg = 'Failed to generate PDF';
@@ -278,10 +279,10 @@ const CoverLettersPage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
@@ -289,15 +290,15 @@ const CoverLettersPage: React.FC = () => {
     console.log('View PDF for cover letter:', coverLetterId);
     setGeneratingPdf(true);
     try {
-      const coverLetter = coverLetters.find(cl => cl.id === coverLetterId);
-      
+      const coverLetter = coverLetters.find((cl) => cl.id === coverLetterId);
+
       // Store cover letter name for the dialog title
       if (coverLetter) {
         setSelectedCoverLetterName(getCoverLetterTitle(coverLetter));
       }
-      
+
       const pdfResponse = await getCoverLetterPdf(coverLetterId);
-      
+
       // Fetch the PDF from the URL
       const response = await fetch(pdfResponse.pdf_url);
       const blob = await response.blob();
@@ -325,33 +326,33 @@ const CoverLettersPage: React.FC = () => {
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: '100%' }}>
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'right', 
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'right',
           alignItems: 'center',
           flexWrap: 'wrap',
           mb: 4,
-          gap: 2
+          gap: 2,
         }}
       >
-        <Button 
+        <Button
           variant="contained"
           color="primary"
           startIcon={<AddIcon />}
           onClick={handleCreateCoverLetter}
-          sx={{ 
+          sx={{
             borderRadius: 2,
             py: 1,
             px: 2,
             textTransform: 'none',
-            fontWeight: 600
+            fontWeight: 600,
           }}
         >
           Create New Cover Letter
         </Button>
       </Box>
-      
+
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
           fullWidth
@@ -369,20 +370,20 @@ const CoverLettersPage: React.FC = () => {
           sx={{ mb: 0 }}
         />
       </Paper>
-      
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
       ) : coverLetters.length === 0 ? (
-        <Paper 
-          sx={{ 
-            p: 4, 
+        <Paper
+          sx={{
+            p: 4,
             textAlign: 'center',
             borderRadius: 2,
-            backgroundColor: 'rgba(255,255,255,0.8)', 
+            backgroundColor: 'rgba(255,255,255,0.8)',
             backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+            boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
           }}
         >
           <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
@@ -397,15 +398,15 @@ const CoverLettersPage: React.FC = () => {
               Create your first cover letter to get started!
             </Typography>
           )}
-          <Button 
-            variant="contained" 
-            color="primary" 
+          <Button
+            variant="contained"
+            color="primary"
             startIcon={<AddIcon />}
             onClick={handleCreateCoverLetter}
-            sx={{ 
+            sx={{
               borderRadius: 2,
               textTransform: 'none',
-              fontWeight: 600
+              fontWeight: 600,
             }}
           >
             Create New Cover Letter
@@ -413,58 +414,66 @@ const CoverLettersPage: React.FC = () => {
         </Paper>
       ) : (
         <>
-          <TableContainer 
-            component={Paper} 
-            sx={{ 
+          <TableContainer
+            component={Paper}
+            sx={{
               borderRadius: 2,
               overflow: 'hidden',
               boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              mb: 3
+              mb: 3,
             }}
           >
             <Table sx={{ minWidth: 650 }} aria-label="cover letters table">
               <TableHead sx={{ backgroundColor: 'rgba(0,0,0,0.03)' }}>
                 <TableRow>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem'
-                  }}>Title</TableCell>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem'
-                  }}>Last Updated</TableCell>
-                  <TableCell sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary',
-                    fontSize: '0.875rem',
-                    textAlign: 'center'
-                  }}>Actions</TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Title
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Last Updated
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontSize: '0.875rem',
+                      textAlign: 'center',
+                    }}
+                  >
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {coverLetters.map((coverLetter) => (
-                  <TableRow 
+                  <TableRow
                     key={coverLetter.id}
                     hover
-                    sx={{ 
+                    sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
                       transition: 'background-color 0.2s ease',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' }
+                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' },
                     }}
                     onClick={() => handleViewCoverLetter(coverLetter.id)}
                   >
-                    <TableCell 
-                      component="th" 
-                      scope="row"
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      <Typography 
-                        variant="subtitle1" 
-                        sx={{ 
+                    <TableCell component="th" scope="row" sx={{ cursor: 'pointer' }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
                           fontWeight: 500,
-                          '&:hover': { textDecoration: 'underline' }
+                          '&:hover': { textDecoration: 'underline' },
                         }}
                       >
                         {getCoverLetterTitle(coverLetter)}
@@ -477,35 +486,29 @@ const CoverLettersPage: React.FC = () => {
                     </TableCell>
                     <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                       <ButtonGroup size="small" variant="outlined">
-                        <Tooltip 
-                          title="View" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
+                        <Tooltip title="View" placement="top" TransitionProps={{ timeout: 0 }}>
                           <Button onClick={() => handleViewCoverLetter(coverLetter.id)}>
                             <VisibilityIcon fontSize="small" />
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="See PDF" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
-                          <Button 
-                            variant="outlined" 
-                            startIcon={generatingPdf && !pdfPreview.open ? <CircularProgress size={16} /> : <PdfIcon />}
+                        <Tooltip title="See PDF" placement="top" TransitionProps={{ timeout: 0 }}>
+                          <Button
+                            variant="outlined"
+                            startIcon={
+                              generatingPdf && !pdfPreview.open ? (
+                                <CircularProgress size={16} />
+                              ) : (
+                                <PdfIcon />
+                              )
+                            }
                             onClick={() => handleViewPdf(coverLetter.id)}
                             disabled={generatingPdf}
                           >
                             {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="Delete" 
-                          placement="top"
-                          TransitionProps={{ timeout: 0 }}
-                        >
-                          <Button 
+                        <Tooltip title="Delete" placement="top" TransitionProps={{ timeout: 0 }}>
+                          <Button
                             onClick={() => {
                               setSelectedCoverLetterId(coverLetter.id);
                               setDeleteDialogOpen(true);
@@ -515,8 +518,8 @@ const CoverLettersPage: React.FC = () => {
                             <DeleteIcon fontSize="small" />
                           </Button>
                         </Tooltip>
-                        <Tooltip 
-                          title="More options" 
+                        <Tooltip
+                          title="More options"
                           placement="top"
                           TransitionProps={{ timeout: 0 }}
                         >
@@ -531,28 +534,32 @@ const CoverLettersPage: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', sm: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', sm: 'center' }, 
-            flexWrap: 'wrap',
-            gap: 2,
-            mb: 4
-          }}>
-            <Box sx={{ 
+
+          <Box
+            sx={{
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              flexWrap: 'wrap',
               gap: 2,
-              flexWrap: 'wrap'
-            }}>
+              mb: 4,
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                flexWrap: 'wrap',
+              }}
+            >
               <Typography variant="body2" color="text.secondary">
-                {totalCoverLetters === 0 ? 'No results' : 
-                  `Showing ${(page - 1) * pageSize + 1} to ${Math.min(page * pageSize, totalCoverLetters)} of ${totalCoverLetters} cover letter${totalCoverLetters !== 1 ? 's' : ''}`
-                }
+                {totalCoverLetters === 0
+                  ? 'No results'
+                  : `Showing ${(page - 1) * pageSize + 1} to ${Math.min(page * pageSize, totalCoverLetters)} of ${totalCoverLetters} cover letter${totalCoverLetters !== 1 ? 's' : ''}`}
               </Typography>
-              
+
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel id="page-size-select-label">Page Size</InputLabel>
                 <Select
@@ -563,15 +570,17 @@ const CoverLettersPage: React.FC = () => {
                   onChange={handlePageSizeChange}
                 >
                   {PAGE_SIZE_OPTIONS.map((size) => (
-                    <MenuItem key={size} value={size}>{size} per page</MenuItem>
+                    <MenuItem key={size} value={size}>
+                      {size} per page
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Box>
-            
-            <Pagination 
+
+            <Pagination
               count={Math.max(1, Math.ceil(totalCoverLetters / pageSize))}
-              page={page} 
+              page={page}
               onChange={handlePageChange}
               color="primary"
               size="large"
@@ -580,13 +589,13 @@ const CoverLettersPage: React.FC = () => {
               sx={{
                 '& .MuiPaginationItem-root': {
                   fontSize: '1rem',
-                }
+                },
               }}
             />
           </Box>
         </>
       )}
-      
+
       {/* Menu for more options */}
       <Menu
         anchorEl={anchorEl}
@@ -603,19 +612,25 @@ const CoverLettersPage: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={() => selectedCoverLetterId && handleViewCoverLetter(selectedCoverLetterId)}>
+        <MenuItem
+          onClick={() => selectedCoverLetterId && handleViewCoverLetter(selectedCoverLetterId)}
+        >
           <ListItemIcon>
             <VisibilityIcon fontSize="small" />
           </ListItemIcon>
           View
         </MenuItem>
-        <MenuItem onClick={() => selectedCoverLetterId && handleEditCoverLetter(selectedCoverLetterId)}>
+        <MenuItem
+          onClick={() => selectedCoverLetterId && handleEditCoverLetter(selectedCoverLetterId)}
+        >
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           Edit
         </MenuItem>
-        <MenuItem onClick={() => selectedCoverLetterId && handleDuplicateCoverLetter(selectedCoverLetterId)}>
+        <MenuItem
+          onClick={() => selectedCoverLetterId && handleDuplicateCoverLetter(selectedCoverLetterId)}
+        >
           <ListItemIcon>
             <FileCopyIcon fontSize="small" />
           </ListItemIcon>
@@ -641,7 +656,7 @@ const CoverLettersPage: React.FC = () => {
           Delete
         </MenuItem>
       </Menu>
-      
+
       {/* Delete confirmation dialog */}
       <Dialog
         open={deleteDialogOpen}
@@ -649,25 +664,19 @@ const CoverLettersPage: React.FC = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          Confirm Delete
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete this cover letter? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button 
-            onClick={handleDeleteCancel} 
-            color="primary"
-            disabled={deletingCoverLetter}
-          >
+          <Button onClick={handleDeleteCancel} color="primary" disabled={deletingCoverLetter}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             variant="contained"
             autoFocus
             disabled={deletingCoverLetter}
@@ -677,7 +686,7 @@ const CoverLettersPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* Error snackbar */}
       <Toast
         open={snackbarOpen}
@@ -685,7 +694,7 @@ const CoverLettersPage: React.FC = () => {
         severity="error"
         onClose={() => setSnackbarOpen(false)}
       />
-      
+
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={`${selectedCoverLetterName || 'Cover Letter'} PDF Preview`}
@@ -717,4 +726,4 @@ const CoverLettersPage: React.FC = () => {
   );
 };
 
-export default CoverLettersPage; 
+export default CoverLettersPage;

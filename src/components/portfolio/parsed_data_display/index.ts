@@ -7,4 +7,4 @@ export { default as ParsedAwardsDisplay } from './ParsedAwardsDisplay';
 export { default as ParsedPublicationsDisplay } from './ParsedPublicationsDisplay';
 export { default as ParsedCertificationsDisplay } from './ParsedCertificationsDisplay';
 export { default as ParsedCustomSectionsDisplay } from './ParsedCustomSectionsDisplay';
-export { default as ParsedPortfolioDisplay } from './ParsedPortfolioDisplay'; 
+export { default as ParsedPortfolioDisplay } from './ParsedPortfolioDisplay';

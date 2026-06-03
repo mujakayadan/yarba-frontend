@@ -26,23 +26,43 @@ const ParsedPortfolioDisplay: React.FC<ParsedPortfolioDisplayProps> = ({ portfol
     <Box sx={{ mt: 3 }}>
       {portfolioData.professional_title && (
         <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h5" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>
-                {portfolioData.professional_title}
-            </Typography>
+          <Typography variant="h5" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>
+            {portfolioData.professional_title}
+          </Typography>
         </Paper>
       )}
 
-      {portfolioData.career_summary && <ParsedCareerSummaryDisplay careerSummary={portfolioData.career_summary} />}
-      {portfolioData.skills && portfolioData.skills.length > 0 && <ParsedSkillsDisplay skills={portfolioData.skills} />}
-      {portfolioData.work_experience && portfolioData.work_experience.length > 0 && <ParsedWorkExperienceDisplay workExperience={sortByDateDesc(portfolioData.work_experience)} />}
-      {portfolioData.education && portfolioData.education.length > 0 && <ParsedEducationDisplay education={sortByDateDesc(portfolioData.education)} />}
-      {portfolioData.projects && portfolioData.projects.length > 0 && <ParsedProjectsDisplay projects={sortByDateDesc(portfolioData.projects)} />}
-      {portfolioData.awards && portfolioData.awards.length > 0 && <ParsedAwardsDisplay awards={portfolioData.awards} />}
-      {portfolioData.publications && portfolioData.publications.length > 0 && <ParsedPublicationsDisplay publications={sortByDateDesc(portfolioData.publications)} />}
-      {portfolioData.certifications && portfolioData.certifications.length > 0 && <ParsedCertificationsDisplay certifications={portfolioData.certifications} />}
-      {portfolioData.custom_sections && portfolioData.custom_sections.sections.length > 0 && <ParsedCustomSectionsDisplay customSections={portfolioData.custom_sections} />}
+      {portfolioData.career_summary && (
+        <ParsedCareerSummaryDisplay careerSummary={portfolioData.career_summary} />
+      )}
+      {portfolioData.skills && portfolioData.skills.length > 0 && (
+        <ParsedSkillsDisplay skills={portfolioData.skills} />
+      )}
+      {portfolioData.work_experience && portfolioData.work_experience.length > 0 && (
+        <ParsedWorkExperienceDisplay
+          workExperience={sortByDateDesc(portfolioData.work_experience)}
+        />
+      )}
+      {portfolioData.education && portfolioData.education.length > 0 && (
+        <ParsedEducationDisplay education={sortByDateDesc(portfolioData.education)} />
+      )}
+      {portfolioData.projects && portfolioData.projects.length > 0 && (
+        <ParsedProjectsDisplay projects={sortByDateDesc(portfolioData.projects)} />
+      )}
+      {portfolioData.awards && portfolioData.awards.length > 0 && (
+        <ParsedAwardsDisplay awards={portfolioData.awards} />
+      )}
+      {portfolioData.publications && portfolioData.publications.length > 0 && (
+        <ParsedPublicationsDisplay publications={sortByDateDesc(portfolioData.publications)} />
+      )}
+      {portfolioData.certifications && portfolioData.certifications.length > 0 && (
+        <ParsedCertificationsDisplay certifications={portfolioData.certifications} />
+      )}
+      {portfolioData.custom_sections && portfolioData.custom_sections.sections.length > 0 && (
+        <ParsedCustomSectionsDisplay customSections={portfolioData.custom_sections} />
+      )}
     </Box>
   );
 };
 
-export default ParsedPortfolioDisplay; 
+export default ParsedPortfolioDisplay;

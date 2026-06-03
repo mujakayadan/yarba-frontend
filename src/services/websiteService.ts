@@ -1,5 +1,10 @@
 import api from './api';
-import { PortfolioWebsiteConfig, PortfolioWebsiteResponse, SubdomainAvailabilityResponse, DeploymentStatus } from '../types/models'; // Assuming these types will be defined
+import {
+  PortfolioWebsiteConfig,
+  PortfolioWebsiteResponse,
+  SubdomainAvailabilityResponse,
+  DeploymentStatus,
+} from '../types/models'; // Assuming these types will be defined
 
 const API_BASE_URL = '/portfolio-websites';
 
@@ -10,7 +15,11 @@ export const createPortfolioWebsite = async (
   forceRebuild: boolean = false
 ): Promise<PortfolioWebsiteResponse> => {
   const params = customSubdomain ? { custom_subdomain: customSubdomain } : {};
-  const response = await api.post<PortfolioWebsiteResponse>(`${API_BASE_URL}/create`, { config, force_rebuild: forceRebuild }, { params });
+  const response = await api.post<PortfolioWebsiteResponse>(
+    `${API_BASE_URL}/create`,
+    { config, force_rebuild: forceRebuild },
+    { params }
+  );
   return response.data;
 };
 
@@ -32,7 +41,10 @@ export const updateWebsiteConfig = async (
   config: Partial<PortfolioWebsiteConfig>,
   forceRebuild: boolean = false
 ): Promise<PortfolioWebsiteResponse> => {
-  const response = await api.put<PortfolioWebsiteResponse>(`${API_BASE_URL}/config`, { config, force_rebuild: forceRebuild });
+  const response = await api.put<PortfolioWebsiteResponse>(`${API_BASE_URL}/config`, {
+    config,
+    force_rebuild: forceRebuild,
+  });
   return response.data;
 };
 
@@ -44,13 +56,19 @@ export const deployPortfolioWebsite = async (
   const params: Record<string, boolean> = {};
   if (forceRebuild) params.force_rebuild = true;
   if (cleanDeploy) params.clean_deploy = true;
-  const response = await api.post<PortfolioWebsiteResponse>(`${API_BASE_URL}/deploy`, null, { params });
+  const response = await api.post<PortfolioWebsiteResponse>(`${API_BASE_URL}/deploy`, null, {
+    params,
+  });
   return response.data;
 };
 
 // Function to check subdomain availability
-export const checkSubdomainAvailability = async (subdomain: string): Promise<SubdomainAvailabilityResponse> => {
-  const response = await api.get<SubdomainAvailabilityResponse>(`${API_BASE_URL}/subdomain/check/${subdomain}`);
+export const checkSubdomainAvailability = async (
+  subdomain: string
+): Promise<SubdomainAvailabilityResponse> => {
+  const response = await api.get<SubdomainAvailabilityResponse>(
+    `${API_BASE_URL}/subdomain/check/${subdomain}`
+  );
   return response.data;
 };
 
@@ -69,4 +87,4 @@ export const getDeploymentStatus = async (): Promise<DeploymentStatus> => {
 // export const getWebsiteAnalytics = async (): Promise<WebsiteAnalytics> => {
 //   const response = await api.get<WebsiteAnalytics>(`${API_BASE_URL}/analytics`);
 //   return response.data;
-// }; 
+// };

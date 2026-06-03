@@ -5,13 +5,7 @@ import { getCoverLetters } from '../services/coverLetterService';
 
 export const useCoverLetters = (params: CoverLetterListParams = {}) => {
   const { user } = useAuth();
-  const {
-    skip = 0,
-    limit = 10,
-    template_id,
-    resume_id,
-    sort_by = 'updated_desc',
-  } = params;
+  const { skip = 0, limit = 10, template_id, resume_id, sort_by = 'updated_desc' } = params;
 
   return useQuery({
     queryKey: coverLetterKeys.list(params),

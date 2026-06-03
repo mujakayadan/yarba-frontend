@@ -2,7 +2,10 @@ import React from 'react';
 import { Typography, TextField, Divider } from '@mui/material';
 import type { ProfileEditTabProps } from '../../../types/profileEdit';
 
-export const LifeStoryEditTab: React.FC<ProfileEditTabProps> = ({ lifeStory, onLifeStoryChange }) => (
+export const LifeStoryEditTab: React.FC<ProfileEditTabProps> = ({
+  lifeStory,
+  onLifeStoryChange,
+}) => (
   <>
     <Typography variant="subtitle1" gutterBottom>
       Life Story
@@ -10,9 +13,9 @@ export const LifeStoryEditTab: React.FC<ProfileEditTabProps> = ({ lifeStory, onL
     <Divider sx={{ mb: 3 }} />
 
     <Typography variant="body2" color="text.secondary" paragraph>
-      Your life story helps build better resume content and cover letters. Share your career journey,
-      motivations, and aspirations. This information helps the AI better understand you when generating
-      documents.
+      Your life story helps build better resume content and cover letters. Share your career
+      journey, motivations, and aspirations. This information helps the AI better understand you
+      when generating documents.
     </Typography>
 
     <TextField

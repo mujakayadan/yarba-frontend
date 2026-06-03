@@ -1,6 +1,7 @@
 # Yarba Frontend Modernization TODO
 
 ## Tier 1 — Build & toolchain
+
 - [x] Migrate CRA → Vite; remove react-app-rewired, customize-cra, config-overrides
 - [x] Remove duplicate Babel/webpack configs (babel.config.js, webpack.config.js, vercel-build.js)
 - [x] Replace vercel-build.js hacks; enable strict production build
@@ -11,6 +12,7 @@
 - [x] Bump Node engines to >=18
 
 ## Tier 2 — Dependencies
+
 - [x] React 18 → 19, @types/react 19
 - [x] axios → 1.16.x (security patches)
 - [x] react-router-dom → 7.x
@@ -23,6 +25,7 @@
 - [x] Run safe npm audit fix
 
 ## Tier 3 — Architecture
+
 - [x] Nested routes + React.lazy code splitting (`src/routes/AppRoutes.tsx`)
 - [x] ErrorBoundary component
 - [x] API 401 handler via auth event (no full page reload)
@@ -37,6 +40,7 @@
 - [x] TanStack Query server-state: `useUserProfile`, `usePortfolio`, list/detail hooks, mutations + invalidation
 
 ## Tier 4 — Cleanup & docs
+
 - [x] Fix App.test.tsx for Vitest
 - [x] Dedupe dev scripts (`start` and `dev` both use Vite)
 - [x] Update README, vercel.json, .cursorrules
@@ -47,9 +51,9 @@
 
 Rename environment variables in `.env.local` and Vercel:
 
-| Old (CRA) | New (Vite) |
-|-----------|------------|
-| `REACT_APP_API_URL` | `VITE_API_URL` |
-| `REACT_APP_DEBUG` | `VITE_DEBUG` |
+| Old (CRA)                  | New (Vite)            |
+| -------------------------- | --------------------- |
+| `REACT_APP_API_URL`        | `VITE_API_URL`        |
+| `REACT_APP_DEBUG`          | `VITE_DEBUG`          |
 | `REACT_APP_CLOUDFRONT_URL` | `VITE_CLOUDFRONT_URL` |
-| `REACT_APP_FIREBASE_*` | `VITE_FIREBASE_*` |
+| `REACT_APP_FIREBASE_*`     | `VITE_FIREBASE_*`     |

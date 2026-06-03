@@ -30,8 +30,15 @@ const PortfolioEditPage: React.FC = () => {
   if (!form.portfolio) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">Portfolio not found. Please try again or create a new portfolio.</Alert>
-        <Button variant="contained" color="primary" onClick={() => navigate('/portfolio')} sx={{ mt: 2 }}>
+        <Alert severity="error">
+          Portfolio not found. Please try again or create a new portfolio.
+        </Alert>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/portfolio')}
+          sx={{ mt: 2 }}
+        >
           Back to Portfolios
         </Button>
       </Box>
@@ -94,7 +101,14 @@ const PortfolioEditPage: React.FC = () => {
           aria-labelledby={`portfolio-edit-tab-${form.renderedTab}`}
           aria-busy={form.isTabPending}
         >
-          <Box sx={{ p: 3, minHeight: 120, opacity: form.isTabPending ? 0.6 : 1, transition: 'opacity 150ms' }}>
+          <Box
+            sx={{
+              p: 3,
+              minHeight: 120,
+              opacity: form.isTabPending ? 0.6 : 1,
+              transition: 'opacity 150ms',
+            }}
+          >
             {ActiveTab && (
               <Suspense
                 fallback={

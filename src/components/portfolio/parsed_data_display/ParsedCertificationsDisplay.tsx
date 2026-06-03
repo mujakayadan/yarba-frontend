@@ -5,14 +5,18 @@ interface ParsedCertificationsDisplayProps {
   certifications: string[];
 }
 
-const ParsedCertificationsDisplay: React.FC<ParsedCertificationsDisplayProps> = ({ certifications }) => {
+const ParsedCertificationsDisplay: React.FC<ParsedCertificationsDisplayProps> = ({
+  certifications,
+}) => {
   if (!certifications || certifications.length === 0) {
     return <Typography>No certifications data provided.</Typography>;
   }
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Certifications</Typography>
+      <Typography variant="h6" gutterBottom>
+        Certifications
+      </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {certifications.map((cert, index) => (
           <Chip key={index} label={cert} />
@@ -22,4 +26,4 @@ const ParsedCertificationsDisplay: React.FC<ParsedCertificationsDisplayProps> = 
   );
 };
 
-export default ParsedCertificationsDisplay; 
+export default ParsedCertificationsDisplay;

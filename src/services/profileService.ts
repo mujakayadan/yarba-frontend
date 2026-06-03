@@ -29,7 +29,9 @@ export const updateProfile = async (profileData: Partial<Profile>): Promise<Prof
 };
 
 // Update personal information
-export const updatePersonalInformation = async (personalInfo: Profile['personal_information']): Promise<Profile> => {
+export const updatePersonalInformation = async (
+  personalInfo: Profile['personal_information']
+): Promise<Profile> => {
   const response = await api.patch('/profiles/me/personal-information', personalInfo);
   return response.data;
 };
@@ -41,13 +43,17 @@ export const updatePersonalInformation = async (personalInfo: Profile['personal_
 // };
 
 // Update prompt preferences
-export const updatePromptPreferences = async (promptPrefs: Partial<NonNullable<Profile['prompt_preferences']>>): Promise<Profile> => {
+export const updatePromptPreferences = async (
+  promptPrefs: Partial<NonNullable<Profile['prompt_preferences']>>
+): Promise<Profile> => {
   const response = await api.put('/profiles/me/preferences/prompt', promptPrefs);
   return response.data;
 };
 
 // Update system preferences
-export const updateSystemPreferences = async (systemPrefs: Partial<NonNullable<Profile['system_preferences']>>): Promise<Profile> => {
+export const updateSystemPreferences = async (
+  systemPrefs: Partial<NonNullable<Profile['system_preferences']>>
+): Promise<Profile> => {
   const response = await api.put('/profiles/me/preferences/system', systemPrefs);
   return response.data;
 };
@@ -59,7 +65,9 @@ export const updateLifeStory = async (lifeStory: string): Promise<Profile> => {
 };
 
 // Profile Picture Operations
-export const uploadProfilePicture = async (file: File): Promise<{ profile_picture_key: string }> => {
+export const uploadProfilePicture = async (
+  file: File
+): Promise<{ profile_picture_key: string }> => {
   const formData = new FormData();
   formData.append('file', file);
 
@@ -102,4 +110,4 @@ export const getSignatureUrl = async (): Promise<{ signature_key: string }> => {
 export const deleteSignature = async (): Promise<{ signature_key: null }> => {
   const response = await api.delete('/profiles/me/signature');
   return response.data;
-}; 
+};

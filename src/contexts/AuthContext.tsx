@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import type { User as FirebaseUser } from 'firebase/auth';
 import api from '../services/api';
-import { 
+import {
   loginWithEmail,
   registerWithEmail,
   loginWithGoogle as loginWithGoogleService,
   logout,
-  getCurrentFirebaseUser
+  getCurrentFirebaseUser,
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
 import { UpdateSetupProgressRequest, User, UserSetupProgressResponse } from '../types/models';
@@ -23,7 +23,7 @@ export enum UserSetupStep {
   LIFE_STORY = 4,
   PORTFOLIO_UPLOAD = 5,
   PORTFOLIO_REVIEW = 6,
-  COMPLETE = 7
+  COMPLETE = 7,
 }
 
 // Map setup steps to routes for navigation
@@ -35,7 +35,7 @@ export const setupStepToRoute: Record<UserSetupStep, string | null> = {
   [UserSetupStep.LIFE_STORY]: '/user/setup/life-story',
   [UserSetupStep.PORTFOLIO_UPLOAD]: '/user/setup/portfolio-upload',
   [UserSetupStep.PORTFOLIO_REVIEW]: '/user/setup/portfolio-review',
-  [UserSetupStep.COMPLETE]: null
+  [UserSetupStep.COMPLETE]: null,
 };
 
 // Define the shape of our auth context state with more accurate typing
@@ -50,7 +50,7 @@ export interface AuthContextState {
   setupRoute: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<{ setupRoute: string }>;
-  signInWithGoogleFlow: () => Promise<{ isNewUser?: boolean, setupRoute?: string }>;
+  signInWithGoogleFlow: () => Promise<{ isNewUser?: boolean; setupRoute?: string }>;
   signOut: () => Promise<void>;
   setError: (error: string | null) => void;
   updateProfile: (profileData: Record<string, unknown>) => Promise<void>;
@@ -105,27 +105,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!isAuthenticated) {
       return '/login';
     }
-    
+
     if (setupRoute) {
       return setupRoute;
     }
-    
+
     return '/dashboard';
   };
 
   // Update setupStep and setupRoute based on user data
   const updateSetupState = (currentSetupStep: number | null | undefined) => {
     debug.log('Updating setup state based on current_setup_step:', currentSetupStep);
-    
+
     if (typeof currentSetupStep !== 'number') {
       setSetupStep(UserSetupStep.COMPLETE);
       setSetupRoute(null);
       return;
     }
-    
+
     const step = currentSetupStep as UserSetupStep;
     setSetupStep(step);
-    
+
     // Map the step number to a route
     const route = setupStepToRoute[step];
     if (route) {
@@ -144,26 +144,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const fetchCurrentUser = async () => {
     debug.log('Fetching current user data from backend');
     const token = localStorage.getItem('auth_token');
-    
+
     if (!token) {
       debug.warn('No auth token found in localStorage');
       setLoading(false);
       return;
     }
-    
+
     try {
       setLoading(true);
-      
+
       // Check if we're offline before making API calls
       if (checkNetworkConnectivity()) {
         debug.warn('Device appears to be offline, skipping API call');
         setLoading(false);
         return;
       }
-      
+
       const response = await api.get('/auth/me');
       debug.log('User data successfully fetched from /auth/me', response.data);
-      
+
       setUser(response.data);
       setIsAuthenticated(true);
       updateSetupState(response.data.current_setup_step);
@@ -190,12 +190,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Device is now ONLINE');
       setIsOfflineMode(false);
     };
-    
+
     const handleOffline = () => {
       debug.log('Device is now OFFLINE');
       setIsOfflineMode(true);
     };
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -207,7 +207,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     };
     window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
-    
+
     const initializeAuth = async () => {
       try {
         const isOffline = checkNetworkConnectivity();
@@ -236,7 +236,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     void initializeAuth();
-    
+
     // Clean up event listeners
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -251,7 +251,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Starting login process for:', email);
       setLoading(true);
       setError(null);
-      
+
       // Check if we're offline first
       if (checkNetworkConnectivity()) {
         const errorMsg = 'Cannot login while offline. Please check your internet connection.';
@@ -260,18 +260,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLoading(false);
         throw new Error(errorMsg);
       }
-      
+
       const result = await loginWithEmail(email, password);
       const fbUser = await getCurrentFirebaseUser();
       setFirebaseUser(fbUser);
       debug.log('Firebase login successful');
       setIsAuthenticated(true);
-      
+
       if (result.user) {
         setUser(result.user);
         updateSetupState(result.current_setup_step);
       }
-      
+
       return;
     } catch (err: any) {
       debug.error('Login error:', err);
@@ -289,7 +289,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Starting registration process for:', email);
       setLoading(true);
       setError(null);
-      
+
       // Check if we're offline first
       if (checkNetworkConnectivity()) {
         const errorMsg = 'Cannot register while offline. Please check your internet connection.';
@@ -298,7 +298,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLoading(false);
         throw new Error(errorMsg);
       }
-      
+
       const result = await registerWithEmail({ email, password });
       const fbUser = await getCurrentFirebaseUser();
       setFirebaseUser(fbUser);
@@ -308,10 +308,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (result.user) {
         setUser({ ...result.user, current_setup_step: result.current_setup_step });
       }
-      
+
       // Determine the setup step from the registration response
       updateSetupState(result.current_setup_step);
-      
+
       // Return the appropriate setup route for immediate redirect
       return { setupRoute: setupRoute || '/dashboard' };
     } catch (err: any) {
@@ -325,35 +325,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Sign in with Google flow
-  const signInWithGoogleFlow = async (): Promise<{ isNewUser?: boolean, setupRoute?: string }> => {
+  const signInWithGoogleFlow = async (): Promise<{ isNewUser?: boolean; setupRoute?: string }> => {
     try {
       debug.log('Starting Google sign-in flow');
       setLoading(true);
       setError(null);
-      
+
       if (checkNetworkConnectivity()) {
-        const errorMsg = 'Cannot sign in with Google while offline. Please check your internet connection.';
+        const errorMsg =
+          'Cannot sign in with Google while offline. Please check your internet connection.';
         debug.error(errorMsg);
         setError(errorMsg);
         setLoading(false);
         throw new Error(errorMsg);
       }
-      
+
       const result = await loginWithGoogleService();
       debug.log('Google sign-in flow completed with result:', result);
-      
+
       const fbUser = await getCurrentFirebaseUser();
       setFirebaseUser(fbUser);
       setIsAuthenticated(true);
-      
+
       if (result.user) {
         setUser({ ...result.user, current_setup_step: result.current_setup_step });
         updateSetupState(result.current_setup_step);
       }
-      
-      return { 
+
+      return {
         isNewUser: result.is_new_user,
-        setupRoute: setupRoute || '/dashboard'
+        setupRoute: setupRoute || '/dashboard',
       };
     } catch (err: any) {
       debug.error('Google sign-in error:', err);
@@ -370,19 +371,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       debug.log('Starting sign out process');
       setLoading(true);
-      
+
       await logout();
-      
+
       // Clean up local state
       localStorage.removeItem('auth_token');
       delete api.defaults.headers.common['Authorization'];
-      
+
       setUser(null);
       setFirebaseUser(null);
       setIsAuthenticated(false);
       setSetupStep(UserSetupStep.NONE);
       setSetupRoute(null);
-      
+
       debug.log('Sign out successful');
     } catch (err: any) {
       debug.error('Sign out error:', err);
@@ -397,14 +398,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       debug.log('Updating user profile');
       setLoading(true);
-      
+
       if (checkNetworkConnectivity()) {
         throw new Error('Cannot update profile while offline');
       }
-      
+
       const response = await api.put('/profiles/me', profileData);
       debug.log('Profile updated successfully', response.data);
-      
+
       // Update local user state
       await fetchCurrentUser();
     } catch (err: any) {
@@ -421,18 +422,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       debug.log('Updating user setup progress:', data);
       setLoading(true);
-      
+
       if (checkNetworkConnectivity()) {
         throw new Error('Cannot update setup progress while offline');
       }
-      
+
       // Using the correct endpoint with PUT method
-      const response = await api.put<UserSetupProgressResponse>('/auth/users/me/setup-progress', data);
+      const response = await api.put<UserSetupProgressResponse>(
+        '/auth/users/me/setup-progress',
+        data
+      );
       debug.log('Setup progress updated successfully', response.data);
-      
+
       // Update local state with new step
       updateSetupState(response.data.current_setup_step);
-      
+
       // Refresh user data
       await fetchCurrentUser();
     } catch (err: any) {
@@ -465,4 +469,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}; 
+};

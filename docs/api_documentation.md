@@ -23,6 +23,7 @@ POST /api/v1/auth/register
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -63,6 +64,7 @@ POST /api/v1/auth/login
 ```
 
 **Request Body:**
+
 ```json
 {
   "id_token": "string (Firebase ID Token)"
@@ -70,6 +72,7 @@ POST /api/v1/auth/login
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -98,6 +101,7 @@ POST /api/v1/auth/swagger-login
 This endpoint is for **development use only** and is disabled in production. It allows testing API endpoints in Swagger UI by providing an ID token.
 
 **Request Body:**
+
 ```json
 {
   "email": "string",
@@ -106,6 +110,7 @@ This endpoint is for **development use only** and is disabled in production. It 
 ```
 
 **Response:**
+
 ```json
 {
   "id_token": "string",
@@ -120,6 +125,7 @@ GET /api/v1/auth/me
 ```
 
 **Response:**
+
 ```json
 {
   "id": "string",
@@ -181,6 +187,7 @@ POST /api/v1/auth/forgot-password
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "string"
@@ -188,6 +195,7 @@ POST /api/v1/auth/forgot-password
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Password reset instructions sent to your email"
@@ -201,6 +209,7 @@ POST /api/v1/auth/verify-email
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "string"
@@ -208,6 +217,7 @@ POST /api/v1/auth/verify-email
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Email verification instructions sent to your email"
@@ -221,6 +231,7 @@ POST /api/v1/auth/change-password
 ```
 
 **Request Body:**
+
 ```json
 {
   "current_password": "string",
@@ -229,6 +240,7 @@ POST /api/v1/auth/change-password
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Password changed successfully"
@@ -246,6 +258,7 @@ The API implements rate limiting to prevent abuse. Different endpoints have diff
 When a rate limit is exceeded, the API will respond with a 429 Too Many Requests status code.
 
 The following headers are included in the response:
+
 - `X-RateLimit-Limit`: The maximum number of requests allowed in the window
 - `X-RateLimit-Remaining`: The number of requests remaining in the current window
 - `X-RateLimit-Reset`: The time when the current rate limit window resets
@@ -271,6 +284,7 @@ POST /api/v1/profiles
 ```
 
 **Request Body:**
+
 ```json
 {
   "personal_information": {
@@ -294,6 +308,7 @@ PUT /api/v1/profiles/me
 ```
 
 **Request Body:**
+
 ```json
 {
   "personal_information": {
@@ -317,10 +332,13 @@ PATCH /api/v1/profiles/me
 ```
 
 **Request Body:**
+
 ```json
 {
   "life_story": "string (optional)",
-  "api_keys": { /* optional API keys object */ }
+  "api_keys": {
+    /* optional API keys object */
+  }
 }
 ```
 
@@ -333,20 +351,45 @@ PUT /api/v1/profiles/me/preferences
 ```
 
 **Request Body:**
+
 ```json
 {
-  "project_details": { /* optional object */ },
-  "work_experience_details": { /* optional object */ },
-  "skills_details": { /* optional object */ },
-  "career_summary_details": { /* optional object */ },
-  "education_details": { /* optional object */ },
-  "cover_letter_details": { /* optional object */ },
-  "awards_details": { /* optional object */ },
-  "publications_details": { /* optional object */ },
-  "feature_preferences": { /* optional object */ },
-  "notifications": { /* optional object */ },
-  "privacy": { /* optional object */ },
-  "llm_preferences": { /* optional object */ },
+  "project_details": {
+    /* optional object */
+  },
+  "work_experience_details": {
+    /* optional object */
+  },
+  "skills_details": {
+    /* optional object */
+  },
+  "career_summary_details": {
+    /* optional object */
+  },
+  "education_details": {
+    /* optional object */
+  },
+  "cover_letter_details": {
+    /* optional object */
+  },
+  "awards_details": {
+    /* optional object */
+  },
+  "publications_details": {
+    /* optional object */
+  },
+  "feature_preferences": {
+    /* optional object */
+  },
+  "notifications": {
+    /* optional object */
+  },
+  "privacy": {
+    /* optional object */
+  },
+  "llm_preferences": {
+    /* optional object */
+  }
 }
 ```
 
@@ -369,6 +412,7 @@ PATCH /api/v1/profiles/me/personal-information
 ```
 
 **Request Body:**
+
 ```json
 {
   "full_name": "string (optional)",
@@ -390,6 +434,7 @@ GET /api/v1/profiles/me/personal-information
 ```
 
 **Response:**
+
 ```json
 {
   "full_name": "string",
@@ -419,6 +464,7 @@ PATCH /api/v1/profiles/me/life-story
 ```
 
 **Request Body:**
+
 ```json
 {
   "life_story": "string"
@@ -434,6 +480,7 @@ GET /api/v1/profiles/me/life-story
 ```
 
 **Response:**
+
 ```json
 {
   "life_story": "string"
@@ -451,6 +498,7 @@ POST /api/v1/profiles/me/profile-picture
 **Request:** Multipart form with file upload
 
 **Response:**
+
 ```json
 {
   "profile_picture_key": "string"
@@ -464,6 +512,7 @@ GET /api/v1/profiles/me/profile-picture
 ```
 
 **Response:**
+
 ```json
 {
   "profile_picture_key": "string"
@@ -477,6 +526,7 @@ DELETE /api/v1/profiles/me/profile-picture
 ```
 
 **Response:**
+
 ```json
 {
   "profile_picture_key": null
@@ -494,6 +544,7 @@ POST /api/v1/profiles/me/signature
 **Request:** Multipart form with file upload
 
 **Response:**
+
 ```json
 {
   "signature_key": "string"
@@ -507,6 +558,7 @@ GET /api/v1/profiles/me/signature
 ```
 
 **Response:**
+
 ```json
 {
   "signature_key": "string"
@@ -520,6 +572,7 @@ DELETE /api/v1/profiles/me/signature
 ```
 
 **Response:**
+
 ```json
 {
   "signature_key": null
@@ -537,6 +590,7 @@ POST /api/v1/resumes
 ```
 
 **Request Body:**
+
 ```json
 {
   "job_description": "string",
@@ -554,6 +608,7 @@ GET /api/v1/resumes
 ```
 
 Query parameters:
+
 - `skip`: Number of resumes to skip (default: 0)
 - `limit`: Number of resumes to return (default: 10, max: 100)
 - `sort_by`: Sort field and direction (default: "updated_desc")
@@ -577,9 +632,11 @@ GET /api/v1/resumes/list-for-selection
 Returns a lightweight list of resumes for the current user, containing only the resume ID and a formatted display name (derived from company and job title). This is useful for populating selection interfaces (e.g., dropdowns) without fetching full resume details.
 
 **Query Parameters:**
+
 - `sort_by`: string (optional, default: "updated_desc") - Sort field and direction. Available options: "updated_desc", "updated_asc", "created_desc", "created_asc", "title_asc", "title_desc".
 
 **Response:**
+
 ```json
 {
   "resumes": [
@@ -611,6 +668,7 @@ PUT /api/v1/resumes/{resume_id}
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "string (optional)",
@@ -649,7 +707,7 @@ DELETE /api/v1/resumes/{resume_id}
 POST /api/v1/resumes/{resume_id}/populate-text-content
 ```
 
-Generates or regenerates the full textual content (summary, experience, skills etc.) for an *existing* resume based on its stored job description. Does not handle PDF generation.
+Generates or regenerates the full textual content (summary, experience, skills etc.) for an _existing_ resume based on its stored job description. Does not handle PDF generation.
 
 **Response:** Resume object with updated textual content.
 
@@ -662,6 +720,7 @@ POST /api/v1/resumes/{resume_id}/regenerate
 Regenerates the full textual content for an existing resume and optionally recompiles the PDF.
 
 **Query Parameters:**
+
 - `generate_pdf`: boolean (default: true) - Whether to regenerate the PDF as well.
 
 **Response:** Resume object with updated content and potentially updated PDF.
@@ -673,6 +732,7 @@ GET /api/v1/resumes/{resume_id}/pdf
 ```
 
 Query parameters:
+
 - `timeout`: PDF generation timeout in seconds (default: 30, min: 5, max: 60)
 
 **Response:** PDF URL
@@ -692,6 +752,7 @@ POST /api/v1/resumes/{resume_id}/upload-pdf
 **Request:** Multipart form with PDF file upload
 
 **Response:**
+
 ```json
 {
   "pdf_url": "string"
@@ -705,6 +766,7 @@ DELETE /api/v1/resumes/{resume_id}/pdf
 ```
 
 **Response:**
+
 ```json
 {
   "pdf_url": null
@@ -767,6 +829,7 @@ POST /api/v1/cover-letters
 ```
 
 **Request Body:**
+
 ```json
 {
   "resume_id": "string",
@@ -778,6 +841,7 @@ POST /api/v1/cover-letters
 **Response:** Cover Letter object
 
 **Cover Letter Object Structure:**
+
 ```json
 {
   "id": "string",
@@ -802,6 +866,7 @@ GET /api/v1/cover-letters
 ```
 
 Query parameters:
+
 - `template_id`: Filter by template ID
 - `resume_id`: Filter by resume ID
 - `skip`: Number of cover letters to skip (default: 0)
@@ -832,6 +897,7 @@ PUT /api/v1/cover-letters/{cover_letter_id}
 ```
 
 **Request Body:**
+
 ```json
 {
   "template_id": "string (optional)",
@@ -856,6 +922,7 @@ POST /api/v1/cover-letters/{cover_letter_id}/generate
 ```
 
 Query parameters:
+
 - `regenerate`: Whether to regenerate content even if it exists (default: false)
 
 **Response:** Cover Letter object with generated content
@@ -867,6 +934,7 @@ GET /api/v1/cover-letters/{cover_letter_id}/pdf
 ```
 
 Query parameters:
+
 - `timeout`: PDF generation timeout in seconds (default: 30, min: 5, max: 60)
 - `regenerate`: Whether to regenerate the PDF even if it exists (default: false)
 
@@ -927,6 +995,7 @@ POST /api/v1/portfolios/
 ```
 
 **Request Body:**
+
 ```json
 {
   "profile_id": "string (optional)"
@@ -958,6 +1027,7 @@ PUT /api/v1/portfolios/{portfolio_id}
 ```
 
 **Request Body:**
+
 ```json
 {
   "profile_id": "string (optional)",
@@ -1051,6 +1121,7 @@ PATCH /api/v1/portfolios/{portfolio_id}
 ```
 
 **Request Body:**
+
 ```json
 {
   // Any combination of the following fields can be included
@@ -1136,6 +1207,7 @@ POST /api/v1/portfolios/parse-document
 Parses an uploaded document (PDF, DOCX) and extracts its content into a structured portfolio data format. This endpoint returns the parsed data, which can then be used to create or update a portfolio. It does not modify any existing portfolio directly.
 
 **Request:** Multipart form-data with a file upload.
+
 - `file`: The document file to be parsed (e.g., a resume in PDF or DOCX format).
 
 **Response:** Parsed portfolio data. The structure matches `PortfolioLLMSchema` but typically excludes database-generated fields like `user_id`, `id`, `created_at`, `updated_at`.
@@ -1220,6 +1292,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/career-summary
 ```
 
 **Request Body:**
+
 ```json
 {
   "job_titles": ["Software Engineer", "Machine Learning Engineer"],
@@ -1235,6 +1308,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/skills
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1255,6 +1329,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/work-experience
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1277,6 +1352,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/education
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1298,6 +1374,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/projects
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1318,6 +1395,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/awards
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1334,6 +1412,7 @@ PATCH /api/v1/portfolios/{portfolio_id}/publications
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -1354,6 +1433,7 @@ DELETE /api/v1/portfolios/{portfolio_id}/items/{item_type}/{item_index}
 ```
 
 **Path Parameters:**
+
 - `portfolio_id`: ID of the portfolio
 - `item_type`: Type of item to delete (e.g., "work_experience", "education", "skills")
 - `item_index`: Index of the item in the array to delete
@@ -1367,6 +1447,7 @@ GET /api/v1/
 ```
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -1429,17 +1510,11 @@ Returns the extracted job details.
     "detail": [
       {
         "type": "url_scheme",
-        "loc": [
-          "query",
-          "url"
-        ],
+        "loc": ["query", "url"],
         "msg": "URL scheme not permitted",
         "input": "invalid-url-scheme://example.com",
         "ctx": {
-          "allowed_schemes": [
-            "http",
-            "https"
-          ]
+          "allowed_schemes": ["http", "https"]
         }
       }
     ]
@@ -1465,6 +1540,7 @@ POST /api/v1/linkedin/credentials
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "string",
@@ -1473,6 +1549,7 @@ POST /api/v1/linkedin/credentials
 ```
 
 **Response:**
+
 ```json
 {
   "message": "LinkedIn credentials saved successfully"
@@ -1486,6 +1563,7 @@ GET /api/v1/linkedin/status
 ```
 
 **Response:**
+
 ```json
 {
   "enabled": true,
@@ -1503,6 +1581,7 @@ POST /api/v1/linkedin/search
 ```
 
 **Request Body:**
+
 ```json
 {
   "keywords": "string",
@@ -1520,6 +1599,7 @@ POST /api/v1/linkedin/apply
 ```
 
 **Request Body:**
+
 ```json
 {
   "job_urls": ["string", "string"],
@@ -1536,6 +1616,7 @@ POST /api/v1/linkedin/apply/single
 ```
 
 **Request Body:**
+
 ```json
 {
   "job_url": "string",
@@ -1565,16 +1646,33 @@ PUT /api/v1/profiles/me/preferences/prompt
 Updates the user's preferences related to LLM prompt generation (e.g., constraints on generated text sections).
 
 **Request Body:** (`PromptPreferencesUpdate` - all fields optional)
+
 ```json
 {
-  "project": { /* optional: e.g., {"max_projects": 5, "bullet_points_per_project": 4} */ },
-  "work_experience": { /* optional: e.g., {"max_jobs": 5, "bullet_points_per_job": 4} */ },
-  "skills": { /* optional: e.g., {"max_categories": 6} */ },
-  "career_summary": { /* optional: e.g., {"max_words": 30} */ },
-  "education": { /* optional: e.g., {"max_entries": 4} */ },
-  "cover_letter": { /* optional: e.g., {"paragraphs": 4} */ },
-  "awards": { /* optional: e.g., {"max_awards": 5} */ },
-  "publications": { /* optional: e.g., {"max_publications": 4} */ }
+  "project": {
+    /* optional: e.g., {"max_projects": 5, "bullet_points_per_project": 4} */
+  },
+  "work_experience": {
+    /* optional: e.g., {"max_jobs": 5, "bullet_points_per_job": 4} */
+  },
+  "skills": {
+    /* optional: e.g., {"max_categories": 6} */
+  },
+  "career_summary": {
+    /* optional: e.g., {"max_words": 30} */
+  },
+  "education": {
+    /* optional: e.g., {"max_entries": 4} */
+  },
+  "cover_letter": {
+    /* optional: e.g., {"paragraphs": 4} */
+  },
+  "awards": {
+    /* optional: e.g., {"max_awards": 5} */
+  },
+  "publications": {
+    /* optional: e.g., {"max_publications": 4} */
+  }
 }
 ```
 
@@ -1589,13 +1687,24 @@ PUT /api/v1/profiles/me/preferences/system
 Updates the user's system-level preferences (e.g., features, LLM settings, templates).
 
 **Request Body:** (`SystemPreferencesUpdate` - all fields optional)
+
 ```json
 {
-  "features": { /* optional: e.g., {"dark_mode": true} */ },
-  "notifications": { /* optional: e.g., {"email_summary": false} */ },
-  "privacy": { /* optional: e.g., {"profile_visibility": "private"} */ },
-  "llm": { /* optional: e.g., {"model_name": "gpt-4", "temperature": 0.5} */ },
-  "templates": { /* optional: e.g., {"default_resume_template_id": "modern"} */ }
+  "features": {
+    /* optional: e.g., {"dark_mode": true} */
+  },
+  "notifications": {
+    /* optional: e.g., {"email_summary": false} */
+  },
+  "privacy": {
+    /* optional: e.g., {"profile_visibility": "private"} */
+  },
+  "llm": {
+    /* optional: e.g., {"model_name": "gpt-4", "temperature": 0.5} */
+  },
+  "templates": {
+    /* optional: e.g., {"default_resume_template_id": "modern"} */
+  }
 }
 ```
 
@@ -1607,153 +1716,41 @@ These endpoints manage user portfolio websites, including creation, configuratio
 
 ### Create Portfolio Website
 
-*   **Endpoint:** `POST /create`
-*   **Summary:** Create portfolio website
-*   **Description:** Create a new portfolio website for the authenticated user. This will also trigger an initial asynchronous deployment.
-*   **Query Parameters:**
-    *   `custom_subdomain` (string, optional): A custom subdomain for the website. If not provided, one will be generated.
-*   **Request Body:** (`PortfolioWebsiteRequest`)
-    ```json
-    {
-      "config": {
-        "theme": "modern",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1F2937",
-        "meta_title": "string (optional)",
-        "meta_description": "string (optional)",
-        "meta_keywords": ["string (optional)"],
-        "social_media_enabled": true,
-        "custom_domain": "string (optional)",
-        "enabled_sections": ["about", "experience", "education", "skills", "projects", "contact"],
-        "section_order": ["about", "experience", "education", "skills", "projects", "contact"],
-        "contact_form_enabled": true
-      },
-      "force_rebuild": false
-    }
-    ```
-    *   `config` (`PortfolioWebsiteConfig`): Configuration for the website. See `PortfolioWebsiteConfig` schema.
-    *   `force_rebuild` (boolean, optional, default: `false`): This field is part of the request but typically more relevant for updates/deployments. For creation, it's less critical.
-*   **Response (201 Created):** (`PortfolioWebsiteResponse`)
-    ```json
-    {
-      "website_url": "string (HttpUrl)",
-      "subdomain": "string",
-      "deployment_status": {
-        "status": "string (e.g., pending, building, success, failed)",
-        "deployment_url": "string (HttpUrl, optional)",
-        "s3_bucket_name": "string (optional)",
-        "cloudfront_distribution_id": "string (optional)",
-        "cloudfront_domain": "string (optional)",
-        "build_id": "string (optional)",
-        "build_logs": "string (optional)",
-        "build_duration": "integer (seconds, optional)",
-        "created_at": "string (datetime)",
-        "started_at": "string (datetime, optional)",
-        "completed_at": "string (datetime, optional)",
-        "error_message": "string (optional)",
-        "error_code": "string (optional)"
-      },
-      "config": {
-        // PortfolioWebsiteConfig object, mirrors request or defaults
-      },
-      "last_updated": "string (datetime)"
-    }
-    ```
-*   **Possible Errors:**
-    *   `409 Conflict`: If the subdomain is already taken or user already has a website.
-    *   `404 Not Found`: If the user is not found.
+- **Endpoint:** `POST /create`
+- **Summary:** Create portfolio website
+- **Description:** Create a new portfolio website for the authenticated user. This will also trigger an initial asynchronous deployment.
+- **Query Parameters:**
+  - `custom_subdomain` (string, optional): A custom subdomain for the website. If not provided, one will be generated.
+- **Request Body:** (`PortfolioWebsiteRequest`)
 
-### Get User's Portfolio Website
+  ```json
+  {
+    "config": {
+      "theme": "modern",
+      "primary_color": "#3B82F6",
+      "secondary_color": "#1F2937",
+      "meta_title": "string (optional)",
+      "meta_description": "string (optional)",
+      "meta_keywords": ["string (optional)"],
+      "social_media_enabled": true,
+      "custom_domain": "string (optional)",
+      "enabled_sections": ["about", "experience", "education", "skills", "projects", "contact"],
+      "section_order": ["about", "experience", "education", "skills", "projects", "contact"],
+      "contact_form_enabled": true
+    },
+    "force_rebuild": false
+  }
+  ```
 
-*   **Endpoint:** `GET /`
-*   **Summary:** Get user's portfolio website
-*   **Description:** Get the portfolio website for the authenticated user.
-*   **Response:** (`PortfolioWebsiteResponse`, optional) - Returns the website object if found, otherwise `null` or an empty response if no website exists for the user.
-    *   Structure is the same as the response for "Create Portfolio Website".
-*   **Possible Errors:** None specific beyond standard auth/server errors if applicable.
+  - `config` (`PortfolioWebsiteConfig`): Configuration for the website. See `PortfolioWebsiteConfig` schema.
+  - `force_rebuild` (boolean, optional, default: `false`): This field is part of the request but typically more relevant for updates/deployments. For creation, it's less critical.
 
-### Update Website Configuration
-
-*   **Endpoint:** `PUT /config`
-*   **Summary:** Update website configuration
-*   **Description:** Update the configuration of the user's portfolio website. May trigger a redeployment if significant changes are made or `force_rebuild` is true.
-*   **Request Body:** (`PortfolioWebsiteRequest`)
-    ```json
-    {
-      "config": {
-        // PortfolioWebsiteConfig object with fields to update
-        "theme": "dark", // example
-        "primary_color": "#FF5733" // example
-        // ... other config fields
-      },
-      "force_rebuild": false // boolean, set to true to force a deployment
-    }
-    ```
-*   **Response:** (`PortfolioWebsiteResponse`)
-    *   Structure is the same as the response for "Create Portfolio Website", reflecting the updated configuration and deployment status if a rebuild was triggered.
-*   **Possible Errors:**
-    *   `404 Not Found`: If the user's portfolio website is not found.
-
-### Deploy Portfolio Website
-
-*   **Endpoint:** `POST /deploy`
-*   **Summary:** Deploy portfolio website
-*   **Description:** Deploy or redeploy the user's portfolio website.
-*   **Query Parameters:**
-    *   `force_rebuild` (boolean, optional, default: `false`): If true, the website will be rebuilt and deployed even if no content or configuration changes are detected.
-*   **Response:** (`PortfolioWebsiteResponse`)
-    *   Structure is the same as the response for "Create Portfolio Website", reflecting the latest deployment status.
-*   **Possible Errors:**
-    *   `404 Not Found`: If the user's portfolio website is not found.
-    *   `500 Internal Server Error`: If the deployment process fails for any reason (e.g., S3 upload error, CloudFront invalidation error). The detail message will contain more information.
-
-### Check Subdomain Availability
-
-*   **Endpoint:** `GET /subdomain/check/{subdomain}`
-*   **Summary:** Check subdomain availability
-*   **Description:** Check if a subdomain is available for use.
-*   **Path Parameters:**
-    *   `subdomain` (string, required): The subdomain string to check.
-*   **Response:** (`SubdomainAvailabilityResponse`)
-    ```json
-    {
-      "subdomain": "string (the checked subdomain)",
-      "available": true, // boolean
-      "suggested_alternatives": ["string"] // list of strings, present if 'available' is false
-    }
-    ```
-*   **Possible Errors:**
-    *   `400 Bad Request`: If the subdomain format is invalid.
-
-### Get Public Portfolio Website
-
-*   **Endpoint:** `GET /public/{subdomain}`
-*   **Summary:** Get public portfolio website
-*   **Description:** Get a public portfolio website by subdomain (for public viewing). This endpoint does not require authentication.
-*   **Path Parameters:**
-    *   `subdomain` (string, required): The subdomain of the public website to retrieve.
-*   **Response:** (`PortfolioWebsiteResponse`)
-    *   Structure is the same as the response for "Create Portfolio Website".
-*   **Possible Errors:**
-    *   `404 Not Found`: If the portfolio website for the given subdomain is not found or is not published.
-
-### Delete Portfolio Website
-
-*   **Endpoint:** `DELETE /`
-*   **Summary:** Delete portfolio website
-*   **Description:** Delete the authenticated user's portfolio website and all associated resources (e.g., S3 files, potentially DNS records if managed by the app in the future).
-*   **Response:** `204 No Content` on successful deletion.
-*   **Possible Errors:**
-    *   `404 Not Found`: If the user's portfolio website is not found.
-
-### Get Deployment Status
-
-*   **Endpoint:** `GET /deployment-status`
-*   **Summary:** Get deployment status
-*   **Description:** Get the current deployment status of the authenticated user's portfolio website.
-*   **Response:** (`DeploymentStatus`)
-    ```json
-    {
+- **Response (201 Created):** (`PortfolioWebsiteResponse`)
+  ```json
+  {
+    "website_url": "string (HttpUrl)",
+    "subdomain": "string",
+    "deployment_status": {
       "status": "string (e.g., pending, building, success, failed)",
       "deployment_url": "string (HttpUrl, optional)",
       "s3_bucket_name": "string (optional)",
@@ -1767,35 +1764,151 @@ These endpoints manage user portfolio websites, including creation, configuratio
       "completed_at": "string (datetime, optional)",
       "error_message": "string (optional)",
       "error_code": "string (optional)"
-    }
-    ```
-*   **Possible Errors:**
-    *   `404 Not Found`: If the user's portfolio website is not found.
+    },
+    "config": {
+      // PortfolioWebsiteConfig object, mirrors request or defaults
+    },
+    "last_updated": "string (datetime)"
+  }
+  ```
+- **Possible Errors:**
+  - `409 Conflict`: If the subdomain is already taken or user already has a website.
+  - `404 Not Found`: If the user is not found.
+
+### Get User's Portfolio Website
+
+- **Endpoint:** `GET /`
+- **Summary:** Get user's portfolio website
+- **Description:** Get the portfolio website for the authenticated user.
+- **Response:** (`PortfolioWebsiteResponse`, optional) - Returns the website object if found, otherwise `null` or an empty response if no website exists for the user.
+  - Structure is the same as the response for "Create Portfolio Website".
+- **Possible Errors:** None specific beyond standard auth/server errors if applicable.
+
+### Update Website Configuration
+
+- **Endpoint:** `PUT /config`
+- **Summary:** Update website configuration
+- **Description:** Update the configuration of the user's portfolio website. May trigger a redeployment if significant changes are made or `force_rebuild` is true.
+- **Request Body:** (`PortfolioWebsiteRequest`)
+  ```json
+  {
+    "config": {
+      // PortfolioWebsiteConfig object with fields to update
+      "theme": "dark", // example
+      "primary_color": "#FF5733" // example
+      // ... other config fields
+    },
+    "force_rebuild": false // boolean, set to true to force a deployment
+  }
+  ```
+- **Response:** (`PortfolioWebsiteResponse`)
+  - Structure is the same as the response for "Create Portfolio Website", reflecting the updated configuration and deployment status if a rebuild was triggered.
+- **Possible Errors:**
+  - `404 Not Found`: If the user's portfolio website is not found.
+
+### Deploy Portfolio Website
+
+- **Endpoint:** `POST /deploy`
+- **Summary:** Deploy portfolio website
+- **Description:** Deploy or redeploy the user's portfolio website.
+- **Query Parameters:**
+  - `force_rebuild` (boolean, optional, default: `false`): If true, the website will be rebuilt and deployed even if no content or configuration changes are detected.
+- **Response:** (`PortfolioWebsiteResponse`)
+  - Structure is the same as the response for "Create Portfolio Website", reflecting the latest deployment status.
+- **Possible Errors:**
+  - `404 Not Found`: If the user's portfolio website is not found.
+  - `500 Internal Server Error`: If the deployment process fails for any reason (e.g., S3 upload error, CloudFront invalidation error). The detail message will contain more information.
+
+### Check Subdomain Availability
+
+- **Endpoint:** `GET /subdomain/check/{subdomain}`
+- **Summary:** Check subdomain availability
+- **Description:** Check if a subdomain is available for use.
+- **Path Parameters:**
+  - `subdomain` (string, required): The subdomain string to check.
+- **Response:** (`SubdomainAvailabilityResponse`)
+  ```json
+  {
+    "subdomain": "string (the checked subdomain)",
+    "available": true, // boolean
+    "suggested_alternatives": ["string"] // list of strings, present if 'available' is false
+  }
+  ```
+- **Possible Errors:**
+  - `400 Bad Request`: If the subdomain format is invalid.
+
+### Get Public Portfolio Website
+
+- **Endpoint:** `GET /public/{subdomain}`
+- **Summary:** Get public portfolio website
+- **Description:** Get a public portfolio website by subdomain (for public viewing). This endpoint does not require authentication.
+- **Path Parameters:**
+  - `subdomain` (string, required): The subdomain of the public website to retrieve.
+- **Response:** (`PortfolioWebsiteResponse`)
+  - Structure is the same as the response for "Create Portfolio Website".
+- **Possible Errors:**
+  - `404 Not Found`: If the portfolio website for the given subdomain is not found or is not published.
+
+### Delete Portfolio Website
+
+- **Endpoint:** `DELETE /`
+- **Summary:** Delete portfolio website
+- **Description:** Delete the authenticated user's portfolio website and all associated resources (e.g., S3 files, potentially DNS records if managed by the app in the future).
+- **Response:** `204 No Content` on successful deletion.
+- **Possible Errors:**
+  - `404 Not Found`: If the user's portfolio website is not found.
+
+### Get Deployment Status
+
+- **Endpoint:** `GET /deployment-status`
+- **Summary:** Get deployment status
+- **Description:** Get the current deployment status of the authenticated user's portfolio website.
+- **Response:** (`DeploymentStatus`)
+  ```json
+  {
+    "status": "string (e.g., pending, building, success, failed)",
+    "deployment_url": "string (HttpUrl, optional)",
+    "s3_bucket_name": "string (optional)",
+    "cloudfront_distribution_id": "string (optional)",
+    "cloudfront_domain": "string (optional)",
+    "build_id": "string (optional)",
+    "build_logs": "string (optional)",
+    "build_duration": "integer (seconds, optional)",
+    "created_at": "string (datetime)",
+    "started_at": "string (datetime, optional)",
+    "completed_at": "string (datetime, optional)",
+    "error_message": "string (optional)",
+    "error_code": "string (optional)"
+  }
+  ```
+- **Possible Errors:**
+  - `404 Not Found`: If the user's portfolio website is not found.
 
 ### Get Website Analytics
 
-*   **Endpoint:** `GET /analytics`
-*   **Summary:** Get website analytics
-*   **Description:** Get analytics data for the authenticated user's portfolio website. (Note: Analytics data structure and population mechanism are TBD and depend on the chosen analytics solution).
-*   **Response:** (`WebsiteAnalytics`)
-    ```json
-    {
-      "page_views": 0,
-      "unique_visitors": 0,
-      "bounce_rate": 0.0,
-      "avg_session_duration": 0.0,
-      "top_pages": [ { "path_example": 100 } ], // Example structure
-      "traffic_sources": { "source_example": 50 }, // Example structure
-      "period_start": "string (datetime)",
-      "period_end": "string (datetime)"
-    }
-    ```
-*   **Possible Errors:**
-    *   `404 Not Found`: If the user's portfolio website is not found.
+- **Endpoint:** `GET /analytics`
+- **Summary:** Get website analytics
+- **Description:** Get analytics data for the authenticated user's portfolio website. (Note: Analytics data structure and population mechanism are TBD and depend on the chosen analytics solution).
+- **Response:** (`WebsiteAnalytics`)
+  ```json
+  {
+    "page_views": 0,
+    "unique_visitors": 0,
+    "bounce_rate": 0.0,
+    "avg_session_duration": 0.0,
+    "top_pages": [{ "path_example": 100 }], // Example structure
+    "traffic_sources": { "source_example": 50 }, // Example structure
+    "period_start": "string (datetime)",
+    "period_end": "string (datetime)"
+  }
+  ```
+- **Possible Errors:**
+  - `404 Not Found`: If the user's portfolio website is not found.
 
 ### Schemas Reference
 
 #### `PortfolioWebsiteConfig`
+
 ```json
 {
   "theme": "string (default: modern)",
@@ -1813,6 +1926,7 @@ These endpoints manage user portfolio websites, including creation, configuratio
 ```
 
 #### `PortfolioWebsiteRequest`
+
 ```json
 {
   "config": "PortfolioWebsiteConfig", // See above
@@ -1821,13 +1935,17 @@ These endpoints manage user portfolio websites, including creation, configuratio
 ```
 
 #### `DeploymentStatus`
+
 (As shown in "Get Deployment Status" response)
 
 #### `PortfolioWebsiteResponse`
+
 (As shown in "Create Portfolio Website" response)
 
 #### `SubdomainAvailabilityResponse`
+
 (As shown in "Check Subdomain Availability" response)
 
 #### `WebsiteAnalytics`
+
 (As shown in "Get Website Analytics" response, structure is illustrative)

@@ -37,7 +37,10 @@ export const createPortfolio = async (data: { profile_id?: string }): Promise<Po
 };
 
 // Update portfolio
-export const updatePortfolio = async (portfolioId: string, data: Partial<Portfolio>): Promise<Portfolio> => {
+export const updatePortfolio = async (
+  portfolioId: string,
+  data: Partial<Portfolio>
+): Promise<Portfolio> => {
   if (isDev) {
     console.log(`Updating portfolio ${portfolioId} with data:`, data);
   }
@@ -46,7 +49,10 @@ export const updatePortfolio = async (portfolioId: string, data: Partial<Portfol
 };
 
 // Partial update portfolio
-export const patchPortfolio = async (portfolioId: string, data: Partial<Portfolio>): Promise<Portfolio> => {
+export const patchPortfolio = async (
+  portfolioId: string,
+  data: Partial<Portfolio>
+): Promise<Portfolio> => {
   if (isDev) {
     console.log(`Patching portfolio ${portfolioId} with data:`, data);
   }
@@ -76,7 +82,7 @@ export const updateCareerSummary = async (
 
 // Update skills section
 export const updateSkills = async (
-  portfolioId: string, 
+  portfolioId: string,
   skills: Array<{ category: string; skills: string[] }>
 ): Promise<Portfolio> => {
   const response = await api.patch(`/portfolios/${portfolioId}/skills`, skills);
@@ -85,7 +91,7 @@ export const updateSkills = async (
 
 // Update work experience section
 export const updateWorkExperience = async (
-  portfolioId: string, 
+  portfolioId: string,
   workExperience: Array<{
     job_title: string;
     company: string;
@@ -100,7 +106,7 @@ export const updateWorkExperience = async (
 
 // Update education section
 export const updateEducation = async (
-  portfolioId: string, 
+  portfolioId: string,
   education: Array<{
     degree_type: string;
     degree: string;
@@ -117,7 +123,7 @@ export const updateEducation = async (
 
 // Update projects section
 export const updateProjects = async (
-  portfolioId: string, 
+  portfolioId: string,
   projects: Array<{
     name: string;
     bullet_points: string[];
@@ -131,7 +137,7 @@ export const updateProjects = async (
 
 // Update certifications section
 export const updateCertifications = async (
-  portfolioId: string, 
+  portfolioId: string,
   certifications: Array<{
     name: string;
     issuer: string;
@@ -146,7 +152,7 @@ export const updateCertifications = async (
 
 // Update awards section
 export const updateAwards = async (
-  portfolioId: string, 
+  portfolioId: string,
   awards: Array<{
     name: string;
     explanation: string;
@@ -158,7 +164,7 @@ export const updateAwards = async (
 
 // Update publications section
 export const updatePublications = async (
-  portfolioId: string, 
+  portfolioId: string,
   publications: Array<{
     name: string;
     publisher: string;
@@ -216,4 +222,4 @@ export const parsePortfolioDocument = async (file: File): Promise<ParsedPortfoli
     }
     throw new Error('An unexpected error occurred while parsing the document.');
   }
-}; 
+};

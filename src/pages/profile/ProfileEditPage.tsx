@@ -28,12 +28,8 @@ const ProfileEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
   const { data: profile, isLoading: profileLoading, isError } = useUserProfile();
-  const {
-    updatePersonalInfo,
-    updateLifeStoryMutation,
-    updatePromptPrefs,
-    updateSystemPrefs,
-  } = useProfileMutations();
+  const { updatePersonalInfo, updateLifeStoryMutation, updatePromptPrefs, updateSystemPrefs } =
+    useProfileMutations();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

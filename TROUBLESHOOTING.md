@@ -9,6 +9,7 @@ This document provides solutions to common issues with the Yarba frontend applic
 **Problem:** When login fails, the application tries indefinitely, requiring you to close the page.
 
 **Fix:** We've updated the code to prevent infinite retries:
+
 1. Added request tracking in `firebaseAuthService.ts`
 2. Added a 30-second cooldown period between retry attempts
 3. Preventing duplicate token exchange requests
@@ -20,6 +21,7 @@ After this update, if login fails, an error message will be displayed instead of
 **Problem:** Console logs aren't visible when running the application.
 
 **Solutions:**
+
 1. Use `npm run dev` - We've added a new script specifically for development that provides better logging
 2. Check browser console (F12 or right-click → Inspect → Console)
 3. Add `BROWSER=none` to `.env` file to prevent browser from opening automatically and see logs in terminal
@@ -32,6 +34,7 @@ After this update, if login fails, an error message will be displayed instead of
 **Problem:** Firebase returns "auth/unauthorized-domain" error.
 
 **Solution:**
+
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Select your project
 3. Navigate to Authentication → Settings → Authorized domains
@@ -42,6 +45,7 @@ After this update, if login fails, an error message will be displayed instead of
 **Problem:** Backend API requests fail with CORS policy errors.
 
 **Solution:**
+
 1. Ensure backend CORS configuration includes frontend domains
 2. Verify protocol matches (http vs https)
 3. Check for exact domain match including subdomains
@@ -80,10 +84,13 @@ We've added a comprehensive debugging system to help troubleshoot issues:
 ## Development Workflow
 
 1. **Start the development server:**
+
    ```
    npm run dev
    ```
+
    Or on Windows:
+
    ```
    npm run dev:win
    ```
@@ -97,4 +104,4 @@ We've added a comprehensive debugging system to help troubleshoot issues:
    - **401 Unauthorized**: Backend doesn't recognize token - check token format
    - **403 Forbidden**: User doesn't have permission - check user roles
    - **422 Unprocessable Content**: Invalid data sent to backend - check request payload
-   - **CORS errors**: Backend not configured to accept requests from your domain 
+   - **CORS errors**: Backend not configured to accept requests from your domain

@@ -8,29 +8,45 @@ interface ParsedCustomSectionsDisplayProps {
   };
 }
 
-const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = ({ customSections }) => {
+const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = ({
+  customSections,
+}) => {
   if (!customSections || !customSections.sections || customSections.sections.length === 0) {
     return <Typography>No custom sections data provided.</Typography>;
   }
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>Custom Sections</Typography>
+      <Typography variant="h6" gutterBottom>
+        Custom Sections
+      </Typography>
       <List disablePadding>
         {customSections.sections.map((section, index) => (
           <React.Fragment key={index}>
             <ListItem alignItems="flex-start" sx={{ flexDirection: 'column', pl: 0 }}>
               <ListItemText
-                primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{section.title || 'N/A'}</Typography>}
+                primary={
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    {section.title || 'N/A'}
+                  </Typography>
+                }
                 secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <Box sx={{ whiteSpace: 'pre-wrap', mt: 0.5 }}>
-                    {typeof section.content === 'string' && <Typography variant="body2">{section.content}</Typography>}
+                    {typeof section.content === 'string' && (
+                      <Typography variant="body2">{section.content}</Typography>
+                    )}
                     {Array.isArray(section.content) && (
                       <List dense disablePadding>
                         {section.content.map((item, cIndex) => (
-                          <ListItem key={cIndex} sx={{ display: 'list-item', listStyleType: 'disc', p: 0, pl: 2 }}>
-                            <ListItemText primary={<Typography variant="body2">{item}</Typography>} sx={{m:0}}/>
+                          <ListItem
+                            key={cIndex}
+                            sx={{ display: 'list-item', listStyleType: 'disc', p: 0, pl: 2 }}
+                          >
+                            <ListItemText
+                              primary={<Typography variant="body2">{item}</Typography>}
+                              sx={{ m: 0 }}
+                            />
                           </ListItem>
                         ))}
                       </List>
@@ -44,7 +60,9 @@ const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = 
                 }
               />
             </ListItem>
-            {index < customSections.sections.length - 1 && <Divider component="li" sx={{ my: 1 }} />}
+            {index < customSections.sections.length - 1 && (
+              <Divider component="li" sx={{ my: 1 }} />
+            )}
           </React.Fragment>
         ))}
       </List>
@@ -52,4 +70,4 @@ const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = 
   );
 };
 
-export default ParsedCustomSectionsDisplay; 
+export default ParsedCustomSectionsDisplay;

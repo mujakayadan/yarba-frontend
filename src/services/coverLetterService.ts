@@ -8,15 +8,15 @@ export const getCoverLetters = async (
   skip: number = 0,
   limit: number = 10,
   sort_by: string = 'updated_desc'
-): Promise<{ items: CoverLetter[], total: number }> => {
+): Promise<{ items: CoverLetter[]; total: number }> => {
   const params = new URLSearchParams();
-  
+
   if (template_id) params.append('template_id', template_id);
   if (resume_id) params.append('resume_id', resume_id);
   params.append('skip', skip.toString());
   params.append('limit', limit.toString());
   params.append('sort_by', sort_by);
-  
+
   const requestUrl = `/cover-letters${params.toString() ? `?${params.toString()}` : ''}`;
   const response = await api.get(requestUrl);
   return response.data;
@@ -55,7 +55,7 @@ export const generateCoverLetterContent = async (
 ): Promise<CoverLetter> => {
   const params = new URLSearchParams();
   if (regenerate) params.append('regenerate', 'true');
-  
+
   const requestUrl = `/cover-letters/${id}/generate${params.toString() ? `?${params.toString()}` : ''}`;
   const response = await api.post(requestUrl);
   return response.data;
@@ -63,30 +63,33 @@ export const generateCoverLetterContent = async (
 
 // Get PDF URL for a cover letter
 export const getCoverLetterPdf = async (
-  id: string, 
+  id: string,
   timeout: number = 30,
   regenerate: boolean = false
 ): Promise<{ pdf_url: string }> => {
   const params = new URLSearchParams();
   params.append('timeout', timeout.toString());
   if (regenerate) params.append('regenerate', 'true');
-  
+
   const requestUrl = `/cover-letters/${id}/pdf?${params.toString()}`;
   const response = await api.get(requestUrl);
   return response.data;
 };
 
 // Upload PDF for a cover letter
-export const uploadCoverLetterPdf = async (id: string, file: File): Promise<{ pdf_url: string }> => {
+export const uploadCoverLetterPdf = async (
+  id: string,
+  file: File
+): Promise<{ pdf_url: string }> => {
   const formData = new FormData();
   formData.append('file', file);
-  
+
   const response = await api.post(`/cover-letters/${id}/upload-pdf`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   });
-  
+
   return response.data;
 };
 
@@ -94,4 +97,4 @@ export const uploadCoverLetterPdf = async (id: string, file: File): Promise<{ pd
 export const deleteCoverLetterPdf = async (id: string): Promise<{ pdf_url: null }> => {
   const response = await api.delete(`/cover-letters/${id}/pdf`);
   return response.data;
-}; 
+};

@@ -8,14 +8,24 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
   return (
     <>
       {sortedWorkExperience.map((job, index) => (
-        <Box key={index} sx={{
-          p: 3,
-          mb: 3,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px'
-        }}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', mb: 2 }}>
+        <Box
+          key={index}
+          sx={{
+            p: 3,
+            mb: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              mb: 2,
+            }}
+          >
             <Box>
               <Typography variant="h6" fontWeight="bold" color="primary.main">
                 {job.job_title || job.position || 'Untitled Position'}
@@ -26,7 +36,11 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
               </Typography>
             </Box>
             <Chip
-              label={job.time || (job.start_date && `${job.start_date}${job.end_date ? ` - ${job.end_date}` : ''}${job.current ? ' - Present' : ''}`)}
+              label={
+                job.time ||
+                (job.start_date &&
+                  `${job.start_date}${job.end_date ? ` - ${job.end_date}` : ''}${job.current ? ' - Present' : ''}`)
+              }
               size="small"
               color="secondary"
               sx={{ alignSelf: { xs: 'flex-start', sm: 'flex-start' }, mt: { xs: 1, sm: 0 } }}
@@ -42,7 +56,9 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
           {job.responsibilities && job.responsibilities.length > 0 && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>Key Responsibilities:</Typography>
+              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>
+                Key Responsibilities:
+              </Typography>
               <Box component="ol" sx={{ m: 0, pl: 3 }}>
                 {job.responsibilities.map((responsibility, responsibilityIndex) => (
                   <Box component="li" key={responsibilityIndex} sx={{ mb: 1 }}>
@@ -58,7 +74,9 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
           {job.achievements && job.achievements.length > 0 && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>Key Achievements:</Typography>
+              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>
+                Key Achievements:
+              </Typography>
               <Box component="ol" sx={{ m: 0, pl: 3 }}>
                 {job.achievements.map((achievement, achievementIndex) => (
                   <Box component="li" key={achievementIndex} sx={{ mb: 1 }}>
@@ -73,7 +91,9 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
         </Box>
       ))}
       {sortedWorkExperience.length === 0 && (
-        <Typography variant="body2" color="text.secondary">No work experience added yet</Typography>
+        <Typography variant="body2" color="text.secondary">
+          No work experience added yet
+        </Typography>
       )}
     </>
   );

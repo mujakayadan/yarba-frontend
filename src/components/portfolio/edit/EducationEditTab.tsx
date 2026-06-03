@@ -20,7 +20,9 @@ export const EducationEditTab: React.FC<EducationEditTabProps> = ({ form }) => {
 
       {education.map((edu, eduIndex) => (
         <Paper key={eduIndex} variant="outlined" sx={{ p: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Typography variant="subtitle1" fontWeight="bold">
               {edu.degree_type} in {edu.degree} at {edu.university_name}
             </Typography>
@@ -144,9 +146,9 @@ export const EducationEditTab: React.FC<EducationEditTabProps> = ({ form }) => {
                 label={course}
                 onDelete={() => {
                   const updatedEducation = [...education];
-                  updatedEducation[eduIndex].transcript = updatedEducation[eduIndex].transcript.filter(
-                    (_, idx) => idx !== courseIndex,
-                  );
+                  updatedEducation[eduIndex].transcript = updatedEducation[
+                    eduIndex
+                  ].transcript.filter((_, idx) => idx !== courseIndex);
                   setEducation(updatedEducation);
                 }}
                 sx={{ m: 0.5 }}

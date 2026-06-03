@@ -1,10 +1,8 @@
 import Grid from '../mui/Grid';
-"use client";
 import React, { Suspense, lazy } from 'react';
 import { Container, Typography, Box, Button, Paper, Avatar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/system';
-import { Theme } from '@mui/material/styles';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import BuildIcon from '@mui/icons-material/Build';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
@@ -14,7 +12,7 @@ import MainLayout from '../components/layout/MainLayout';
 const AnimatedBackground = lazy(() =>
   import('animated-backgrounds').then((module) => ({
     default: module.AnimatedBackground as React.ComponentType<{ animationName: string }>,
-  })),
+  }))
 );
 
 const FeaturePaper = styled(Paper)(({ theme }) => ({
@@ -39,38 +37,43 @@ const TestimonialPaper = styled(Paper)(({ theme }) => ({
 
 const MainPage: React.FC = () => {
   const features = [
-    { 
-      icon: <AutoFixHighIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }}/>, 
-      title: 'AI-Powered Resume Builder', 
-      description: 'Craft compelling, professional resumes in minutes with our intelligent assistant. Beat the ATS and impress recruiters.'
+    {
+      icon: <AutoFixHighIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }} />,
+      title: 'AI-Powered Resume Builder',
+      description:
+        'Craft compelling, professional resumes in minutes with our intelligent assistant. Beat the ATS and impress recruiters.',
     },
-    { 
-      icon: <BuildIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }}/>, 
-      title: 'Dynamic Cover Letters', 
-      description: 'Generate personalized cover letters tailored to each job application. Make a lasting first impression effortlessly.'
+    {
+      icon: <BuildIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }} />,
+      title: 'Dynamic Cover Letters',
+      description:
+        'Generate personalized cover letters tailored to each job application. Make a lasting first impression effortlessly.',
     },
-    { 
-      icon: <FindInPageIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }}/>, 
-      title: 'Portfolio Showcase', 
-      description: 'Display your projects and achievements in a beautifully designed portfolio. Let your work speak for itself.'
+    {
+      icon: <FindInPageIcon fontSize="large" color="primary" sx={{ mb: 2, fontSize: '3rem' }} />,
+      title: 'Portfolio Showcase',
+      description:
+        'Display your projects and achievements in a beautifully designed portfolio. Let your work speak for itself.',
     },
   ];
 
   const testimonials = [
-    { 
-      avatar: 'JD', 
-      name: 'Jane Doe, Software Engineer', 
-      quote: 'YARBA revolutionized my job hunt! The AI resume builder is a game-changer.'
+    {
+      avatar: 'JD',
+      name: 'Jane Doe, Software Engineer',
+      quote: 'YARBA revolutionized my job hunt! The AI resume builder is a game-changer.',
     },
-    { 
-      avatar: 'SM', 
-      name: 'Samuel Miller, Product Manager', 
-      quote: 'Creating tailored cover letters used to take hours. With YARBA, it\'s a breeze. Highly recommended!'
+    {
+      avatar: 'SM',
+      name: 'Samuel Miller, Product Manager',
+      quote:
+        "Creating tailored cover letters used to take hours. With YARBA, it's a breeze. Highly recommended!",
     },
-    { 
-      avatar: 'CH', 
-      name: 'Carlos Hernandez, UX Designer', 
-      quote: 'My portfolio looks amazing, and I landed three interviews within a week of using YARBA.'
+    {
+      avatar: 'CH',
+      name: 'Carlos Hernandez, UX Designer',
+      quote:
+        'My portfolio looks amazing, and I landed three interviews within a week of using YARBA.',
     },
   ];
 
@@ -80,69 +83,71 @@ const MainPage: React.FC = () => {
         <AnimatedBackground animationName="fallingFoodFiesta" />
       </Suspense>
       <Box sx={{ overflowX: 'hidden' }}>
-        <Container 
+        <Container
           disableGutters
-          sx={theme => ({ 
+          sx={(theme) => ({
             maxWidth: '85% !important',
             p: 0,
             backgroundColor: 'rgba(200, 200, 200, 0.9)',
             borderRadius: '12px',
             my: 2,
             mx: 'auto',
-            overflow: 'hidden'
+            overflow: 'hidden',
           })}
         >
-          <Grid container spacing={0}> 
-            <Grid 
-              item 
-              xs={12} 
-              md={5} 
-              sx={{ 
+          <Grid container spacing={0}>
+            <Grid
+              item
+              xs={12}
+              md={5}
+              sx={{
                 display: 'flex',
                 justifyContent: 'flex-start',
                 order: { xs: 1, md: 1 },
                 p: 0,
-                height: { xs: 'auto', md: '100%' }
+                height: { xs: 'auto', md: '100%' },
               }}
             >
               <Box
                 component="img"
-                sx={theme => ({
+                sx={(theme) => ({
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
                   display: 'block',
                   boxShadow: 'none',
-                  borderRadius: { xs: 0, md: '0 12px 12px 0' }
+                  borderRadius: { xs: 0, md: '0 12px 12px 0' },
                 })}
                 alt="YARBA Hero Image"
                 src="/assets/hero.webp"
               />
             </Grid>
-            <Grid 
+            <Grid
               container
-              item 
-              xs={12} 
-              md={7} 
-              sx={{ 
+              item
+              xs={12}
+              md={7}
+              sx={{
                 py: { xs: 4, md: 4 },
                 pl: { md: 4 },
                 pr: { md: 4 },
                 order: { xs: 2, md: 2 },
                 mb: { xs: 0, md: 0 },
-                flexDirection: 'column'
+                flexDirection: 'column',
               }}
             >
               <Grid item>
-                <Box sx={{ 
-                  textAlign: { xs: 'center', md: 'left' },
-                  p: { xs: 2, md: 0 }
-                }}> 
-                  <Typography 
-                    variant="h4" 
-                    component="h1" 
-                    gutterBottom 
-                    sx={theme => ({ 
+                <Box
+                  sx={{
+                    textAlign: { xs: 'center', md: 'left' },
+                    p: { xs: 2, md: 0 },
+                  }}
+                >
+                  <Typography
+                    variant="h4"
+                    component="h1"
+                    gutterBottom
+                    sx={(theme) => ({
                       fontWeight: 700,
                       fontSize: { xs: '2rem', sm: '2.5rem', md: '2.8rem' },
                       letterSpacing: '0.5px',
@@ -150,8 +155,8 @@ const MainPage: React.FC = () => {
                       textAlign: { xs: 'center', md: 'left' },
                       color: theme.palette.primary.dark,
                       '& .firstLetter': {
-                        color: '#E05B49'
-                      }
+                        color: '#E05B49',
+                      },
                     })}
                   >
                     {'YET ANOTHER RESUME BUILDER APP'.split(' ').map((word, index) => (
@@ -162,36 +167,51 @@ const MainPage: React.FC = () => {
                       </React.Fragment>
                     ))}
                   </Typography>
-                  <Typography 
-                    variant="h6" 
-                    paragraph 
-                    sx={theme => ({ 
-                      mb: 3, 
+                  <Typography
+                    variant="h6"
+                    paragraph
+                    sx={(theme) => ({
+                      mb: 3,
                       fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
-                      color: theme.palette.text.primary, 
+                      color: theme.palette.text.primary,
                       fontWeight: 500,
                       lineHeight: 1.5,
-                      textAlign: { xs: 'center', md: 'left' }
+                      textAlign: { xs: 'center', md: 'left' },
                     })}
                   >
                     We Do Not Generate Fake Resumes, We Choose From Your Portfolio.
                   </Typography>
                 </Box>
               </Grid>
-              
+
               {/* Buttons below text only */}
               <Grid item sx={{ mt: 2 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: { xs: 'center', md: 'flex-start' }, 
-                  gap: 2, 
-                  flexWrap: 'wrap',
-                  p: { xs: 2, md: 0 }
-                }}>
-                  <Button component={RouterLink} to="/register" variant="contained" color="primary" size="large" sx={{boxShadow: 3, '&:hover': { boxShadow: 5 } }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: { xs: 'center', md: 'flex-start' },
+                    gap: 2,
+                    flexWrap: 'wrap',
+                    p: { xs: 2, md: 0 },
+                  }}
+                >
+                  <Button
+                    component={RouterLink}
+                    to="/register"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    sx={{ boxShadow: 3, '&:hover': { boxShadow: 5 } }}
+                  >
                     Get Started for Free
                   </Button>
-                  <Button component={RouterLink} to="/login" variant="outlined" color="secondary" size="large">
+                  <Button
+                    component={RouterLink}
+                    to="/login"
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                  >
                     Already have an account?
                   </Button>
                 </Box>
@@ -203,84 +223,88 @@ const MainPage: React.FC = () => {
         {/* "How YARBA Works" Section - Replicated Hero Layout */}
         <Container
           disableGutters
-          sx={theme => ({
+          sx={(theme) => ({
             maxWidth: '85% !important',
             p: 0,
             backgroundColor: 'rgba(200, 200, 200, 0.9)',
             borderRadius: '12px',
             my: 2,
             mx: 'auto',
-            overflow: 'hidden'
+            overflow: 'hidden',
           })}
         >
           <Grid container spacing={0} alignItems="stretch">
-            <Grid 
-              item 
-              xs={12} 
-              md={5} 
-              sx={{ 
+            <Grid
+              item
+              xs={12}
+              md={5}
+              sx={{
                 display: 'flex',
                 justifyContent: 'flex-start',
                 order: { xs: 1, md: 1 },
                 p: 0,
-                height: '100%'
+                height: '100%',
               }}
             >
               <Box
                 component="img"
-                sx={theme => ({
+                sx={(theme) => ({
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
                   display: 'block',
                   boxShadow: 'none',
-                  borderRadius: { xs: 0, md: '0 12px 12px 0' }
+                  borderRadius: { xs: 0, md: '0 12px 12px 0' },
                 })}
                 alt="Steps to use YARBA"
                 src="/assets/steps.webp"
               />
             </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              md={7} 
-              sx={{ 
+            <Grid
+              item
+              xs={12}
+              md={7}
+              sx={{
                 py: { xs: 4, md: 4 },
                 pl: { md: 4 },
                 pr: { md: 4 },
-                order: { xs: 2, md: 2 }
+                order: { xs: 2, md: 2 },
               }}
             >
-              <Box sx={{ 
-                textAlign: { xs: 'center', md: 'left' }, 
-              }}>
+              <Box
+                sx={{
+                  textAlign: { xs: 'center', md: 'left' },
+                }}
+              >
                 <Typography
                   variant="h3"
                   component="h2"
                   gutterBottom
-                  sx={theme => ({
+                  sx={(theme) => ({
                     fontWeight: 700,
                     fontSize: { xs: '2rem', sm: '2.5rem', md: '2.8rem' },
                     letterSpacing: '0.5px',
                     color: theme.palette.primary.dark,
                     mb: 2,
-                    textAlign: { xs: 'center', md: 'left' }
+                    textAlign: { xs: 'center', md: 'left' },
                   })}
                 >
                   How YARBA Works
                 </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    mb: 4, 
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 4,
                     fontSize: { xs: '1rem', sm: '1.1rem' },
                     color: '#333333',
                     fontWeight: 500,
                     lineHeight: 1.6,
-                    textAlign: { xs: 'center', md: 'left' }
+                    textAlign: { xs: 'center', md: 'left' },
                   }}
                 >
-                  No one has only few skills, each job requires different skills that you have. You did not do only few bullet points in your job. You upload your portfolio, we choose the most relevant skills, experiences, projects to build your resume.
+                  No one has only few skills, each job requires different skills that you have. You
+                  did not do only few bullet points in your job. You upload your portfolio, we
+                  choose the most relevant skills, experiences, projects to build your resume.
                 </Typography>
               </Box>
             </Grid>
@@ -288,7 +312,13 @@ const MainPage: React.FC = () => {
         </Container>
 
         <Container maxWidth="lg" sx={{ py: 6 }}>
-          <Typography variant="h3" component="h2" gutterBottom textAlign="center" sx={{ mb: 6, fontWeight: 600 }}>
+          <Typography
+            variant="h3"
+            component="h2"
+            gutterBottom
+            textAlign="center"
+            sx={{ mb: 6, fontWeight: 600 }}
+          >
             Why Choose YARBA?
           </Typography>
           <Grid container spacing={4}>
@@ -299,9 +329,7 @@ const MainPage: React.FC = () => {
                   <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
                     {feature.title}
                   </Typography>
-                  <Typography variant="body2">
-                    {feature.description}
-                  </Typography>
+                  <Typography variant="body2">{feature.description}</Typography>
                 </FeaturePaper>
               </Grid>
             ))}
@@ -310,7 +338,13 @@ const MainPage: React.FC = () => {
 
         <Box sx={{ backgroundColor: 'alternate.main', py: 8 }}>
           <Container maxWidth="md">
-            <Typography variant="h3" component="h2" gutterBottom textAlign="center" sx={{ mb: 6, fontWeight: 600, color: 'white' }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              gutterBottom
+              textAlign="center"
+              sx={{ mb: 6, fontWeight: 600, color: 'white' }}
+            >
               Loved by Professionals
             </Typography>
             <Grid container spacing={3}>
@@ -319,11 +353,17 @@ const MainPage: React.FC = () => {
                   <TestimonialPaper elevation={3}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>{testimonial.avatar}</Avatar>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{testimonial.name}</Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                        {testimonial.name}
+                      </Typography>
                     </Box>
-                    <Typography variant="body2" fontStyle="italic">"{testimonial.quote}"</Typography>
+                    <Typography variant="body2" fontStyle="italic">
+                      "{testimonial.quote}"
+                    </Typography>
                     <Box sx={{ mt: 1, textAlign: 'right' }}>
-                      {[...Array(5)].map((_, i) => <StarIcon key={i} sx={{ color: '#FFD700'}} />)}
+                      {[...Array(5)].map((_, i) => (
+                        <StarIcon key={i} sx={{ color: '#FFD700' }} />
+                      ))}
                     </Box>
                   </TestimonialPaper>
                 </Grid>
@@ -339,7 +379,14 @@ const MainPage: React.FC = () => {
           <Typography variant="h6" color="primary" paragraph sx={{ mb: 4 }}>
             Join thousands of successful job seekers who trust YARBA.
           </Typography>
-          <Button component={RouterLink} to="/register" variant="contained" color="primary" size="large" sx={{ py: 1.5, px: 5, fontSize: '1.2rem' }}>
+          <Button
+            component={RouterLink}
+            to="/register"
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ py: 1.5, px: 5, fontSize: '1.2rem' }}
+          >
             Sign Up Now & Get Hired!
           </Button>
         </Container>
@@ -348,4 +395,4 @@ const MainPage: React.FC = () => {
   );
 };
 
-export default MainPage; 
+export default MainPage;

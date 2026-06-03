@@ -116,7 +116,7 @@ const theme = createTheme({
     '0px 24px 48px rgba(0, 0, 0, 0.40)',
     '0px 24px 48px rgba(0, 0, 0, 0.40)',
     '0px 24px 48px rgba(0, 0, 0, 0.40)',
-    '0px 24px 48px rgba(0, 0, 0, 0.40)'
+    '0px 24px 48px rgba(0, 0, 0, 0.40)',
   ],
   components: {
     MuiButton: {
@@ -155,8 +155,7 @@ const theme = createTheme({
         },
       },
       styleOverrides: {
-        root: {
-        },
+        root: {},
       },
     },
     MuiCard: {
@@ -209,8 +208,10 @@ const theme = createTheme({
       styleOverrides: {
         paper: {
           border: 'none',
-          backgroundImage: 'linear-gradient(180deg, rgba(63, 114, 175, 0.03) 0%, rgba(94, 96, 206, 0.03) 100%)',
-          boxShadow: '0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)', // 16dp elevation
+          backgroundImage:
+            'linear-gradient(180deg, rgba(63, 114, 175, 0.03) 0%, rgba(94, 96, 206, 0.03) 100%)',
+          boxShadow:
+            '0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)', // 16dp elevation
         },
       },
     },
@@ -246,4 +247,4 @@ const theme = createTheme({
   },
 });
 
-export default theme; 
+export default theme;

@@ -32,9 +32,7 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       Publisher
                     </Typography>
-                    <Typography variant="body1">
-                      {pub.publisher || 'Not specified'}
-                    </Typography>
+                    <Typography variant="body1">{pub.publisher || 'Not specified'}</Typography>
                   </Box>
                 </Grid>
 
@@ -58,9 +56,7 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Authors
                       </Typography>
-                      <Typography variant="body1">
-                        {pub.authors.join(', ')}
-                      </Typography>
+                      <Typography variant="body1">{pub.authors.join(', ')}</Typography>
                     </Box>
                   </Grid>
                 )}
@@ -73,49 +69,50 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Description
                       </Typography>
-                      <Typography variant="body1">
-                        {pub.description}
-                      </Typography>
+                      <Typography variant="body1">{pub.description}</Typography>
                     </Box>
                   </Grid>
                 )}
 
                 {/* Link/URL if available */}
-                {(pub.link || pub.url) && (() => {
-                  const url = pub.link || pub.url;
-                  if (!url) return null;
+                {(pub.link || pub.url) &&
+                  (() => {
+                    const url = pub.link || pub.url;
+                    if (!url) return null;
 
-                  return (
-                    <Grid item xs={12}>
-                      <Divider sx={{ my: 1 }} />
-                      <Box sx={{ mt: 1 }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          Link
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          component="a"
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{
-                            wordBreak: 'break-all',
-                            color: 'primary.main',
-                            textDecoration: 'underline'
-                          }}
-                        >
-                          {url}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  );
-                })()}
+                    return (
+                      <Grid item xs={12}>
+                        <Divider sx={{ my: 1 }} />
+                        <Box sx={{ mt: 1 }}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Link
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            component="a"
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                              wordBreak: 'break-all',
+                              color: 'primary.main',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            {url}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    );
+                  })()}
               </Grid>
             </Paper>
           ))}
         </Box>
       ) : (
-        <Typography variant="body2" color="text.secondary">No publications added yet</Typography>
+        <Typography variant="body2" color="text.secondary">
+          No publications added yet
+        </Typography>
       )}
     </>
   );

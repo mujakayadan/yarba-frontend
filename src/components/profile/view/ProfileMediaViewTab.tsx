@@ -1,16 +1,7 @@
 import React from 'react';
 import { env } from '../../../config/env';
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Avatar,
-} from '@mui/material';
-import {
-  PhotoCamera as PhotoCameraIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Box, Typography, Button, Paper, Avatar } from '@mui/material';
+import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { ProfileViewTabProps } from '../../../types/profileView';
 
 export const ProfileMediaViewTab: React.FC<ProfileViewTabProps> = ({
