@@ -15,7 +15,7 @@ Build a clean, maintainable, and idiomatic React application that provides users
 
 - React 19
 - TypeScript 5
-- Vite 6
+- Vite 8
 - Material-UI (MUI) v7 for components and theming
 - React Router v7 (page routing)
 - TanStack Query 5 (server state)

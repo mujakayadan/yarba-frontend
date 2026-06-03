@@ -50,7 +50,7 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 ## Stack
 
 - React 19 + TypeScript 5
-- Vite 6
+- Vite 8
 - Material UI 7 (legacy Grid via `src/mui/Grid.tsx`)
 - React Router 7
 - TanStack Query 5

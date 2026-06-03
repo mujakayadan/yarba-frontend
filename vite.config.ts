@@ -51,7 +51,7 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks: vendorChunk,
       },
