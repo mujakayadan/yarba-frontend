@@ -49,22 +49,126 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Stack
 
-- React 19 + TypeScript 5
-- Vite 8
-- Material UI 7 (legacy Grid via `src/mui/Grid.tsx`)
-- React Router 7
-- TanStack Query 5
-- Firebase 12
-- Axios
-- Vitest + Testing Library
+Yarba frontend is a **React + TypeScript** SPA built with **Vite**, styled with **MUI**, and wired to a **FastAPI** backend and **Firebase** auth. See [`.cursorrules`](./.cursorrules) for detailed coding conventions.
+
+### Architecture overview
+
+```mermaid
+flowchart TB
+  subgraph client["Browser (this repo)"]
+    UI["React 19 + MUI 7"]
+    Router["React Router 7"]
+    Query["TanStack Query 5"]
+    Services["Axios services<br/>src/services/"]
+    UI --> Router
+    UI --> Query
+    Query --> Services
+  end
+
+  subgraph auth["Authentication"]
+    Firebase["Firebase Auth"]
+    Firebase -->|"ID token"| Services
+    Services -->|"JWT"| Local["Token storage"]
+  end
+
+  subgraph platform["Platform"]
+    Vite["Vite 8 build"]
+    Vercel["Vercel deploy"]
+    Vite --> Vercel
+  end
+
+  Services --> API["Yarba backend<br/>FastAPI REST"]
+  client --> Firebase
+  client --> Vite
+```
+
+### Authentication flow
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant App as React app
+  participant FB as Firebase
+  participant API as FastAPI backend
+
+  User->>App: Sign in (Google or email/password)
+  App->>FB: Authenticate
+  FB-->>App: Firebase ID token
+  App->>API: POST /api/v1/auth/login
+  API-->>App: JWT + user info
+  App->>App: Store JWT; attach on requests
+  Note over App,API: 401 clears token and redirects to /login
+```
+
+### Core libraries
+
+| Layer | Technology | Notes |
+|-------|------------|--------|
+| UI | React 19, TypeScript 5 | Functional components; strict typing |
+| Build | Vite 8 | Dev server on port 3000; `tsc --noEmit` on build |
+| Components | Material UI 7, Emotion | MUI only for UI; use `Grid` from `src/mui/Grid.tsx` |
+| Routing | React Router 7 | Pages under `src/pages/` |
+| Server state | TanStack Query 5 | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts` |
+| HTTP | Axios | All API calls via `src/services/` — not raw axios in components |
+| Auth | Firebase 12 | Google + email/password; backend validates tokens |
+| PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview |
+| Env | `VITE_*` | Loaded via `src/config/env.ts` |
+
+### Backend & related repos
+
+| Piece | Stack | Role |
+|-------|--------|------|
+| [yarba-backend](https://github.com/mucahitkayadan/yarba-backend) | FastAPI | REST API (`VITE_API_URL`); JWT after Firebase login |
+| API contracts | `src/types/models.ts` | TypeScript shapes aligned with backend schemas |
+| Docs | `docs/api_documentation.md` | Endpoint reference |
+
+### State management
+
+```mermaid
+flowchart LR
+  Local["Component useState<br/>(form drafts)"]
+  Context["Context API<br/>AuthContext, ProfileContext"]
+  Query["TanStack Query<br/>(server truth)"]
+  Services["Services layer"]
+
+  Local -.->|"not in cache"| Query
+  Context --> Query
+  Query --> Services
+```
+
+- **Local state first** — `useState` for UI and in-progress edits.
+- **No Redux/Zustand** — keep global state minimal.
+- **Contexts** — auth and profile only where many routes need the same data.
+- **Query cache** — fetched API data; invalidate after mutations. Do not duplicate fetch logic with `useEffect` + `useState` when a hook already exists.
+
+### Project layout
+
+```
+src/
+  components/   # auth, common, layout, portfolio, profile, …
+  contexts/     # AuthContext, ProfileContext
+  hooks/        # TanStack Query hooks (useUserProfile, useResumes, …)
+  lib/          # queryKeys.ts
+  pages/        # route-level screens
+  services/     # Axios API modules
+  types/        # models.ts and feature types
+  utils/        # auth helpers, formatters, …
+```
+
+### Quality & tooling
+
+| Tool | Command / usage |
+|------|------------------|
+| ESLint | `npm run lint` — `eslint-config-react-app` |
+| TypeScript | `npm run build` runs `tsc --noEmit` |
+| Tests | `npm test` — Vitest + Testing Library |
+| Formatter | Not configured — no Prettier/Biome in repo |
+
+Forms: [`.cursorrules`](./.cursorrules) recommends **Formik + Yup** for new forms; adopt when adding complex validation (not currently in `package.json`).
 
 ## Deployment
 
-Configured for Vercel. Set all `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
-
-## Server state (TanStack Query)
-
-API reads go through hooks in `src/hooks/` with keys from `src/lib/queryKeys.ts` (for example `useUserProfile`, `usePortfolioById`, `useResumes`). After writes, use mutation hooks or `queryClient.invalidateQueries` so cached data stays in sync. Keep in-progress form drafts in component state, not in the query cache.
+Configured for **Vercel**. Set all `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
 
 ## Development tools
 
