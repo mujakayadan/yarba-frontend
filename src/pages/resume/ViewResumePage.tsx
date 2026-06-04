@@ -56,7 +56,8 @@ import {
   regenerateResumeContent,
 } from '../../services/resumeService';
 import { Resume } from '../../types/models';
-import { Toast, PdfPreviewDialog } from '../../components/common';
+import { PdfPreviewDialog } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import ReactMarkdown from 'react-markdown';
 
@@ -76,6 +77,7 @@ const isBlob = (response: any): response is Blob => {
 const ViewResumePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showSuccess } = useToast();
   const [resume, setResume] = useState<Resume | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,11 +86,6 @@ const ViewResumePage: React.FC = () => {
   const [deletingResume, setDeletingResume] = useState(false);
   const [jobDescriptionExpanded, setJobDescriptionExpanded] = useState(false);
   const [regeneratingContent, setRegeneratingContent] = useState(false);
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success'
-  );
   const [generationErrorDialogOpen, setGenerationErrorDialogOpen] = useState(false);
   const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
   const pdfPreview = usePdfPreview();
@@ -281,10 +278,6 @@ const ViewResumePage: React.FC = () => {
     setJobDescriptionExpanded(!jobDescriptionExpanded);
   };
 
-  const handleCloseToast = () => {
-    setToastOpen(false);
-  };
-
   const handleRegenerateContent = async () => {
     if (!id) return;
     setRegeneratingContent(true);
@@ -292,9 +285,7 @@ const ViewResumePage: React.FC = () => {
     try {
       const updatedResume = await regenerateResumeContent(id, true);
       setResume(updatedResume);
-      setToastMessage('Resume content regenerated successfully!');
-      setToastSeverity('success');
-      setToastOpen(true);
+      showSuccess('Resume content regenerated successfully!');
     } catch (err: any) {
       console.error('Failed to regenerate content:', err);
       let regenerationErrorMsg =
@@ -1642,14 +1633,6 @@ const ViewResumePage: React.FC = () => {
             </Button>
           ) : undefined
         }
-      />
-
-      {/* Toast Notification */}
-      <Toast
-        open={toastOpen}
-        message={toastMessage}
-        severity={toastSeverity}
-        onClose={handleCloseToast}
       />
 
       {/* PDF Generation Error Dialog */}

@@ -50,7 +50,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
 import { Portfolio } from '../../types/models';
-import { Toast, PdfPreviewDialog } from '../../components/common';
+import { PdfPreviewDialog } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { useResumes } from '../../hooks/useResumes';
 import { useUserPortfolio } from '../../hooks/usePortfolio';
@@ -112,6 +113,7 @@ const DEFAULT_PAGE_SIZE = 10;
 
 const ResumesPage: React.FC = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [page, setPage] = useState(1);
@@ -121,8 +123,6 @@ const ResumesPage: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingResume, setDeletingResume] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
   const [availablePortfolios, setAvailablePortfolios] = useState<Portfolio[]>([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
@@ -240,8 +240,7 @@ const ResumesPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setDeletingResume(false);
       setDeleteDialogOpen(false);
@@ -269,8 +268,7 @@ const ResumesPage: React.FC = () => {
       setSelectedPortfolioId(userPortfolio._id);
     } else {
       setAvailablePortfolios([]);
-      setErrorMessage('Failed to load available portfolio');
-      setSnackbarOpen(true);
+      showError('Failed to load available portfolio');
     }
   };
 
@@ -287,12 +285,10 @@ const ResumesPage: React.FC = () => {
 
       queryClient.invalidateQueries({ queryKey: resumeKeys.all });
 
-      setErrorMessage('Resume successfully updated with new portfolio');
-      setSnackbarOpen(true);
+      showSuccess('Resume successfully updated with new portfolio');
     } catch (error) {
       console.error('Failed to update resume:', error);
-      setErrorMessage('Failed to update resume with new portfolio');
-      setSnackbarOpen(true);
+      showError('Failed to update resume with new portfolio');
     } finally {
       setUpdatingResume(false);
       setPortfolioDialogOpen(false);
@@ -308,10 +304,9 @@ const ResumesPage: React.FC = () => {
 
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
-        setErrorMessage(
+        showError(
           'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
         );
-        setSnackbarOpen(true);
         handleOpenPortfolioDialog(resumeId);
         return;
       }
@@ -347,8 +342,7 @@ const ResumesPage: React.FC = () => {
         errorMsg = error.message;
       }
 
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setGeneratingPdf(false);
     }
@@ -363,10 +357,9 @@ const ResumesPage: React.FC = () => {
 
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
-        setErrorMessage(
+        showError(
           'This resume has no associated portfolio. Please update the resume with a valid portfolio first.'
         );
-        setSnackbarOpen(true);
         handleOpenPortfolioDialog(resumeId);
         return;
       }
@@ -446,8 +439,7 @@ const ResumesPage: React.FC = () => {
         handleOpenPortfolioDialog(resumeId);
       }
 
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setGeneratingPdf(false);
       handleMenuClose();
@@ -869,14 +861,6 @@ const ResumesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Error Toast */}
-      <Toast
-        open={snackbarOpen}
-        message={errorMessage || ''}
-        severity={errorMessage?.includes('success') ? 'success' : 'error'}
-        onClose={() => setSnackbarOpen(false)}
-      />
-
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={`${selectedResumeName || 'Resume'} PDF Preview`}
@@ -888,8 +872,7 @@ const ResumesPage: React.FC = () => {
         onPrevious={pdfPreview.previousPage}
         onNext={pdfPreview.nextPage}
         onLoadError={(error) => {
-          setErrorMessage(error.message);
-          setSnackbarOpen(true);
+          showError(error.message);
         }}
         footerActions={
           pdfPreview.pdfUrl && selectedResumeId ? (

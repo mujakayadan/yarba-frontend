@@ -13,11 +13,13 @@ import {
   WorkExperienceFormItem,
 } from '../types/portfolioEdit';
 import { extractApiErrorMessage, mapPortfolioToEditForm } from '../utils/portfolioEditMappers';
+import { useToast } from '../contexts/ToastContext';
 import { usePortfolioById } from './usePortfolio';
 import { usePortfolioMutations } from './usePortfolioMutations';
 
 export const usePortfolioEditForm = (id: string | undefined) => {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
   const { data: portfolio, isLoading, isError, error: queryError } = usePortfolioById(id);
   const mutations = usePortfolioMutations(id);
@@ -25,7 +27,6 @@ export const usePortfolioEditForm = (id: string | undefined) => {
   const [formSeeded, setFormSeeded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const [skills, setSkills] = useState<SkillCategoryForm[]>([]);
   const [newSkill, setNewSkill] = useState('');
@@ -152,8 +153,6 @@ export const usePortfolioEditForm = (id: string | undefined) => {
     }
 
     setSaving(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       let updated: Portfolio | undefined;
@@ -161,7 +160,7 @@ export const usePortfolioEditForm = (id: string | undefined) => {
       switch (tabValue) {
         case 0:
           updated = await mutations.updateCareerSummaryMutation.mutateAsync(careerSummary);
-          setSuccess('Career summary updated successfully!');
+          showSuccess('Career summary updated successfully!');
           break;
         case 1: {
           const formattedSkills = skills
@@ -171,16 +170,16 @@ export const usePortfolioEditForm = (id: string | undefined) => {
               skills: [...category.skills],
             }));
           updated = await mutations.updateSkillsMutation.mutateAsync(formattedSkills);
-          setSuccess('Skills updated successfully!');
+          showSuccess('Skills updated successfully!');
           break;
         }
         case 2:
           updated = await mutations.updateWorkExperienceMutation.mutateAsync(workExperience);
-          setSuccess('Work experience updated successfully!');
+          showSuccess('Work experience updated successfully!');
           break;
         case 3:
           updated = await mutations.updateEducationMutation.mutateAsync(education);
-          setSuccess('Education updated successfully!');
+          showSuccess('Education updated successfully!');
           break;
         case 4: {
           const projectsToSave = projects.map((project) => ({
@@ -188,20 +187,20 @@ export const usePortfolioEditForm = (id: string | undefined) => {
             link: project.link === '' ? undefined : project.link,
           }));
           updated = await mutations.updateProjectsMutation.mutateAsync(projectsToSave);
-          setSuccess('Projects updated successfully!');
+          showSuccess('Projects updated successfully!');
           break;
         }
         case 5:
           updated = await mutations.updateAwardsMutation.mutateAsync(awards);
-          setSuccess('Awards updated successfully!');
+          showSuccess('Awards updated successfully!');
           break;
         case 6:
           updated = await mutations.updatePublicationsMutation.mutateAsync(publications);
-          setSuccess('Publications updated successfully!');
+          showSuccess('Publications updated successfully!');
           break;
         case 7:
           updated = await mutations.updateCertificationsMutation.mutateAsync(certifications);
-          setSuccess('Certifications updated successfully!');
+          showSuccess('Certifications updated successfully!');
           break;
         default:
           break;
@@ -212,7 +211,7 @@ export const usePortfolioEditForm = (id: string | undefined) => {
       }
     } catch (err: unknown) {
       console.error('Failed to update portfolio:', err);
-      setError(extractApiErrorMessage(err, 'Failed to update portfolio. Please try again.'));
+      showError(extractApiErrorMessage(err, 'Failed to update portfolio. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -236,7 +235,6 @@ export const usePortfolioEditForm = (id: string | undefined) => {
     loading: isLoading,
     saving,
     error,
-    success,
     skills,
     setSkills,
     newSkill,

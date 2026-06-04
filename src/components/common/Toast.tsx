@@ -1,5 +1,5 @@
 import React from 'react';
-import { Snackbar, Alert, AlertProps, SnackbarProps } from '@mui/material';
+import { Snackbar, Alert, AlertProps } from '@mui/material';
 
 interface ToastProps {
   open: boolean;

@@ -16,6 +16,7 @@ import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useProfileMutations } from '../../hooks/useProfileMutations';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { useToast } from '../../contexts/ToastContext';
 import { PROFILE_EDIT_TABS } from '../../components/profile/edit/profileEditTabs';
 import type { ProfileEditTabProps, ProfilePreferencesForm } from '../../types/profileEdit';
 import {
@@ -26,14 +27,13 @@ import {
 
 const ProfileEditPage: React.FC = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
   const { data: profile, isLoading: profileLoading, isError } = useUserProfile();
   const { updatePersonalInfo, updateLifeStoryMutation, updatePromptPrefs, updateSystemPrefs } =
     useProfileMutations();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [formSeeded, setFormSeeded] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState(emptyPersonalInfo());
@@ -157,14 +157,12 @@ const ProfileEditPage: React.FC = () => {
 
     await updatePromptPrefs.mutateAsync(promptPreferencesData);
     await updateSystemPrefs.mutateAsync(systemPreferencesData);
-    setSuccess('Preferences updated successfully!');
+    showSuccess('Preferences updated successfully!');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       if (tabValue === 0) {
@@ -177,11 +175,11 @@ const ProfileEditPage: React.FC = () => {
           github: personalInfo.github,
           website: personalInfo.website,
         });
-        setSuccess('Personal information updated successfully!');
+        showSuccess('Personal information updated successfully!');
         navigate('/profile');
       } else if (tabValue === 1) {
         await updateLifeStoryMutation.mutateAsync(lifeStory);
-        setSuccess('Life story updated successfully!');
+        showSuccess('Life story updated successfully!');
         navigate('/profile');
       } else if (tabValue === 2) {
         await handleSavePreferences();
@@ -189,7 +187,7 @@ const ProfileEditPage: React.FC = () => {
     } catch (err: unknown) {
       console.error('Failed to update profile:', err);
       const apiErr = err as { response?: { data?: { detail?: string } } };
-      setError(apiErr.response?.data?.detail || 'Failed to update profile. Please try again.');
+      showError(apiErr.response?.data?.detail || 'Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -228,18 +226,6 @@ const ProfileEditPage: React.FC = () => {
             Cancel
           </Button>
         </Box>
-
-        {success && (
-          <Alert severity="success" sx={{ mb: 3 }}>
-            {success}
-          </Alert>
-        )}
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="profile edit tabs">

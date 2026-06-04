@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { getResumeById, updateResume } from '../../services/resumeService';
 import { Resume } from '../../types/models';
-import { Toast } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 
 // Helpers placed outside the component to avoid initialization order issues
 const getEmptyResumeContentSkeleton = () => ({
@@ -64,6 +64,7 @@ const normalizeResumeContent = (raw: any) => {
 const EditResumePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
 
   const [initialResume, setInitialResume] = useState<Resume | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -79,12 +80,6 @@ const EditResumePage: React.FC = () => {
   // Removed portfolioId editing per request
   const [content, setContent] = useState<any | null>(null);
   const [jobDescriptionExpanded, setJobDescriptionExpanded] = useState<boolean>(false);
-
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success'
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,16 +146,11 @@ const EditResumePage: React.FC = () => {
       const updated = await updateResume(id, payload);
       setInitialResume(updated);
       setContent(normalizeResumeContent(updated.content));
-      setToastMessage('Resume updated successfully');
-      setToastSeverity('success');
-      setToastOpen(true);
+      showSuccess('Resume updated successfully');
       // Navigate back to view page after successful save
       navigate(`/resumes/${id}`);
     } catch (e: any) {
-      setError(e.response?.data?.detail || e.message || 'Failed to update resume');
-      setToastMessage(e.response?.data?.detail || e.message || 'Failed to update resume');
-      setToastSeverity('error');
-      setToastOpen(true);
+      showError(e.response?.data?.detail || e.message || 'Failed to update resume');
     } finally {
       setSaving(false);
     }
@@ -1350,13 +1340,6 @@ const EditResumePage: React.FC = () => {
           </Box>
         )}
       </Paper>
-
-      <Toast
-        open={toastOpen}
-        message={toastMessage}
-        severity={toastSeverity}
-        onClose={() => setToastOpen(false)}
-      />
     </Container>
   );
 };

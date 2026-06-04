@@ -5,6 +5,7 @@ import { CssBaseline } from '@mui/material';
 import theme from './theme';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProfileProvider } from './contexts/ProfileContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { AppQueryProvider } from './providers/QueryProvider';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import AppRoutes from './routes/AppRoutes';
@@ -26,13 +27,15 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppQueryProvider>
-          <AuthProvider>
-            <ProfileProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </ProfileProvider>
-          </AuthProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <ProfileProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </ProfileProvider>
+            </AuthProvider>
+          </ToastProvider>
         </AppQueryProvider>
         <Suspense fallback={null}>
           <Analytics />

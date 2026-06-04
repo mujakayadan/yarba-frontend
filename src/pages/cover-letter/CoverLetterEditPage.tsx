@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 import { generateCoverLetterContent, updateCoverLetter } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
-import { Toast } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 import { useCoverLetter } from '../../hooks/useCoverLetter';
 import { useResume } from '../../hooks/useResume';
 import { coverLetterKeys } from '../../lib/queryKeys';
@@ -39,6 +39,7 @@ const contentToEditableText = (content: CoverLetter['content']): string => {
 const CoverLetterEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
 
   const { data: initialCoverLetter, isLoading, isError } = useCoverLetter(id);
   const { data: resume } = useResume(initialCoverLetter?.resume_id);
@@ -47,13 +48,6 @@ const CoverLetterEditPage: React.FC = () => {
   const [formSeeded, setFormSeeded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success'
-  );
-
   useEffect(() => {
     if (initialCoverLetter && !formSeeded) {
       setContent(contentToEditableText(initialCoverLetter.content));
@@ -80,12 +74,6 @@ const CoverLetterEditPage: React.FC = () => {
     return content !== contentToEditableText(initialCoverLetter.content);
   }, [content, initialCoverLetter]);
 
-  const showToast = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
-    setToastMessage(message);
-    setToastSeverity(severity);
-    setToastOpen(true);
-  };
-
   const handleBack = () => {
     navigate('/cover-letters');
   };
@@ -102,7 +90,6 @@ const CoverLetterEditPage: React.FC = () => {
     }
 
     setGenerating(true);
-    setError(null);
 
     try {
       const updated = await generateCoverLetterContent(id, regenerate);
@@ -110,15 +97,11 @@ const CoverLetterEditPage: React.FC = () => {
         queryClient.setQueryData(coverLetterKeys.detail(id), updated);
       }
       setContent(contentToEditableText(updated.content));
-      showToast(
-        regenerate ? 'Cover letter regenerated' : 'Cover letter content generated',
-        'success'
-      );
+      showSuccess(regenerate ? 'Cover letter regenerated' : 'Cover letter content generated');
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'Failed to generate cover letter content';
-      setError(message);
-      showToast(message, 'error');
+      showError(message);
     } finally {
       setGenerating(false);
     }
@@ -130,16 +113,14 @@ const CoverLetterEditPage: React.FC = () => {
     }
 
     setSaving(true);
-    setError(null);
 
     try {
       await updateMutation.mutateAsync(content);
-      showToast('Cover letter updated successfully', 'success');
+      showSuccess('Cover letter updated successfully');
       navigate(`/cover-letters/${id}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update cover letter';
-      setError(message);
-      showToast(message, 'error');
+      showError(message);
     } finally {
       setSaving(false);
     }
@@ -180,12 +161,6 @@ const CoverLetterEditPage: React.FC = () => {
             </Button>
           </Stack>
         </Stack>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Divider sx={{ mb: 2 }} />
 
@@ -229,13 +204,6 @@ const CoverLetterEditPage: React.FC = () => {
           </Button>
         </Stack>
       </Paper>
-
-      <Toast
-        open={toastOpen}
-        message={toastMessage}
-        severity={toastSeverity}
-        onClose={() => setToastOpen(false)}
-      />
     </Box>
   );
 };

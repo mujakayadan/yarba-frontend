@@ -63,18 +63,6 @@ const PortfolioEditPage: React.FC = () => {
         </Button>
       </Box>
 
-      {form.success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          {form.success}
-        </Alert>
-      )}
-
-      {form.error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {form.error}
-        </Alert>
-      )}
-
       <Paper elevation={1} sx={{ mb: 4 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs

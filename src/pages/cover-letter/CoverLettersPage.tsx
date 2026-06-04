@@ -50,7 +50,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
-import { Toast, PdfPreviewDialog } from '../../components/common';
+import { PdfPreviewDialog } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { getResumeById } from '../../services/resumeService';
 import { useCoverLetters } from '../../hooks/useCoverLetters';
@@ -64,6 +65,7 @@ const DEFAULT_PAGE_SIZE = 10;
 // Set up the worker for PDF.js
 const CoverLettersPage: React.FC = () => {
   const navigate = useNavigate();
+  const { showError } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
@@ -72,8 +74,6 @@ const CoverLettersPage: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCoverLetter, setDeletingCoverLetter] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const pdfPreview = usePdfPreview();
   const [selectedCoverLetterName, setSelectedCoverLetterName] = useState<string>('');
   const [resumeTitles, setResumeTitles] = useState<Record<string, string>>({});
@@ -221,8 +221,7 @@ const CoverLettersPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setDeletingCoverLetter(false);
       setDeleteDialogOpen(false);
@@ -269,8 +268,7 @@ const CoverLettersPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setGeneratingPdf(false);
       handleMenuClose();
@@ -316,8 +314,7 @@ const CoverLettersPage: React.FC = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      setErrorMessage(errorMsg);
-      setSnackbarOpen(true);
+      showError(errorMsg);
     } finally {
       setGeneratingPdf(false);
       handleMenuClose();
@@ -687,14 +684,6 @@ const CoverLettersPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Error snackbar */}
-      <Toast
-        open={snackbarOpen}
-        message={errorMessage || ''}
-        severity="error"
-        onClose={() => setSnackbarOpen(false)}
-      />
-
       <PdfPreviewDialog
         open={pdfPreview.open}
         title={`${selectedCoverLetterName || 'Cover Letter'} PDF Preview`}
@@ -706,8 +695,7 @@ const CoverLettersPage: React.FC = () => {
         onPrevious={pdfPreview.previousPage}
         onNext={pdfPreview.nextPage}
         onLoadError={(error) => {
-          setErrorMessage(error.message);
-          setSnackbarOpen(true);
+          showError(error.message);
         }}
         footerActions={
           pdfPreview.pdfUrl && selectedCoverLetterId ? (

@@ -15,11 +15,12 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Key as KeyIcon, Save as SaveIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { changePassword } from '../../services/authService';
-import { Toast } from '../../components/common';
 
 const UserPage: React.FC = () => {
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,7 +29,6 @@ const UserPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const handleToggleCurrentPasswordVisibility = () => {
     setShowCurrentPassword(!showCurrentPassword);
@@ -71,24 +71,19 @@ const UserPage: React.FC = () => {
 
     setLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
       await changePassword(currentPassword, newPassword);
-      setSuccess('Password changed successfully');
+      showSuccess('Password changed successfully');
       // Clear form
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {
-      setError(err.message || 'Failed to change password');
+      showError(err.message || 'Failed to change password');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSuccess(null);
   };
 
   return (
@@ -217,13 +212,6 @@ const UserPage: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
-
-      <Toast
-        open={!!success}
-        message={success || ''}
-        severity="success"
-        onClose={handleCloseSnackbar}
-      />
     </Box>
   );
 };

@@ -22,7 +22,7 @@ import {
 } from '../../services/resumeService';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { ResumeCreateRequest } from '../../types/models';
-import { Toast } from '../../components/common';
+import { useToast } from '../../contexts/ToastContext';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 
@@ -50,17 +50,13 @@ function TabPanel(props: TabPanelProps) {
 
 const CreateResumePage: React.FC = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError, showWarning } = useToast();
   const [loading, setLoading] = useState(false);
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const [error, setError] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [jobDescription, setJobDescription] = useState('');
   const [jobDescriptionUrl, setJobDescriptionUrl] = useState('');
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success'
-  );
   const [extractedJobDetails, setExtractedJobDetails] = useState<JobExtractionDetails | null>(null);
   const [isJobExtracted, setIsJobExtracted] = useState(false);
   const [extractionError, setExtractionError] = useState<string | null>(null);
@@ -73,9 +69,7 @@ const CreateResumePage: React.FC = () => {
   const handleExtractJobDetails = async () => {
     if (!jobDescriptionUrl) {
       setExtractionError('Please enter a Job Posting URL.');
-      setToastMessage('Please enter a Job Posting URL.');
-      setToastSeverity('error');
-      setToastOpen(true);
+      showError('Please enter a Job Posting URL.');
       return;
     }
     setLoading(true);
@@ -88,27 +82,22 @@ const CreateResumePage: React.FC = () => {
       if (details.description && details.description.trim() !== '') {
         setJobDescription(details.description);
         setIsJobExtracted(true);
-        setToastMessage(
+        showSuccess(
           'Job details extracted successfully! Review below or switch to "Job Description" tab to edit.'
         );
-        setToastSeverity('success');
       } else {
         setIsJobExtracted(false);
         const errorMsg = `Successfully contacted URL, but could not extract a usable job description. ${details.title ? 'Title found: ' + details.title + '.' : ''} Please try pasting the description manually or check the URL.`;
         setExtractionError(errorMsg);
-        setToastMessage(errorMsg);
-        setToastSeverity('warning');
+        showWarning(errorMsg);
       }
-      setToastOpen(true);
     } catch (err: any) {
       console.error('Failed to extract job details:', err);
       const errorMessage =
         err.response?.data?.detail || err.message || 'Failed to extract job details.';
       setExtractionError(errorMessage);
       setIsJobExtracted(false);
-      setToastMessage(errorMessage);
-      setToastSeverity('error');
-      setToastOpen(true);
+      showError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -124,9 +113,7 @@ const CreateResumePage: React.FC = () => {
       jobDescToUse = jobDescription;
       if (!jobDescToUse || jobDescToUse.trim() === '') {
         setError('Please provide a job description.');
-        setToastMessage('Job description is missing or empty.');
-        setToastSeverity('error');
-        setToastOpen(true);
+        showError('Job description is missing or empty.');
         setLoading(false);
         return;
       }
@@ -135,9 +122,7 @@ const CreateResumePage: React.FC = () => {
         setError(
           'Extracted job description is not available. Please extract again or enter manually.'
         );
-        setToastMessage('Extracted job description is not available.');
-        setToastSeverity('error');
-        setToastOpen(true);
+        showError('Extracted job description is not available.');
         setLoading(false);
         return;
       }
@@ -146,9 +131,7 @@ const CreateResumePage: React.FC = () => {
 
     if (!jobDescToUse || jobDescToUse.trim() === '') {
       setError('Job description is missing or empty.');
-      setToastMessage('Job description is missing or empty.');
-      setToastSeverity('error');
-      setToastOpen(true);
+      showError('Job description is missing or empty.');
       setLoading(false);
       return;
     }
@@ -164,9 +147,7 @@ const CreateResumePage: React.FC = () => {
       }
 
       const response = await createResume(resumeData);
-      setToastMessage('Resume created successfully!');
-      setToastSeverity('success');
-      setToastOpen(true);
+      showSuccess('Resume created successfully!');
       if (response && response.id) {
         navigate(`/resumes/${response.id}`);
       }
@@ -175,16 +156,10 @@ const CreateResumePage: React.FC = () => {
       const errorMsg =
         err.response?.data?.detail || err.message || 'Failed to create resume. Please try again.';
       setError(errorMsg);
-      setToastMessage(errorMsg);
-      setToastSeverity('error');
-      setToastOpen(true);
+      showError(errorMsg);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCloseToast = () => {
-    setToastOpen(false);
   };
 
   const handleEditPreferences = () => {
@@ -507,13 +482,6 @@ const CreateResumePage: React.FC = () => {
           </CardContent>
         </Card>
       )}
-
-      <Toast
-        open={toastOpen}
-        message={toastMessage}
-        severity={toastSeverity}
-        onClose={handleCloseToast}
-      />
     </Container>
   );
 };
