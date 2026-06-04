@@ -59,6 +59,7 @@ import { Resume } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
+import { triggerUrlDownload } from '../../utils/pdfDownload';
 import ReactMarkdown from 'react-markdown';
 
 interface PdfResponse {
@@ -192,12 +193,8 @@ const ViewResumePage: React.FC = () => {
       let blobToDownload: Blob;
 
       if (isPdfResponse(response)) {
-        // Fetch the PDF from the URL as a blob first
-        const fetchedResponse = await fetch(response.pdf_url);
-        if (!fetchedResponse.ok) {
-          throw new Error(`Failed to fetch PDF from URL: ${fetchedResponse.statusText}`);
-        }
-        blobToDownload = await fetchedResponse.blob();
+        triggerUrlDownload(response.pdf_url, filename);
+        return;
       } else if (isBlob(response)) {
         blobToDownload = response;
       } else {
@@ -215,22 +212,8 @@ const ViewResumePage: React.FC = () => {
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
-      let downloadErrorMsg =
-        'Failed to download PDF. Please try again later or contact support if the issue persists.';
-      if (err.response?.data instanceof Blob) {
-        try {
-          const errorText = await err.response.data.text();
-          if (errorText && errorText.length < 500 && !errorText.toLowerCase().includes('<html')) {
-            downloadErrorMsg = `Failed to download PDF: ${errorText}`;
-          }
-        } catch (blobError) {
-          console.warn('Could not parse error response blob for download:', blobError);
-        }
-      } else if (err.message) {
-        if (!err.message.toLowerCase().includes('request failed')) {
-          downloadErrorMsg = err.message;
-        }
-      }
+      const downloadErrorMsg =
+        'Could not download the PDF. Try regenerating it from the resume page, or contact admin@yarba.app if it keeps failing.';
       setGenerationErrorMessage(downloadErrorMsg);
       setGenerationErrorDialogOpen(true);
       setError(null);
@@ -1593,34 +1576,16 @@ const ViewResumePage: React.FC = () => {
                 setGeneratingPdf(true);
                 try {
                   if (pdfPreview.pdfUrl?.startsWith('http')) {
-                    const fetchedResponse = await fetch(pdfPreview.pdfUrl);
-                    if (!fetchedResponse.ok) {
-                      setGenerationErrorMessage(
-                        `Failed to fetch PDF for download: ${fetchedResponse.statusText}`
-                      );
-                      setGenerationErrorDialogOpen(true);
-                      throw new Error(
-                        `Failed to fetch PDF from URL: ${fetchedResponse.statusText}`
-                      );
-                    }
-                    const blob = await fetchedResponse.blob();
-                    const objectUrl = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = objectUrl;
-                    link.setAttribute('download', `${resume?.title || 'resume'}.pdf`);
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                    window.URL.revokeObjectURL(objectUrl);
+                    triggerUrlDownload(pdfPreview.pdfUrl, `${resume?.title || 'resume'}.pdf`);
                   } else {
                     await handleDownloadPdf();
                   }
                 } catch (e: unknown) {
                   console.error('Error downloading PDF from modal:', e);
                   if (!generationErrorDialogOpen) {
-                    const message =
-                      e instanceof Error ? e.message : 'Error downloading PDF from modal.';
-                    setGenerationErrorMessage(message);
+                    setGenerationErrorMessage(
+                      'Could not download the PDF. Try regenerating it, or contact admin@yarba.app if it keeps failing.'
+                    );
                     setGenerationErrorDialogOpen(true);
                   }
                 } finally {
