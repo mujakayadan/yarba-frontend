@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   TextField,
-  Divider,
   Stack,
   Switch,
   FormControlLabel,
@@ -12,8 +11,26 @@ import {
   Select,
   InputLabel,
   FormControl,
+  FormHelperText,
 } from '@mui/material';
 import type { ProfileEditTabProps } from '../../../types/profileEdit';
+import { EditSectionHeader } from './EditSectionHeader';
+
+const FeatureToggle: React.FC<{
+  name: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: ProfileEditTabProps['onSwitchChange'];
+}> = ({ name, label, description, checked, onChange }) => (
+  <Box sx={{ mb: 1.5 }}>
+    <FormControlLabel
+      control={<Switch checked={checked} onChange={onChange} name={name} />}
+      label={label}
+    />
+    <FormHelperText sx={{ ml: 4.5, mt: -0.5 }}>{description}</FormHelperText>
+  </Box>
+);
 
 export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
   preferences,
@@ -22,10 +39,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
   onSwitchChange,
 }) => (
   <>
-    <Typography variant="subtitle1" gutterBottom>
-      Career Summary
+    <Typography variant="body2" color="text.secondary" paragraph>
+      These settings control how AI generates and tailors your resumes and cover letters from your
+      portfolio. Adjust the limits below to match the roles you apply for.
     </Typography>
-    <Divider sx={{ mb: 3 }} />
+
+    <EditSectionHeader
+      first
+      title="Career Summary"
+      description="Controls the length of the professional summary at the top of tailored resumes."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -37,10 +60,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.career_summary_min_words}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 100,
-          }}
+          helperText="Shortest summary the AI should write"
+          inputProps={{ min: 0, max: 100 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -52,18 +73,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.career_summary_max_words}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 500,
-          }}
+          helperText="Longest summary the AI should write"
+          inputProps={{ min: 0, max: 500 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Work Experience
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Work Experience"
+      description="Limits how many jobs and bullet points the AI includes when tailoring work history for a specific role."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -75,10 +94,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.work_experience_max_jobs}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Most recent roles to include on a tailored resume"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -90,18 +107,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.work_experience_bullet_points_per_job}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Achievements listed under each job entry"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Projects
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Projects"
+      description="Sets how many projects and details appear when generating resume content."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -113,10 +128,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.project_max_projects}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Number of projects to highlight on a tailored resume"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -128,18 +141,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.project_bullet_points_per_project}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Details listed under each project"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Skills
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Skills"
+      description="Guides how the AI organizes your skills into categories and trims the list to fit the page."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -151,10 +162,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.skills_max_categories}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Skill groups such as Languages or Frameworks"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -166,10 +175,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.skills_min_per_category}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Floor for skills kept in each category"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
     </Stack>
@@ -184,18 +191,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.skills_max_per_category}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 20,
-          }}
+          helperText="Ceiling for skills listed in each category"
+          inputProps={{ min: 0, max: 20 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Education
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Education"
+      description="Caps education entries and relevant coursework included in generated documents."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -207,10 +212,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.education_max_entries}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 5,
-          }}
+          helperText="Degrees or programs to include"
+          inputProps={{ min: 0, max: 5 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -222,18 +225,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.education_max_courses}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Relevant courses listed per education entry"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Cover Letter
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Cover Letter"
+      description="Shapes the structure and reading level of AI-written cover letters."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -245,10 +246,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.cover_letter_paragraphs}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Body paragraphs in the generated letter"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -260,18 +259,16 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.cover_letter_target_age}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 100,
-          }}
+          helperText="Reading level for the letter (e.g. 18 = simpler, 25 = professional)"
+          inputProps={{ min: 0, max: 100 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Other Sections
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Other Sections"
+      description="Limits for awards and publications when those sections are included in a resume."
+    />
 
     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -283,10 +280,8 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.awards_max_awards}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Awards to include on a tailored resume"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -298,56 +293,45 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           value={preferences.publications_max_publications}
           onChange={onNumberInputChange}
           margin="normal"
-          inputProps={{
-            min: 0,
-            max: 10,
-          }}
+          helperText="Publications to include on a tailored resume"
+          inputProps={{ min: 0, max: 10 }}
         />
       </Box>
     </Stack>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Feature Preferences
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Feature Preferences"
+      description="Toggles for app behavior. Some options affect resume and cover letter generation."
+    />
 
     <FormGroup>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={preferences.feature_check_clearance}
-            onChange={onSwitchChange}
-            name="feature_check_clearance"
-          />
-        }
+      <FeatureToggle
+        name="feature_check_clearance"
         label="Check Clearance"
+        description="Scan job descriptions for security clearance requirements before generating a resume."
+        checked={preferences.feature_check_clearance}
+        onChange={onSwitchChange}
       />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={preferences.feature_auto_save}
-            onChange={onSwitchChange}
-            name="feature_auto_save"
-          />
-        }
+      <FeatureToggle
+        name="feature_auto_save"
         label="Auto Save"
+        description="Automatically save your work as you edit resumes and cover letters."
+        checked={preferences.feature_auto_save}
+        onChange={onSwitchChange}
       />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={preferences.feature_dark_mode}
-            onChange={onSwitchChange}
-            name="feature_dark_mode"
-          />
-        }
+      <FeatureToggle
+        name="feature_dark_mode"
         label="Dark Mode"
+        description="Use a dark color theme throughout the application."
+        checked={preferences.feature_dark_mode}
+        onChange={onSwitchChange}
       />
     </FormGroup>
 
-    <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>
-      Default Templates
-    </Typography>
-    <Divider sx={{ mb: 3 }} />
+    <EditSectionHeader
+      title="Default Templates"
+      description="Pre-selected LaTeX templates when creating new resumes or cover letters."
+    />
 
     <Stack spacing={1} sx={{ mb: 3 }}>
       <FormControl fullWidth>
@@ -363,6 +347,7 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           <MenuItem value="professional">Professional</MenuItem>
           <MenuItem value="elegant">Elegant</MenuItem>
         </Select>
+        <FormHelperText>Layout and styling for newly created resumes</FormHelperText>
       </FormControl>
 
       <FormControl fullWidth>
@@ -378,6 +363,7 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           <MenuItem value="creative">Creative</MenuItem>
           <MenuItem value="modern">Modern</MenuItem>
         </Select>
+        <FormHelperText>Layout and styling for newly created cover letters</FormHelperText>
       </FormControl>
     </Stack>
   </>
