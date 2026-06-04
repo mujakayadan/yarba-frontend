@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { PortfolioViewTabProps } from '../../../../types/portfolioView';
 
 export const CareerSummaryViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) => (
@@ -87,7 +88,7 @@ export const CareerSummaryViewTab: React.FC<PortfolioViewTabProps> = ({ portfoli
                   size="small"
                   sx={{
                     bgcolor: portfolio.career_summary?.default_job_title
-                      ? '#E05B49'
+                      ? 'accent.main'
                       : 'primary.main',
                     color: 'white',
                     width: chipWidth,
@@ -100,7 +101,7 @@ export const CareerSummaryViewTab: React.FC<PortfolioViewTabProps> = ({ portfoli
                     sx={{
                       display: 'inline-flex',
                       fontWeight: 'bold',
-                      bgcolor: 'rgba(25, 118, 210, 0.1)',
+                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
                       borderRadius: 1,
                       px: 1,
                       py: 0.3,

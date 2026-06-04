@@ -74,7 +74,9 @@ export interface Profile {
     features?: {
       check_clearance: boolean;
       auto_save: boolean;
+      /** @deprecated Use theme_mode; kept in sync when saving preferences */
       dark_mode: boolean;
+      theme_mode?: 'default' | 'light' | 'dark';
     };
     notifications?: Record<string, any>;
     privacy?: Record<string, any>;
@@ -318,8 +320,8 @@ export interface DeploymentStatus {
 
 export interface PortfolioWebsiteConfig {
   theme: string; // default: modern
-  primary_color: string; // hex color, default: #3B82F6
-  secondary_color: string; // hex color, default: #1F2937
+  primary_color: string; // hex color, default: brand primary (#3F72AF)
+  secondary_color: string; // hex color, default: brand text primary (#2D3748)
   meta_title?: string;
   meta_description?: string;
   meta_keywords?: string[];

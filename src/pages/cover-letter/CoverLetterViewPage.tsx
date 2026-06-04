@@ -289,7 +289,7 @@ const CoverLetterViewPage: React.FC = () => {
       {/* Cover Letter Content */}
       <Box sx={{ width: '100%' }}>
         {/* Cover Letter Details */}
-        <Paper elevation={0} sx={{ mb: 3, p: 2, backgroundColor: '#f9f9f9' }}>
+        <Paper elevation={0} sx={{ mb: 3, p: 2, bgcolor: 'grey.50' }}>
           <Typography variant="h6" component="div" gutterBottom color="primary">
             Cover Letter Details
           </Typography>
@@ -335,7 +335,7 @@ const CoverLetterViewPage: React.FC = () => {
         </Paper>
 
         {/* Cover Letter Content */}
-        <Paper elevation={0} sx={{ mb: 3, p: 2, backgroundColor: '#f9f9f9' }}>
+        <Paper elevation={0} sx={{ mb: 3, p: 2, bgcolor: 'grey.50' }}>
           <Typography variant="h6" component="div" gutterBottom color="primary">
             Cover Letter Content
           </Typography>
@@ -348,8 +348,10 @@ const CoverLetterViewPage: React.FC = () => {
               sx={{
                 p: { xs: 3, sm: 5 },
                 backgroundColor: '#fcfcfc',
-                backgroundImage: 'linear-gradient(to bottom, #f9f9f9, #fcfcfc 15%)',
-                border: '1px solid #e0e0e0',
+                backgroundImage: (theme) =>
+                  `linear-gradient(to bottom, ${theme.palette.background.default}, ${theme.palette.background.paper} 15%)`,
+                border: 1,
+                borderColor: 'divider',
                 borderRadius: 2,
                 boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                 fontFamily: '"Georgia", serif',

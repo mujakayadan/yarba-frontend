@@ -36,6 +36,7 @@ import debounce from 'lodash/debounce';
 import { usePortfolioWebsite } from '../hooks/useWebsite';
 import { websiteKeys } from '../lib/queryKeys';
 import { queryClient } from '../providers/QueryProvider';
+import { defaultWebsiteColors } from '../theme/tokens';
 
 const THEMES = [
   {
@@ -55,13 +56,25 @@ const THEMES = [
 
 const DEFAULT_CONFIG: PortfolioWebsiteConfig = {
   theme: 'modern',
-  primary_color: '#3B82F6',
-  secondary_color: '#1F2937',
+  primary_color: defaultWebsiteColors.primary_color,
+  secondary_color: defaultWebsiteColors.secondary_color,
   social_media_enabled: true,
   enabled_sections: ['about', 'experience', 'education', 'skills', 'projects', 'contact'],
   section_order: ['about', 'experience', 'education', 'skills', 'projects', 'contact'],
   contact_form_enabled: true,
 };
+
+const SUPPORT_EMAIL = 'admin@yarba.app';
+const WEBSITE_ACTION_ERROR = `Something went wrong. Please try again. If the problem persists, contact ${SUPPORT_EMAIL}.`;
+const DEPLOYMENT_FAILED_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=Portfolio%20Website%20Deployment%20Error`;
+
+function logWebsiteActionError(context: string, err: unknown) {
+  const detail =
+    err && typeof err === 'object' && 'response' in err
+      ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail
+      : undefined;
+  console.error(context, detail ?? err);
+}
 
 const WebsitePage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -127,13 +140,17 @@ const WebsitePage: React.FC = () => {
 
   useEffect(() => {
     if (websiteQueryError) {
-      setError(
-        websiteQueryError instanceof Error
-          ? websiteQueryError.message
-          : 'Failed to fetch website data.'
-      );
+      console.error('Failed to fetch website data:', websiteQueryError);
+      setError(WEBSITE_ACTION_ERROR);
     }
   }, [websiteQueryError]);
+
+  useEffect(() => {
+    const message = website?.deployment_status?.error_message;
+    if (website?.deployment_status?.status === 'failed' && message) {
+      console.error('Portfolio deployment failed:', message);
+    }
+  }, [website?.deployment_status?.status, website?.deployment_status?.error_message]);
 
   useEffect(() => {
     return () => {
@@ -202,8 +219,9 @@ const WebsitePage: React.FC = () => {
       if (isDeploymentInProgress(newWebsite.deployment_status)) {
         pollDeploymentStatus();
       }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Failed to create website.');
+    } catch (err: unknown) {
+      logWebsiteActionError('Failed to create website:', err);
+      setError(WEBSITE_ACTION_ERROR);
     } finally {
       setActionLoading(false);
     }
@@ -228,8 +246,9 @@ const WebsitePage: React.FC = () => {
       if (isDeploymentInProgress(updatedWebsite.deployment_status)) {
         pollDeploymentStatus();
       }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Failed to redeploy website.');
+    } catch (err: unknown) {
+      logWebsiteActionError('Failed to redeploy website:', err);
+      setError(WEBSITE_ACTION_ERROR);
     } finally {
       setActionLoading(false);
     }
@@ -254,8 +273,9 @@ const WebsitePage: React.FC = () => {
       setSubdomainAvailable(null);
       setSubdomainError(null);
       stopPolling();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Failed to delete website.');
+    } catch (err: unknown) {
+      logWebsiteActionError('Failed to delete website:', err);
+      setError(WEBSITE_ACTION_ERROR);
     } finally {
       setActionLoading(false);
     }
@@ -444,7 +464,9 @@ const WebsitePage: React.FC = () => {
               />
               {website.deployment_status.status === 'failed' && (
                 <Alert severity="error" sx={{ my: 1 }}>
-                  Error: {website.deployment_status.error_message || 'Deployment failed'}
+                  We could not complete your website deployment. Please try Redeploy, or{' '}
+                  <Link href={DEPLOYMENT_FAILED_MAILTO}>{SUPPORT_EMAIL}</Link> if the problem
+                  persists.
                 </Alert>
               )}
               {isDeploymentInProgress(website.deployment_status) && (

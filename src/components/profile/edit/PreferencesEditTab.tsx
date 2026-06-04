@@ -14,6 +14,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 import type { ProfileEditTabProps } from '../../../types/profileEdit';
+import { APPEARANCE_MODE_LABELS, type AppearanceMode } from '../../../theme/appearance';
 import { EditSectionHeader } from './EditSectionHeader';
 
 const FeatureToggle: React.FC<{
@@ -319,14 +320,28 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
         checked={preferences.feature_auto_save}
         onChange={onSwitchChange}
       />
-      <FeatureToggle
-        name="feature_dark_mode"
-        label="Dark Mode"
-        description="Use a dark color theme throughout the application."
-        checked={preferences.feature_dark_mode}
-        onChange={onSwitchChange}
-      />
     </FormGroup>
+
+    <FormControl fullWidth sx={{ mb: 3 }}>
+      <InputLabel id="theme-mode-label">Appearance</InputLabel>
+      <Select
+        labelId="theme-mode-label"
+        name="theme_mode"
+        value={preferences.theme_mode}
+        label="Appearance"
+        onChange={onPreferenceChange}
+      >
+        {(Object.keys(APPEARANCE_MODE_LABELS) as AppearanceMode[]).map((mode) => (
+          <MenuItem key={mode} value={mode}>
+            {APPEARANCE_MODE_LABELS[mode]}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>
+        Default uses the classic gradient sidebar. Light uses a minimal sidebar. Dark uses a dark
+        palette.
+      </FormHelperText>
+    </FormControl>
 
     <EditSectionHeader
       title="Default Templates"

@@ -261,8 +261,9 @@ const CreateResumePage: React.FC = () => {
                   my: 2,
                   maxHeight: '300px',
                   overflowY: 'auto',
-                  backgroundColor: '#f9f9f9',
-                  border: '1px solid #e0e0e0',
+                  backgroundColor: 'grey.50',
+                  border: 1,
+                  borderColor: 'divider',
                 }}
               >
                 <ReactMarkdown>{extractedJobDetails!.description!}</ReactMarkdown>

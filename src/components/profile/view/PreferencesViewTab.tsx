@@ -250,10 +250,11 @@ export const PreferencesViewTab: React.FC<ProfileViewTabProps> = ({ profile }) =
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: 'flex', mb: 1 }}>
         <Typography variant="subtitle2" sx={{ width: 200, fontWeight: 'bold' }}>
-          Dark Mode:
+          Appearance:
         </Typography>
-        <Typography variant="body2">
-          {profile.system_preferences?.features?.dark_mode ? 'Enabled' : 'Disabled'}
+        <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+          {profile.system_preferences?.features?.theme_mode ??
+            (profile.system_preferences?.features?.dark_mode ? 'dark' : 'default')}
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', mb: 1 }}>

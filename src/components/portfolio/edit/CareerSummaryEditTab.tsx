@@ -64,7 +64,7 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
                 }
                 size="small"
                 sx={{
-                  bgcolor: careerSummary.default_job_title ? '#E05B49' : 'primary.main',
+                  bgcolor: careerSummary.default_job_title ? 'accent.main' : 'primary.main',
                   color: 'white',
                 }}
               />
@@ -179,7 +179,7 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
                 label={title}
                 color={title === careerSummary.default_job_title ? undefined : 'primary'}
                 sx={{
-                  bgcolor: title === careerSummary.default_job_title ? '#E05B49' : undefined,
+                  bgcolor: title === careerSummary.default_job_title ? 'accent.main' : undefined,
                   color: title === careerSummary.default_job_title ? 'white' : undefined,
                 }}
                 onDelete={() => handleDeleteJobTitle(index)}

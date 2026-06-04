@@ -1242,7 +1242,7 @@ const ViewResumePage: React.FC = () => {
     if (!content) return null;
 
     return (
-      <Paper elevation={0} sx={{ mb: 2, p: 2, backgroundColor: '#f9f9f9' }}>
+      <Paper elevation={0} sx={{ mb: 2, p: 2, bgcolor: 'grey.50' }}>
         <Typography
           variant="h6"
           component="div"
@@ -1441,7 +1441,7 @@ const ViewResumePage: React.FC = () => {
       {/* Main Content */}
       <Box sx={{ width: '100%' }}>
         {/* Resume Details */}
-        <Paper elevation={0} sx={{ mb: 3, p: 2, backgroundColor: '#f9f9f9' }}>
+        <Paper elevation={0} sx={{ mb: 3, p: 2, bgcolor: 'grey.50' }}>
           <Typography variant="h6" component="div" gutterBottom color="primary">
             Resume Details
           </Typography>

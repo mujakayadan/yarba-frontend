@@ -11,16 +11,24 @@ import {
   Paper,
   FormGroup,
   FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Switch,
   Tooltip,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';
-import { Profile } from '../../../types/models';
+import {
+  APPEARANCE_MODE_LABELS,
+  type AppearanceMode,
+  resolveAppearanceMode,
+} from '../../../theme/appearance';
 
 interface SystemPreferencesFormData {
-  darkMode: boolean;
+  themeMode: AppearanceMode;
   autoSave: boolean;
 }
 
@@ -29,7 +37,7 @@ const SystemPreferencesSetupPage: React.FC = () => {
   const { updateUserSetupProgress, updateProfile } = useAuth();
   const { profile, loading: profileLoading, refreshProfile } = useProfile();
   const [formData, setFormData] = useState<SystemPreferencesFormData>({
-    darkMode: false,
+    themeMode: 'default',
     autoSave: true,
   });
   const [saving, setSaving] = useState(false);
@@ -38,7 +46,7 @@ const SystemPreferencesSetupPage: React.FC = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        darkMode: profile.system_preferences?.features?.dark_mode || false,
+        themeMode: resolveAppearanceMode(profile.system_preferences?.features),
         autoSave:
           profile.system_preferences?.features?.auto_save === undefined
             ? true
@@ -47,11 +55,18 @@ const SystemPreferencesSetupPage: React.FC = () => {
     }
   }, [profile]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: checked,
+    }));
+  };
+
+  const handleThemeModeChange = (event: { target: { value: unknown } }) => {
+    setFormData((prev) => ({
+      ...prev,
+      themeMode: event.target.value as AppearanceMode,
     }));
   };
 
@@ -62,7 +77,8 @@ const SystemPreferencesSetupPage: React.FC = () => {
       const profileUpdateData = {
         system_preferences: {
           features: {
-            dark_mode: formData.darkMode,
+            theme_mode: formData.themeMode,
+            dark_mode: formData.themeMode === 'dark',
             auto_save: formData.autoSave,
           },
         },
@@ -160,19 +176,21 @@ const SystemPreferencesSetupPage: React.FC = () => {
           </Typography>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={6}>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.darkMode}
-                      onChange={handleChange}
-                      name="darkMode"
-                      disabled={saving}
-                    />
-                  }
-                  label="Dark Mode"
-                />
-              </FormGroup>
+              <FormControl fullWidth disabled={saving}>
+                <InputLabel id="setup-theme-mode-label">Appearance</InputLabel>
+                <Select
+                  labelId="setup-theme-mode-label"
+                  value={formData.themeMode}
+                  label="Appearance"
+                  onChange={handleThemeModeChange}
+                >
+                  {(Object.keys(APPEARANCE_MODE_LABELS) as AppearanceMode[]).map((mode) => (
+                    <MenuItem key={mode} value={mode}>
+                      {APPEARANCE_MODE_LABELS[mode]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormGroup>
@@ -180,7 +198,7 @@ const SystemPreferencesSetupPage: React.FC = () => {
                   control={
                     <Switch
                       checked={formData.autoSave}
-                      onChange={handleChange}
+                      onChange={handleSwitchChange}
                       name="autoSave"
                       disabled={saving}
                     />

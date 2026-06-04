@@ -182,7 +182,7 @@ const DashboardPage: React.FC = () => {
           <Box
             component="span"
             sx={{
-              color: '#E05B49',
+              color: 'accent.main',
               ml: 1,
               fontWeight: 'bold',
             }}

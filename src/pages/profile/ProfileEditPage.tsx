@@ -243,7 +243,8 @@ const ProfileEditPage: React.FC = () => {
       features: {
         check_clearance: preferences.feature_check_clearance,
         auto_save: preferences.feature_auto_save,
-        dark_mode: preferences.feature_dark_mode,
+        theme_mode: preferences.theme_mode,
+        dark_mode: preferences.theme_mode === 'dark',
       },
       llm: {
         model_name: preferences.llm_model_name,

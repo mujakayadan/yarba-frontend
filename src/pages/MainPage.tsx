@@ -155,7 +155,7 @@ const MainPage: React.FC = () => {
                       textAlign: { xs: 'center', md: 'left' },
                       color: theme.palette.primary.dark,
                       '& .firstLetter': {
-                        color: '#E05B49',
+                        color: 'accent.main',
                       },
                     })}
                   >
@@ -296,7 +296,7 @@ const MainPage: React.FC = () => {
                   sx={{
                     mb: 4,
                     fontSize: { xs: '1rem', sm: '1.1rem' },
-                    color: '#333333',
+                    color: 'text.primary',
                     fontWeight: 500,
                     lineHeight: 1.6,
                     textAlign: { xs: 'center', md: 'left' },
@@ -362,7 +362,7 @@ const MainPage: React.FC = () => {
                     </Typography>
                     <Box sx={{ mt: 1, textAlign: 'right' }}>
                       {[...Array(5)].map((_, i) => (
-                        <StarIcon key={i} sx={{ color: '#FFD700' }} />
+                        <StarIcon key={i} sx={{ color: 'warning.main' }} />
                       ))}
                     </Box>
                   </TestimonialPaper>

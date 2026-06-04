@@ -1,5 +1,6 @@
 import type { Profile } from '../types/models';
 import type { ProfilePreferencesForm } from '../types/profileEdit';
+import { resolveAppearanceMode } from '../theme/appearance';
 
 export const emptyPersonalInfo = () => ({
   full_name: '',
@@ -61,10 +62,7 @@ export const seedPreferencesFromProfile = (profileData: Profile): ProfilePrefere
     profileData.system_preferences?.features?.auto_save !== undefined
       ? profileData.system_preferences.features.auto_save
       : true,
-  feature_dark_mode:
-    profileData.system_preferences?.features?.dark_mode !== undefined
-      ? profileData.system_preferences.features.dark_mode
-      : false,
+  theme_mode: resolveAppearanceMode(profileData.system_preferences?.features),
   llm_model_name: profileData.system_preferences?.llm?.model_name || '',
   llm_temperature: profileData.system_preferences?.llm?.temperature?.toString() || '0.1',
   default_resume_template_id:

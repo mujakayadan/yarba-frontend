@@ -12,8 +12,9 @@ const Footer: React.FC = () => {
         py: 2,
         px: 3,
         mt: 'auto',
-        backgroundColor: '#f5f5f5',
-        borderTop: '1px solid #e0e0e0',
+        backgroundColor: 'background.default',
+        borderTop: 1,
+        borderColor: 'divider',
         width: '100%',
       }}
     >

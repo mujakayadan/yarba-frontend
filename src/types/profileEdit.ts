@@ -1,5 +1,6 @@
 import type { SelectChangeEvent } from '@mui/material';
 import type { Profile } from './models';
+import type { AppearanceMode } from '../theme/appearance';
 
 export interface ProfilePersonalInfoForm {
   full_name: string;
@@ -29,7 +30,7 @@ export interface ProfilePreferencesForm {
   publications_max_publications: string;
   feature_check_clearance: boolean;
   feature_auto_save: boolean;
-  feature_dark_mode: boolean;
+  theme_mode: AppearanceMode;
   default_resume_template_id: string;
   default_cover_letter_template_id: string;
   llm_model_name: string;

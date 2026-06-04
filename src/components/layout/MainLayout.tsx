@@ -39,11 +39,22 @@ import {
   Login as LoginIcon,
   Language as LanguageIcon,
 } from '@mui/icons-material';
+import { alpha } from '@mui/material/styles';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAppearance } from '../../contexts/AppearanceContext';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { env } from '../../config/env';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import { headerGradient } from '../../theme/tokens';
 import Footer from './Footer';
+import { ProfileMenuAppearance } from './ProfileMenuAppearance';
+import {
+  getDrawerDividerSx,
+  getDrawerNavIconSx,
+  getDrawerNavItemSx,
+  getDrawerNavLabelSx,
+  getDrawerPaperSx,
+} from './drawerNavStyles';
 
 // Define navigation items
 const navItems = [
@@ -76,7 +87,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   const { user, signOut } = useAuth();
   const location = useLocation();
   const theme = useTheme();
+  const { navVariant } = useAppearance();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const drawerNavItemSx = getDrawerNavItemSx(navVariant);
+  const drawerNavLabelSx = getDrawerNavLabelSx(navVariant);
   const [drawerOpen, setDrawerOpen] = useState(!isMobile && !hideDrawer);
   const { data: profile } = useUserProfile();
   const [imageVersion, setImageVersion] = useState<number>(Date.now());
@@ -148,38 +162,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               selected={location.pathname === item.path}
               className="slide-up nav-item"
               sx={{
-                minHeight: 48,
+                ...drawerNavItemSx,
                 justifyContent: drawerOpen ? 'initial' : 'center',
-                px: 2.5,
-                py: 1,
-                ml: 1, // 8dp from left edge (16dp keyline)
-                mr: 1, // 8dp from right edge
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                  },
-                },
                 animation: `slideUp 0.3s ease-out forwards ${index * 0.05 + 0.2}s`,
                 opacity: 0,
-                transition: 'background-color 0.2s ease-in-out',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                },
               }}
             >
               <ListItemIcon
                 sx={{
-                  minWidth: 0,
+                  ...getDrawerNavIconSx(navVariant, location.pathname === item.path),
                   mr: drawerOpen ? 2 : 'auto',
-                  ml: drawerOpen ? 0 : 0, // Proper alignment when collapsed
-                  justifyContent: 'center',
-                  color: location.pathname === item.path ? '#E05B49' : 'rgba(255, 255, 255, 0.8)',
-                  transition: 'none',
-                  fontSize: '1.5rem',
-                  '& .MuiSvgIcon-root': {
-                    fontSize: '1.5rem',
-                  },
+                  ml: drawerOpen ? 0 : 0,
                 }}
               >
                 {item.icon}
@@ -196,28 +189,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                   }}
-                  sx={{
-                    opacity: 1,
-                    display: 'block',
-                    color: '#ffffff',
-                    textShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
-                    '& span': {
-                      transition: 'none !important',
-                    },
-                    maxWidth: '100%',
-                  }}
+                  sx={drawerNavLabelSx}
                 />
               )}
             </ListItemButton>
           </Tooltip>
         ))}
       </List>
-      <Divider
-        sx={{
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
-          my: 1, // 8dp padding above and below divider (1 = 8px in the default MUI theme)
-        }}
-      />
+      <Divider sx={getDrawerDividerSx(navVariant)} />
       <List>
         <Tooltip
           title={!drawerOpen ? 'Logout' : ''}
@@ -233,31 +212,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             }}
             className="nav-item"
             sx={{
-              minHeight: 48,
+              ...drawerNavItemSx,
               justifyContent: drawerOpen ? 'initial' : 'center',
-              px: 2.5,
-              margin: '4px 8px',
-              ml: 1, // 8dp from left edge (16dp keyline)
-              mr: 1, // 8dp from right edge
-              borderRadius: 2,
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              },
-              transition: 'background-color 0.2s ease-in-out',
+              ...(navVariant === 'gradient'
+                ? {}
+                : {
+                    '&:hover': {
+                      backgroundColor: (t) => alpha(t.palette.error.main, 0.08),
+                    },
+                  }),
             }}
           >
             <ListItemIcon
               sx={{
-                minWidth: 0,
+                ...getDrawerNavIconSx(navVariant, false),
                 mr: drawerOpen ? 2 : 'auto',
-                ml: drawerOpen ? 0 : 0, // Proper alignment when collapsed
-                justifyContent: 'center',
-                color: '#E05B49',
-                transition: 'none',
-                fontSize: '1.5rem',
-                '& .MuiSvgIcon-root': {
-                  fontSize: '1.5rem',
-                },
+                ml: drawerOpen ? 0 : 0,
+                ...(navVariant === 'gradient' ? { color: '#E05B49' } : { color: 'accent.main' }),
               }}
             >
               <LogoutIcon />
@@ -274,14 +245,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
-                sx={{
-                  color: '#ffffff',
-                  textShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
-                  '& span': {
-                    transition: 'none !important',
-                  },
-                  maxWidth: '100%',
-                }}
+                sx={drawerNavLabelSx}
               />
             )}
           </ListItemButton>
@@ -297,8 +261,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
         sx={{
           width: '100%',
           ml: 0,
-          backgroundImage: 'linear-gradient(to right,rgb(142, 92, 150),rgb(122, 172, 216))',
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'transparent',
+          backgroundImage: headerGradient(),
+          zIndex: (t) => t.zIndex.drawer + 1,
           boxShadow: 3,
           height: {
             xs: '56px',
@@ -482,7 +447,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     {user.email || profile?.personal_information?.email || ''}
                   </Typography>
                 </Box>
-                <Divider />
+                <ProfileMenuAppearance onClose={handleClose} />
                 <MenuItem onClick={handleProfileNavigate} component={RouterLink} to="/user">
                   <ListItemIcon sx={{ minWidth: '25px' }}>
                     <SettingsIcon fontSize="small" />
@@ -559,11 +524,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               paddingTop: isMobile ? '56px' : '64px', // Proper padding for header height
               marginTop: 0, // Ensure no additional margin
               height: '100%',
-              backgroundColor: '#ffffff',
-              backgroundImage:
-                'linear-gradient(to bottom right, rgb(142, 92, 150), rgb(122, 172, 216))',
-              boxShadow:
-                '0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)', // 16dp elevation
+              ...getDrawerPaperSx(navVariant),
               zIndex: theme.zIndex.drawer,
             },
           }}
@@ -622,11 +583,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             left: drawerOpen ? drawerWidth - 20 : miniDrawerWidth - 20,
             bottom: 20,
             zIndex: 1300,
-            backgroundColor: '#3F72AF',
-            color: 'white',
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
             transition: 'left 0.2s ease',
             '&:hover': {
-              backgroundColor: '#2C5282',
+              backgroundColor: 'primary.dark',
             },
           }}
         >
