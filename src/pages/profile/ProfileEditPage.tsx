@@ -14,13 +14,14 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { Save as SaveIcon, Cancel as CancelIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { Profile } from '../../types/models';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useProfileMutations } from '../../hooks/useProfileMutations';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { EditPageActionBar } from '../../components/common/EditPageActionBar';
 import { IconTabBar } from '../../components/common/IconTabBar';
 import { useToast } from '../../contexts/ToastContext';
 import { PROFILE_EDIT_TABS } from '../../components/profile/edit/profileEditTabs';
@@ -264,8 +265,7 @@ const ProfileEditPage: React.FC = () => {
     showSuccess('Preferences updated successfully!');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     if (isMediaTab) {
       return;
     }
@@ -323,24 +323,21 @@ const ProfileEditPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<CancelIcon />}
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-        </Box>
+      <EditPageActionBar
+        backLabel="Back to Profile"
+        onBack={handleCancel}
+        onSave={handleSave}
+        saving={loading}
+        saveDisabled={isMediaTab}
+      />
 
-        {mediaError && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {mediaError}
-          </Alert>
-        )}
+      {mediaError && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {mediaError}
+        </Alert>
+      )}
 
+      <Paper elevation={1} sx={{ mb: 4 }}>
         <IconTabBar
           tabValue={tabValue}
           onChange={handleTabChange}
@@ -349,43 +346,27 @@ const ProfileEditPage: React.FC = () => {
           ariaLabel="profile edit tabs"
         />
 
-        <Box component="form" onSubmit={handleSubmit}>
-          <div
-            role="tabpanel"
-            id={`profile-edit-tabpanel-${renderedTab}`}
-            aria-labelledby={`profile-edit-tab-${renderedTab}`}
-            aria-busy={isTabPending}
+        <div
+          role="tabpanel"
+          id={`profile-edit-tabpanel-${renderedTab}`}
+          aria-labelledby={`profile-edit-tab-${renderedTab}`}
+          aria-busy={isTabPending}
+        >
+          <Box
+            sx={{
+              p: 3,
+              minHeight: 80,
+              opacity: isTabPending ? 0.6 : 1,
+              transition: 'opacity 150ms',
+            }}
           >
-            <Box
-              sx={{
-                p: { xs: 1, sm: 2 },
-                minHeight: 80,
-                opacity: isTabPending ? 0.6 : 1,
-                transition: 'opacity 150ms',
-              }}
-            >
-              {ActiveTab && (
-                <Suspense fallback={<TabPanelFallback />}>
-                  <ActiveTab {...tabProps} />
-                </Suspense>
-              )}
-            </Box>
-          </div>
-
-          {!isMediaTab && (
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                startIcon={<SaveIcon />}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Save Changes'}
-              </Button>
-            </Box>
-          )}
-        </Box>
+            {ActiveTab && (
+              <Suspense fallback={<TabPanelFallback />}>
+                <ActiveTab {...tabProps} />
+              </Suspense>
+            )}
+          </Box>
+        </div>
       </Paper>
 
       <Dialog open={openDialog} onClose={handleCloseUploadDialog}>

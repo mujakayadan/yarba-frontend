@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Box, Typography, Button, Paper, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Alert, Button } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
 import { IconTabBar } from '../../components/common/IconTabBar';
+import { PAGE_PRIMARY_ACTION_MIN_WIDTH } from '../../components/common/PagePrimaryButton';
 import { PROFILE_VIEW_TABS } from '../../components/profile/view/profileViewTabs';
 import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
 
@@ -50,13 +51,14 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'right', alignItems: 'center', mb: 3 }}>
+    <Box sx={{ width: '100%', p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 3 }}>
         <Button
           variant="contained"
           color="primary"
           startIcon={<EditIcon />}
           onClick={handleEditClick}
+          sx={{ minWidth: PAGE_PRIMARY_ACTION_MIN_WIDTH }}
         >
           Edit Profile
         </Button>

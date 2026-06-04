@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Paper, Button, CircularProgress, Alert } from '@mui/material';
-import { Save as SaveIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { usePortfolioEditForm } from '../../hooks/usePortfolioEditForm';
 import { PORTFOLIO_EDIT_TABS } from '../../components/portfolio/edit/portfolioEditTabs';
 import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
+import { EditPageActionBar } from '../../components/common/EditPageActionBar';
 
 const PortfolioEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,29 +48,12 @@ const PortfolioEditPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3,
-          gap: 1,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Button startIcon={<ArrowBackIcon />} onClick={form.handleCancel}>
-          Back to Portfolio
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<SaveIcon />}
-          onClick={form.handleSave}
-          disabled={form.saving}
-        >
-          {form.saving ? <CircularProgress size={24} /> : 'Save Changes'}
-        </Button>
-      </Box>
+      <EditPageActionBar
+        backLabel="Back to Portfolio"
+        onBack={form.handleCancel}
+        onSave={form.handleSave}
+        saving={form.saving}
+      />
 
       <Paper elevation={1} sx={{ mb: 4 }}>
         <PortfolioTabBar

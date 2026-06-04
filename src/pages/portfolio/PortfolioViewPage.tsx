@@ -7,6 +7,7 @@ import { getPortfolioViewSortedData } from '../../utils/portfolioViewSorted';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { usePortfolioById, useUserPortfolio } from '../../hooks/usePortfolio';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { PagePrimaryButton } from '../../components/common/PagePrimaryButton';
 import { PORTFOLIO_VIEW_TABS } from '../../components/portfolio/view/portfolioViewTabs';
 import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
 import { parsePortfolioTabIndex, portfolioTabSearchParam } from '../../utils/portfolioTabUrl';
@@ -95,16 +96,11 @@ const PortfolioViewPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'right', alignItems: 'center', mb: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={handleEditClick}
-        >
+    <Box sx={{ width: '100%', p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 3 }}>
+        <PagePrimaryButton startIcon={<EditIcon />} onClick={handleEditClick}>
           Edit Portfolio
-        </Button>
+        </PagePrimaryButton>
       </Box>
 
       <Paper elevation={1} sx={{ mb: 4 }}>
