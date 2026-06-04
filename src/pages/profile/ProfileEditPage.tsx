@@ -1,40 +1,69 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Button,
   Paper,
   CircularProgress,
   Alert,
-  Tabs,
-  Tab,
   SelectChangeEvent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Typography,
 } from '@mui/material';
-import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { Save as SaveIcon, Cancel as CancelIcon, Close as CloseIcon } from '@mui/icons-material';
 import { Profile } from '../../types/models';
+import { useAuth } from '../../contexts/AuthContext';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useProfileMutations } from '../../hooks/useProfileMutations';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { IconTabBar } from '../../components/common/IconTabBar';
 import { useToast } from '../../contexts/ToastContext';
 import { PROFILE_EDIT_TABS } from '../../components/profile/edit/profileEditTabs';
+import { PROFILE_VIEW_TABS } from '../../components/profile/view/profileViewTabs';
 import type { ProfileEditTabProps, ProfilePreferencesForm } from '../../types/profileEdit';
 import {
   emptyPersonalInfo,
   seedPersonalInfoFromProfile,
   seedPreferencesFromProfile,
 } from '../../utils/profileFormSeed';
+import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
+import { createDebugger } from '../../utils/debug';
+
+const debug = createDebugger('ProfileEditPage');
+
+const MEDIA_TAB_INDEX = PROFILE_VIEW_TABS.length - 1;
 
 const ProfileEditPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const { showSuccess, showError } = useToast();
-  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
+  const initialTab = parseTabIndex(searchParams.get('tab'), PROFILE_EDIT_TABS.length - 1);
+  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(initialTab);
   const { data: profile, isLoading: profileLoading, isError } = useUserProfile();
-  const { updatePersonalInfo, updateLifeStoryMutation, updatePromptPrefs, updateSystemPrefs } =
-    useProfileMutations();
+  const {
+    updatePersonalInfo,
+    updateLifeStoryMutation,
+    updatePromptPrefs,
+    updateSystemPrefs,
+    uploadPicture,
+    deletePicture,
+    uploadSignatureMutation,
+    deleteSignatureMutation,
+  } = useProfileMutations();
 
   const [loading, setLoading] = useState(false);
   const [formSeeded, setFormSeeded] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  const [uploadType, setUploadType] = useState<'profile' | 'signature' | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageVersion, setImageVersion] = useState<number>(Date.now());
 
   const [personalInfo, setPersonalInfo] = useState(emptyPersonalInfo());
   const [lifeStory, setLifeStory] = useState('');
@@ -80,6 +109,73 @@ const ProfileEditPage: React.FC = () => {
     setPreferences((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const handleOpenUploadDialog = (type: 'profile' | 'signature') => {
+    setUploadType(type);
+    setOpenDialog(true);
+  };
+
+  const handleCloseUploadDialog = () => {
+    setOpenDialog(false);
+    setSelectedFile(null);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !uploadType) {
+      return;
+    }
+
+    setMediaError(null);
+    try {
+      if (uploadType === 'profile') {
+        await uploadPicture.mutateAsync(selectedFile);
+        showSuccess('Profile picture updated successfully!');
+      } else {
+        await uploadSignatureMutation.mutateAsync(selectedFile);
+        showSuccess('Signature updated successfully!');
+      }
+      setImageVersion(Date.now());
+      handleCloseUploadDialog();
+    } catch (err) {
+      debug.error(
+        `Failed to upload ${uploadType === 'profile' ? 'profile picture' : 'signature'}:`,
+        err
+      );
+      setMediaError(
+        `Failed to upload ${uploadType === 'profile' ? 'profile picture' : 'signature'}. Please try again.`
+      );
+    }
+  };
+
+  const handleDeleteProfilePicture = async () => {
+    setMediaError(null);
+    try {
+      await deletePicture.mutateAsync();
+      setImageVersion(Date.now());
+      showSuccess('Profile picture removed successfully!');
+    } catch (err) {
+      debug.error('Failed to delete profile picture:', err);
+      setMediaError('Failed to delete profile picture. Please try again.');
+    }
+  };
+
+  const handleDeleteSignature = async () => {
+    setMediaError(null);
+    try {
+      await deleteSignatureMutation.mutateAsync();
+      setImageVersion(Date.now());
+      showSuccess('Signature removed successfully!');
+    } catch (err) {
+      debug.error('Failed to delete signature:', err);
+      setMediaError('Failed to delete signature. Please try again.');
+    }
+  };
+
   const tabProps: ProfileEditTabProps = {
     personalInfo,
     onPersonalInfoChange: handlePersonalInfoChange,
@@ -89,9 +185,17 @@ const ProfileEditPage: React.FC = () => {
     onPreferenceChange: handlePreferenceChange,
     onNumberInputChange: handleNumberInputChange,
     onSwitchChange: handleSwitchChange,
+    profile: profile ?? undefined,
+    userEmail: user?.email,
+    imageVersion,
+    onOpenUploadDialog: handleOpenUploadDialog,
+    onDeleteProfilePicture: handleDeleteProfilePicture,
+    onDeleteSignature: handleDeleteSignature,
   };
 
   const ActiveTab = PROFILE_EDIT_TABS[renderedTab]?.Tab;
+  const uploading = uploadPicture.isPending || uploadSignatureMutation.isPending;
+  const isMediaTab = tabValue === MEDIA_TAB_INDEX;
 
   const handleSavePreferences = async () => {
     const promptPreferencesData: Partial<NonNullable<Profile['prompt_preferences']>> = {
@@ -162,6 +266,10 @@ const ProfileEditPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isMediaTab) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -176,13 +284,13 @@ const ProfileEditPage: React.FC = () => {
           website: personalInfo.website,
         });
         showSuccess('Personal information updated successfully!');
-        navigate('/profile');
+        navigate(`/profile${tabSearchParam(tabValue)}`);
       } else if (tabValue === 1) {
+        await handleSavePreferences();
+      } else if (tabValue === 2) {
         await updateLifeStoryMutation.mutateAsync(lifeStory);
         showSuccess('Life story updated successfully!');
-        navigate('/profile');
-      } else if (tabValue === 2) {
-        await handleSavePreferences();
+        navigate(`/profile${tabSearchParam(tabValue)}`);
       }
     } catch (err: unknown) {
       console.error('Failed to update profile:', err);
@@ -194,7 +302,7 @@ const ProfileEditPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate('/profile');
+    navigate(`/profile${tabSearchParam(tabValue)}`);
   };
 
   if (profileLoading) {
@@ -227,24 +335,25 @@ const ProfileEditPage: React.FC = () => {
           </Button>
         </Box>
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="profile edit tabs">
-            {PROFILE_EDIT_TABS.map((tab, index) => (
-              <Tab
-                key={tab.label}
-                label={tab.label}
-                id={`profile-tab-${index}`}
-                aria-controls={`profile-tabpanel-${index}`}
-              />
-            ))}
-          </Tabs>
-        </Box>
+        {mediaError && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {mediaError}
+          </Alert>
+        )}
+
+        <IconTabBar
+          tabValue={tabValue}
+          onChange={handleTabChange}
+          tabs={PROFILE_EDIT_TABS}
+          idPrefix="profile-edit"
+          ariaLabel="profile edit tabs"
+        />
 
         <Box component="form" onSubmit={handleSubmit}>
           <div
             role="tabpanel"
-            id={`profile-tabpanel-${renderedTab}`}
-            aria-labelledby={`profile-tab-${renderedTab}`}
+            id={`profile-edit-tabpanel-${renderedTab}`}
+            aria-labelledby={`profile-edit-tab-${renderedTab}`}
             aria-busy={isTabPending}
           >
             <Box
@@ -263,19 +372,66 @@ const ProfileEditPage: React.FC = () => {
             </Box>
           </div>
 
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              startIcon={<SaveIcon />}
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Save Changes'}
-            </Button>
-          </Box>
+          {!isMediaTab && (
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                startIcon={<SaveIcon />}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} /> : 'Save Changes'}
+              </Button>
+            </Box>
+          )}
         </Box>
       </Paper>
+
+      <Dialog open={openDialog} onClose={handleCloseUploadDialog}>
+        <DialogTitle>
+          {uploadType === 'profile' ? 'Upload Profile Picture' : 'Upload Signature'}
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseUploadDialog}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="profile-file-upload"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <label htmlFor="profile-file-upload">
+              <Button variant="outlined" component="span">
+                Choose File
+              </Button>
+            </label>
+            {selectedFile && (
+              <Typography variant="body2" sx={{ ml: 2, display: 'inline' }}>
+                {selectedFile.name}
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseUploadDialog}>Cancel</Button>
+          <Button
+            onClick={handleUpload}
+            disabled={!selectedFile || uploading}
+            variant="contained"
+            startIcon={uploading ? <CircularProgress size={20} /> : null}
+          >
+            {uploading ? 'Uploading...' : 'Upload'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -1,4 +1,5 @@
 import type { SelectChangeEvent } from '@mui/material';
+import type { Profile } from './models';
 
 export interface ProfilePersonalInfoForm {
   full_name: string;
@@ -44,4 +45,10 @@ export interface ProfileEditTabProps {
   onPreferenceChange: (e: SelectChangeEvent) => void;
   onNumberInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSwitchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  profile?: Profile;
+  userEmail?: string;
+  imageVersion?: string | number;
+  onOpenUploadDialog?: (type: 'profile' | 'signature') => void;
+  onDeleteProfilePicture?: () => void;
+  onDeleteSignature?: () => void;
 }

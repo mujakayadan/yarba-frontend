@@ -1,16 +1,12 @@
 import React from 'react';
 import { env } from '../../../config/env';
-import { Box, Typography, Button, Paper, Avatar } from '@mui/material';
-import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Box, Typography, Paper, Avatar } from '@mui/material';
 import type { ProfileViewTabProps } from '../../../types/profileView';
 
 export const ProfileMediaViewTab: React.FC<ProfileViewTabProps> = ({
   profile,
   userEmail,
   imageVersion,
-  onOpenUploadDialog,
-  onDeleteProfilePicture,
-  onDeleteSignature,
 }) => (
   <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
     <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.default', flex: 1 }}>
@@ -34,26 +30,11 @@ export const ProfileMediaViewTab: React.FC<ProfileViewTabProps> = ({
               '?'}
           </Avatar>
         )}
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="contained"
-            startIcon={<PhotoCameraIcon />}
-            onClick={() => onOpenUploadDialog('profile')}
-          >
-            {profile.profile_picture_key ? 'Change Picture' : 'Upload Picture'}
-          </Button>
-
-          {profile.profile_picture_key && (
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={onDeleteProfilePicture}
-            >
-              Remove
-            </Button>
-          )}
-        </Box>
+        {!profile.profile_picture_key && (
+          <Typography variant="body2" color="text.secondary">
+            No profile picture uploaded
+          </Typography>
+        )}
       </Box>
     </Paper>
 
@@ -90,27 +71,6 @@ export const ProfileMediaViewTab: React.FC<ProfileViewTabProps> = ({
             </Typography>
           </Box>
         )}
-
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="contained"
-            startIcon={<PhotoCameraIcon />}
-            onClick={() => onOpenUploadDialog('signature')}
-          >
-            {profile.signature_key ? 'Change Signature' : 'Upload Signature'}
-          </Button>
-
-          {profile.signature_key && (
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={onDeleteSignature}
-            >
-              Remove
-            </Button>
-          )}
-        </Box>
       </Box>
     </Paper>
   </Box>
