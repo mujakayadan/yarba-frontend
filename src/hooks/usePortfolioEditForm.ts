@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDeferredTabs } from './useDeferredTabs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Portfolio } from '../types/models';
 import {
   AwardFormItem,
@@ -13,14 +13,21 @@ import {
   WorkExperienceFormItem,
 } from '../types/portfolioEdit';
 import { extractApiErrorMessage, mapPortfolioToEditForm } from '../utils/portfolioEditMappers';
+import { parsePortfolioTabIndex, portfolioTabSearchParam } from '../utils/portfolioTabUrl';
 import { useToast } from '../contexts/ToastContext';
 import { usePortfolioById } from './usePortfolio';
 import { usePortfolioMutations } from './usePortfolioMutations';
+import { PORTFOLIO_VIEW_TAB_ITEMS } from '../components/portfolio/view/portfolioViewTabs';
 
 export const usePortfolioEditForm = (id: string | undefined) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showSuccess, showError } = useToast();
-  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
+  const initialTab = parsePortfolioTabIndex(
+    searchParams.get('tab'),
+    PORTFOLIO_VIEW_TAB_ITEMS.length - 1
+  );
+  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(initialTab);
   const { data: portfolio, isLoading, isError, error: queryError } = usePortfolioById(id);
   const mutations = usePortfolioMutations(id);
 
@@ -191,16 +198,16 @@ export const usePortfolioEditForm = (id: string | undefined) => {
           break;
         }
         case 5:
+          updated = await mutations.updateCertificationsMutation.mutateAsync(certifications);
+          showSuccess('Certifications updated successfully!');
+          break;
+        case 6:
           updated = await mutations.updateAwardsMutation.mutateAsync(awards);
           showSuccess('Awards updated successfully!');
           break;
-        case 6:
+        case 7:
           updated = await mutations.updatePublicationsMutation.mutateAsync(publications);
           showSuccess('Publications updated successfully!');
-          break;
-        case 7:
-          updated = await mutations.updateCertificationsMutation.mutateAsync(certifications);
-          showSuccess('Certifications updated successfully!');
           break;
         default:
           break;
@@ -218,10 +225,9 @@ export const usePortfolioEditForm = (id: string | undefined) => {
   };
 
   const handleCancel = () => {
-    if (portfolio?._id) {
-      navigate(`/portfolio/${portfolio._id}`);
-    } else if (id) {
-      navigate(`/portfolio/${id}`);
+    const portfolioId = portfolio?._id ?? id;
+    if (portfolioId) {
+      navigate(`/portfolio/${portfolioId}${portfolioTabSearchParam(tabValue)}`);
     } else {
       navigate('/portfolio');
     }

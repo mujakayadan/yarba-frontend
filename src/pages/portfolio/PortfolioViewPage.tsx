@@ -1,6 +1,6 @@
 import React, { Suspense, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Tabs, Tab, Paper, Button, CircularProgress, Alert } from '@mui/material';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Box, Typography, Paper, Button, CircularProgress, Alert } from '@mui/material';
 import { Edit as EditIcon, Add as AddIcon } from '@mui/icons-material';
 import { ViewPortfolio } from '../../types/portfolioView';
 import { getPortfolioViewSortedData } from '../../utils/portfolioViewSorted';
@@ -8,11 +8,18 @@ import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { usePortfolioById, useUserPortfolio } from '../../hooks/usePortfolio';
 import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
 import { PORTFOLIO_VIEW_TABS } from '../../components/portfolio/view/portfolioViewTabs';
+import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
+import { parsePortfolioTabIndex, portfolioTabSearchParam } from '../../utils/portfolioTabUrl';
 
 const PortfolioViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(0);
+  const [searchParams] = useSearchParams();
+  const initialTab = parsePortfolioTabIndex(
+    searchParams.get('tab'),
+    PORTFOLIO_VIEW_TABS.length - 1
+  );
+  const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(initialTab);
 
   const portfolioByIdQuery = usePortfolioById(id);
   const userPortfolioQuery = useUserPortfolio();
@@ -28,10 +35,9 @@ const PortfolioViewPage: React.FC = () => {
   );
 
   const handleEditClick = () => {
-    if (portfolio?._id) {
-      navigate(`/portfolio/${portfolio._id}/edit`);
-    } else if (id) {
-      navigate(`/portfolio/${id}/edit`);
+    const portfolioId = portfolio?._id ?? id;
+    if (portfolioId) {
+      navigate(`/portfolio/${portfolioId}/edit${portfolioTabSearchParam(tabValue)}`);
     } else {
       navigate('/portfolio');
     }
@@ -102,28 +108,13 @@ const PortfolioViewPage: React.FC = () => {
       </Box>
 
       <Paper elevation={1} sx={{ mb: 4 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="portfolio tabs"
-            variant="fullWidth"
-            centered
-          >
-            {PORTFOLIO_VIEW_TABS.map((tab, index) => {
-              const Icon = tab.icon;
-              return (
-                <Tab
-                  key={tab.label}
-                  icon={<Icon />}
-                  label={tab.label}
-                  id={`portfolio-tab-${index}`}
-                  aria-controls={`portfolio-tabpanel-${index}`}
-                />
-              );
-            })}
-          </Tabs>
-        </Box>
+        <PortfolioTabBar
+          tabValue={tabValue}
+          onChange={handleTabChange}
+          tabs={PORTFOLIO_VIEW_TABS}
+          idPrefix="portfolio"
+          ariaLabel="portfolio tabs"
+        />
 
         <div
           role="tabpanel"

@@ -1,9 +1,10 @@
 import React, { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Tabs, Tab, Paper, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Paper, Button, CircularProgress, Alert } from '@mui/material';
 import { Save as SaveIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { usePortfolioEditForm } from '../../hooks/usePortfolioEditForm';
 import { PORTFOLIO_EDIT_TABS } from '../../components/portfolio/edit/portfolioEditTabs';
+import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
 
 const PortfolioEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,11 +48,19 @@ const PortfolioEditPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={form.handleCancel} sx={{ mb: 2 }}>
-        Back to Portfolio
-      </Button>
-
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+          gap: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Button startIcon={<ArrowBackIcon />} onClick={form.handleCancel}>
+          Back to Portfolio
+        </Button>
         <Button
           variant="contained"
           color="primary"
@@ -64,24 +73,13 @@ const PortfolioEditPage: React.FC = () => {
       </Box>
 
       <Paper elevation={1} sx={{ mb: 4 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={form.tabValue}
-            onChange={form.handleTabChange}
-            aria-label="portfolio edit tabs"
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {PORTFOLIO_EDIT_TABS.map((tab, index) => (
-              <Tab
-                key={tab.label}
-                label={tab.label}
-                id={`portfolio-edit-tab-${index}`}
-                aria-controls={`portfolio-edit-tabpanel-${index}`}
-              />
-            ))}
-          </Tabs>
-        </Box>
+        <PortfolioTabBar
+          tabValue={form.tabValue}
+          onChange={form.handleTabChange}
+          tabs={PORTFOLIO_EDIT_TABS}
+          idPrefix="portfolio-edit"
+          ariaLabel="portfolio edit tabs"
+        />
 
         <div
           role="tabpanel"
