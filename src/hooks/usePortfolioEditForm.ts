@@ -15,11 +15,11 @@ import {
 import { extractApiErrorMessage, mapPortfolioToEditForm } from '../utils/portfolioEditMappers';
 import { parsePortfolioTabIndex, portfolioTabSearchParam } from '../utils/portfolioTabUrl';
 import { useToast } from '../contexts/ToastContext';
-import { usePortfolioById } from './usePortfolio';
+import { useUserPortfolio } from './usePortfolio';
 import { usePortfolioMutations } from './usePortfolioMutations';
 import { PORTFOLIO_VIEW_TAB_ITEMS } from '../components/portfolio/view/portfolioViewTabs';
 
-export const usePortfolioEditForm = (id: string | undefined) => {
+export const usePortfolioEditForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { showSuccess, showError } = useToast();
@@ -28,8 +28,9 @@ export const usePortfolioEditForm = (id: string | undefined) => {
     PORTFOLIO_VIEW_TAB_ITEMS.length - 1
   );
   const { tabValue, renderedTab, isTabPending, handleTabChange } = useDeferredTabs(initialTab);
-  const { data: portfolio, isLoading, isError, error: queryError } = usePortfolioById(id);
-  const mutations = usePortfolioMutations(id);
+  const { data: portfolio, isLoading, isError, error: queryError } = useUserPortfolio();
+  const portfolioId = portfolio?._id;
+  const mutations = usePortfolioMutations(portfolioId);
 
   const [formSeeded, setFormSeeded] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -155,7 +156,7 @@ export const usePortfolioEditForm = (id: string | undefined) => {
   };
 
   const handleSave = async () => {
-    if (!id || !portfolio) {
+    if (!portfolioId || !portfolio) {
       return;
     }
 
@@ -225,12 +226,7 @@ export const usePortfolioEditForm = (id: string | undefined) => {
   };
 
   const handleCancel = () => {
-    const portfolioId = portfolio?._id ?? id;
-    if (portfolioId) {
-      navigate(`/portfolio/${portfolioId}${portfolioTabSearchParam(tabValue)}`);
-    } else {
-      navigate('/portfolio');
-    }
+    navigate(`/portfolio${portfolioTabSearchParam(tabValue)}`);
   };
 
   return {

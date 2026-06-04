@@ -119,7 +119,7 @@ const PortfolioCreatePage: React.FC = () => {
       const response = await createPortfolio(portfolioData);
 
       // Redirect to portfolio view page
-      navigate(`/portfolio/${response._id}`);
+      navigate('/portfolio');
     } catch (err: any) {
       console.error('Failed to create portfolio:', err);
       setError(err.response?.data?.detail || 'Failed to create portfolio. Please try again.');

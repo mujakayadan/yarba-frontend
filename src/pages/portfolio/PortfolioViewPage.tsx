@@ -38,12 +38,7 @@ const PortfolioViewPage: React.FC = () => {
   );
 
   const handleEditClick = () => {
-    const portfolioId = portfolio?._id ?? id;
-    if (portfolioId) {
-      navigate(`/portfolio/${portfolioId}/edit${portfolioTabSearchParam(tabValue)}`);
-    } else {
-      navigate('/portfolio');
-    }
+    navigate(`/portfolio/edit${portfolioTabSearchParam(tabValue)}`);
   };
 
   const handleCreateClick = () => {

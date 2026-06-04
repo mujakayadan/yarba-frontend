@@ -1,10 +1,15 @@
 import React, { Suspense, lazy } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { isDev } from '../config/env';
+
+const PortfolioEditLegacyRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/portfolio/edit${search}`} replace />;
+};
 
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const MainPage = lazy(() => import('../pages/MainPage'));
@@ -125,8 +130,9 @@ const AppRoutes: React.FC = () => (
         <Route path="/portfolio" element={<PortfolioViewPage />} />
         <Route path="/portfolio/upload" element={<UploadPortfolioPage />} />
         <Route path="/portfolio/create" element={<PortfolioCreatePage />} />
+        <Route path="/portfolio/edit" element={<PortfolioEditPage />} />
+        <Route path="/portfolio/:id/edit" element={<PortfolioEditLegacyRedirect />} />
         <Route path="/portfolio/:id" element={<PortfolioViewPage />} />
-        <Route path="/portfolio/:id/edit" element={<PortfolioEditPage />} />
         <Route path="/templates" element={<TemplatesPage />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/profile" element={<ProfilePage />} />

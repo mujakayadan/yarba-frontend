@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Box, Paper } from '@mui/material';
 import { usePortfolioEditForm } from '../../hooks/usePortfolioEditForm';
 import { PORTFOLIO_EDIT_TABS } from '../../components/portfolio/edit/portfolioEditTabs';
@@ -10,9 +10,8 @@ import { PageLoadingState, PageErrorState } from '../../components/common/PageSt
 import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 
 const PortfolioEditPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const form = usePortfolioEditForm(id);
+  const form = usePortfolioEditForm();
   const ActiveTab = PORTFOLIO_EDIT_TABS[form.renderedTab]?.Tab;
 
   if (form.loading) {
