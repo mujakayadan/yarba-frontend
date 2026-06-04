@@ -206,4 +206,4 @@ The Firebase debug page at `/firebase-test` is available only in development mod
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+This project is licensed under the [Elastic License 2.0](./LICENSE) (ELv2). The source is available for use, study, and contribution, but you may not provide it to third parties as a hosted or managed service that offers a substantial set of Yarba’s features. Third-party dependencies retain their own licenses.

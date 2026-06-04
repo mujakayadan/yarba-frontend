@@ -1,7 +1,7 @@
 {
   "name": "yarba-frontend",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "Elastic-2.0",
   "type": "module",
   "dependencies": {
     "@emotion/react": "^11.14.0",
