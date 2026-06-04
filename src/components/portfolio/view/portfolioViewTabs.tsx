@@ -1,7 +1,8 @@
 import { lazy, type ComponentType } from 'react';
 import {
-  Person as PersonIcon,
-  Work as WorkIcon,
+  Summarize as SummarizeIcon,
+  Category as CategoryIcon,
+  WorkHistory as WorkHistoryIcon,
   School as EducationIcon,
   Code as ProjectsIcon,
   EmojiEvents as AwardsIcon,
@@ -25,9 +26,9 @@ const lazyTab = (
 ) => lazy(() => loader().then((module) => ({ default: module[name] })));
 
 export const PORTFOLIO_VIEW_TAB_ITEMS: readonly PortfolioViewTabItem[] = [
-  { label: 'Summary', icon: PersonIcon },
-  { label: 'Skills', icon: WorkIcon },
-  { label: 'Work Experience', icon: WorkIcon },
+  { label: 'Summary', icon: SummarizeIcon },
+  { label: 'Skills', icon: CategoryIcon },
+  { label: 'Work Experience', icon: WorkHistoryIcon },
   { label: 'Education', icon: EducationIcon },
   { label: 'Projects', icon: ProjectsIcon },
   { label: 'Certifications', icon: CertificationsIcon },

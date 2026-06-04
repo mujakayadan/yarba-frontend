@@ -20,9 +20,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useProfileMutations } from '../../hooks/useProfileMutations';
-import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 import { EditPageActionBar } from '../../components/common/EditPageActionBar';
 import { IconTabBar } from '../../components/common/IconTabBar';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
 import { useToast } from '../../contexts/ToastContext';
 import { PROFILE_EDIT_TABS } from '../../components/profile/edit/profileEditTabs';
 import { PROFILE_VIEW_TABS } from '../../components/profile/view/profileViewTabs';
@@ -287,13 +289,14 @@ const ProfileEditPage: React.FC = () => {
         navigate(`/profile${tabSearchParam(tabValue)}`);
       } else if (tabValue === 1) {
         await handleSavePreferences();
+        navigate(`/profile${tabSearchParam(tabValue)}`);
       } else if (tabValue === 2) {
         await updateLifeStoryMutation.mutateAsync(lifeStory);
         showSuccess('Life story updated successfully!');
         navigate(`/profile${tabSearchParam(tabValue)}`);
       }
     } catch (err: unknown) {
-      console.error('Failed to update profile:', err);
+      debug.error('Failed to update profile:', err);
       const apiErr = err as { response?: { data?: { detail?: string } } };
       showError(apiErr.response?.data?.detail || 'Failed to update profile. Please try again.');
     } finally {
@@ -306,30 +309,38 @@ const ProfileEditPage: React.FC = () => {
   };
 
   if (profileLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <PageLoadingState />;
   }
 
   if (isError || !profile) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">Unable to load profile information. Please try again later.</Alert>
-      </Box>
+      <PageErrorState
+        title="Edit Profile"
+        message="Unable to load profile information. Please try again later."
+        backLabel="Back to Profile"
+        onBack={handleCancel}
+      />
     );
   }
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
+      <ViewPageHeader title="Edit Profile" />
+
       <EditPageActionBar
         backLabel="Back to Profile"
         onBack={handleCancel}
         onSave={handleSave}
         saving={loading}
-        saveDisabled={isMediaTab}
+        showSave={!isMediaTab}
       />
+
+      {isMediaTab && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Profile picture and signature uploads save immediately. Use the upload and delete controls
+          in this tab.
+        </Alert>
+      )}
 
       {mediaError && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -355,7 +366,7 @@ const ProfileEditPage: React.FC = () => {
           <Box
             sx={{
               p: 3,
-              minHeight: 80,
+              minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
             }}
@@ -407,7 +418,7 @@ const ProfileEditPage: React.FC = () => {
             onClick={handleUpload}
             disabled={!selectedFile || uploading}
             variant="contained"
-            startIcon={uploading ? <CircularProgress size={20} /> : null}
+            startIcon={uploading ? <CircularProgress size={20} color="inherit" /> : null}
           >
             {uploading ? 'Uploading...' : 'Upload'}
           </Button>

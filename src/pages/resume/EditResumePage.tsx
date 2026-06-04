@@ -4,12 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Button,
-  CircularProgress,
   Container,
   Paper,
   TextField,
   Typography,
-  Alert,
   Divider,
   Stack,
   Accordion,
@@ -19,8 +17,6 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  ArrowBack as ArrowBackIcon,
-  Save as SaveIcon,
   Visibility as VisibilityIcon,
   ExpandMore as ExpandMoreIcon,
   Add as AddIcon,
@@ -31,6 +27,9 @@ import {
 import { getResumeById, updateResume } from '../../services/resumeService';
 import { Resume } from '../../types/models';
 import { useToast } from '../../contexts/ToastContext';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { EditPageActionBar } from '../../components/common/EditPageActionBar';
+import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
 
 // Helpers placed outside the component to avoid initialization order issues
 const getEmptyResumeContentSkeleton = () => ({
@@ -159,11 +158,7 @@ const EditResumePage: React.FC = () => {
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Box
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}
-        >
-          <CircularProgress />
-        </Box>
+        <PageLoadingState />
       </Container>
     );
   }
@@ -171,12 +166,12 @@ const EditResumePage: React.FC = () => {
   if (error) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-        <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
-          Back to Resumes
-        </Button>
+        <PageErrorState
+          title="Edit Resume"
+          message={error}
+          backLabel="Back to Resumes"
+          onBack={handleBack}
+        />
       </Container>
     );
   }
@@ -184,10 +179,12 @@ const EditResumePage: React.FC = () => {
   if (!initialResume) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Alert severity="warning">Resume not found</Alert>
-        <Button startIcon={<ArrowBackIcon />} sx={{ mt: 2 }} onClick={handleBack}>
-          Back to Resumes
-        </Button>
+        <PageErrorState
+          title="Edit Resume"
+          message="Resume not found."
+          backLabel="Back to Resumes"
+          onBack={handleBack}
+        />
       </Container>
     );
   }
@@ -195,45 +192,20 @@ const EditResumePage: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2,
-            gap: 1,
-            flexWrap: 'wrap',
-          }}
-        >
-          <Typography variant="h5">Edit Resume</Typography>
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              onClick={handleBack}
-              size="small"
-            >
-              Back
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<VisibilityIcon />}
-              onClick={handleView}
-              size="small"
-            >
+        <ViewPageHeader title="Edit Resume" />
+
+        <EditPageActionBar
+          backLabel="Back to Resumes"
+          onBack={handleBack}
+          onSave={handleSave}
+          saving={saving}
+          saveDisabled={!hasChanges}
+          secondaryActions={
+            <Button variant="outlined" startIcon={<VisibilityIcon />} onClick={handleView}>
               View
             </Button>
-            <Button
-              variant="contained"
-              startIcon={saving ? <CircularProgress size={16} /> : <SaveIcon />}
-              onClick={handleSave}
-              disabled={saving || !hasChanges}
-              size="small"
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </Stack>
-        </Box>
+          }
+        />
 
         <Divider sx={{ mb: 2 }} />
 

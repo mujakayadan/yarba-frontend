@@ -1,10 +1,13 @@
 import React, { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Paper, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { usePortfolioEditForm } from '../../hooks/usePortfolioEditForm';
 import { PORTFOLIO_EDIT_TABS } from '../../components/portfolio/edit/portfolioEditTabs';
 import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
 import { EditPageActionBar } from '../../components/common/EditPageActionBar';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
+import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 
 const PortfolioEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,41 +16,35 @@ const PortfolioEditPage: React.FC = () => {
   const ActiveTab = PORTFOLIO_EDIT_TABS[form.renderedTab]?.Tab;
 
   if (form.loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <PageLoadingState />;
   }
 
   if (form.error && !form.portfolio) {
     return (
-      <Alert severity="error" sx={{ my: 2 }}>
-        {form.error}
-      </Alert>
+      <PageErrorState
+        title="Edit Portfolio"
+        message={form.error}
+        backLabel="Back to Portfolios"
+        onBack={() => navigate('/portfolio')}
+      />
     );
   }
 
   if (!form.portfolio) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">
-          Portfolio not found. Please try again or create a new portfolio.
-        </Alert>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate('/portfolio')}
-          sx={{ mt: 2 }}
-        >
-          Back to Portfolios
-        </Button>
-      </Box>
+      <PageErrorState
+        title="Edit Portfolio"
+        message="Portfolio not found. Please try again or create a new portfolio."
+        backLabel="Back to Portfolios"
+        onBack={() => navigate('/portfolio')}
+      />
     );
   }
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
+      <ViewPageHeader title="Edit Portfolio" />
+
       <EditPageActionBar
         backLabel="Back to Portfolio"
         onBack={form.handleCancel}
@@ -73,19 +70,13 @@ const PortfolioEditPage: React.FC = () => {
           <Box
             sx={{
               p: 3,
-              minHeight: 120,
+              minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: form.isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
             }}
           >
             {ActiveTab && (
-              <Suspense
-                fallback={
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                    <CircularProgress size={32} />
-                  </Box>
-                }
-              >
+              <Suspense fallback={<TabPanelFallback />}>
                 <ActiveTab form={form} />
               </Suspense>
             )}

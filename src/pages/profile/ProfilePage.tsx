@@ -1,13 +1,15 @@
 import React, { Suspense } from 'react';
-import { Box, Typography, Paper, CircularProgress, Alert, Button } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { useUserProfile } from '../../hooks/useUserProfile';
-import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 import { IconTabBar } from '../../components/common/IconTabBar';
-import { PAGE_PRIMARY_ACTION_MIN_WIDTH } from '../../components/common/PagePrimaryButton';
+import { PagePrimaryButton } from '../../components/common/PagePrimaryButton';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
 import { PROFILE_VIEW_TABS } from '../../components/profile/view/profileViewTabs';
 import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
 
@@ -26,43 +28,32 @@ const ProfilePage: React.FC = () => {
   const ActiveTab = PROFILE_VIEW_TABS[renderedTab]?.Tab;
 
   if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <PageLoadingState />;
   }
 
   if (isError || !profile) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            Profile Information
-          </Typography>
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {queryError instanceof Error
-              ? queryError.message
-              : 'Unable to load your profile information. Please try refreshing the page.'}
-          </Alert>
-        </Paper>
-      </Box>
+      <PageErrorState
+        title="Profile"
+        message={
+          queryError instanceof Error
+            ? queryError.message
+            : 'Unable to load your profile information. Please try refreshing the page.'
+        }
+      />
     );
   }
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={handleEditClick}
-          sx={{ minWidth: PAGE_PRIMARY_ACTION_MIN_WIDTH }}
-        >
-          Edit Profile
-        </Button>
-      </Box>
+      <ViewPageHeader
+        title="Profile"
+        action={
+          <PagePrimaryButton startIcon={<EditIcon />} onClick={handleEditClick}>
+            Edit Profile
+          </PagePrimaryButton>
+        }
+      />
 
       <Paper elevation={1} sx={{ mb: 4 }}>
         <IconTabBar
@@ -82,7 +73,7 @@ const ProfilePage: React.FC = () => {
           <Box
             sx={{
               p: 3,
-              minHeight: 80,
+              minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
             }}

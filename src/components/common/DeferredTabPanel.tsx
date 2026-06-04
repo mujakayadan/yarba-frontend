@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 
+export const TAB_PANEL_MIN_HEIGHT = 120;
+
 interface DeferredTabPanelProps {
   children: React.ReactNode;
   renderedTab: number;
@@ -32,7 +34,7 @@ export const DeferredTabPanel: React.FC<DeferredTabPanelProps> = ({
       <Box
         sx={{
           p: padding,
-          minHeight: 80,
+          minHeight: TAB_PANEL_MIN_HEIGHT,
           opacity: isPending ? 0.6 : 1,
           transition: 'opacity 150ms',
         }}

@@ -1,13 +1,15 @@
 import React, { Suspense, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Box, Typography, Paper, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Paper, Alert } from '@mui/material';
 import { Edit as EditIcon, Add as AddIcon } from '@mui/icons-material';
 import { ViewPortfolio } from '../../types/portfolioView';
 import { getPortfolioViewSortedData } from '../../utils/portfolioViewSorted';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
 import { usePortfolioById, useUserPortfolio } from '../../hooks/usePortfolio';
-import { TabPanelFallback } from '../../components/common/DeferredTabPanel';
+import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 import { PagePrimaryButton } from '../../components/common/PagePrimaryButton';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
 import { PORTFOLIO_VIEW_TABS } from '../../components/portfolio/view/portfolioViewTabs';
 import { PortfolioTabBar } from '../../components/portfolio/PortfolioTabBar';
 import { parsePortfolioTabIndex, portfolioTabSearchParam } from '../../utils/portfolioTabUrl';
@@ -51,19 +53,11 @@ const PortfolioViewPage: React.FC = () => {
   const ActiveTab = PORTFOLIO_VIEW_TABS[renderedTab]?.Tab;
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <PageLoadingState />;
   }
 
   if (error) {
-    return (
-      <Alert severity="error" sx={{ my: 2 }}>
-        {error}
-      </Alert>
-    );
+    return <PageErrorState title="Portfolio" message={error} />;
   }
 
   if (!portfolio) {
@@ -80,15 +74,9 @@ const PortfolioViewPage: React.FC = () => {
           </Alert>
 
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              startIcon={<AddIcon />}
-              onClick={handleCreateClick}
-            >
+            <PagePrimaryButton size="large" startIcon={<AddIcon />} onClick={handleCreateClick}>
               Create New Portfolio
-            </Button>
+            </PagePrimaryButton>
           </Box>
         </Paper>
       </Box>
@@ -97,11 +85,14 @@ const PortfolioViewPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 3 }}>
-        <PagePrimaryButton startIcon={<EditIcon />} onClick={handleEditClick}>
-          Edit Portfolio
-        </PagePrimaryButton>
-      </Box>
+      <ViewPageHeader
+        title="Portfolio"
+        action={
+          <PagePrimaryButton startIcon={<EditIcon />} onClick={handleEditClick}>
+            Edit Portfolio
+          </PagePrimaryButton>
+        }
+      />
 
       <Paper elevation={1} sx={{ mb: 4 }}>
         <PortfolioTabBar
@@ -121,7 +112,7 @@ const PortfolioViewPage: React.FC = () => {
           <Box
             sx={{
               p: 3,
-              minHeight: 120,
+              minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
             }}

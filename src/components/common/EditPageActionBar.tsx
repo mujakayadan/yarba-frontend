@@ -10,6 +10,8 @@ interface EditPageActionBarProps {
   saving?: boolean;
   saveDisabled?: boolean;
   saveLabel?: string;
+  showSave?: boolean;
+  secondaryActions?: React.ReactNode;
 }
 
 export const EditPageActionBar: React.FC<EditPageActionBarProps> = ({
@@ -19,6 +21,8 @@ export const EditPageActionBar: React.FC<EditPageActionBarProps> = ({
   saving = false,
   saveDisabled = false,
   saveLabel = 'Save Changes',
+  showSave = true,
+  secondaryActions,
 }) => (
   <Box
     sx={{
@@ -33,12 +37,17 @@ export const EditPageActionBar: React.FC<EditPageActionBarProps> = ({
     <Button startIcon={<ArrowBackIcon />} onClick={onBack}>
       {backLabel}
     </Button>
-    <PagePrimaryButton
-      startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-      onClick={onSave}
-      disabled={saving || saveDisabled}
-    >
-      {saveLabel}
-    </PagePrimaryButton>
+    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+      {secondaryActions}
+      {showSave && (
+        <PagePrimaryButton
+          startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+          onClick={onSave}
+          disabled={saving || saveDisabled}
+        >
+          {saveLabel}
+        </PagePrimaryButton>
+      )}
+    </Box>
   </Box>
 );
