@@ -34,7 +34,9 @@ import {
   seedPersonalInfoFromProfile,
   seedPreferencesFromProfile,
 } from '../../utils/profileFormSeed';
+import { buildAppearanceFeaturesPatch } from '../../theme/appearance';
 import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
 import { createDebugger } from '../../utils/debug';
 
 const debug = createDebugger('ProfileEditPage');
@@ -241,27 +243,27 @@ const ProfileEditPage: React.FC = () => {
 
     const systemPreferencesData: Partial<NonNullable<Profile['system_preferences']>> = {
       features: {
-        check_clearance: preferences.feature_check_clearance,
-        auto_save: preferences.feature_auto_save,
-        theme_mode: preferences.theme_mode,
-        dark_mode: preferences.theme_mode === 'dark',
-      },
-      llm: {
-        model_name: preferences.llm_model_name,
-        temperature: parseFloat(preferences.llm_temperature),
+        ...buildAppearanceFeaturesPatch(
+          {
+            check_clearance: preferences.feature_check_clearance,
+            auto_save: preferences.feature_auto_save,
+            dark_mode: preferences.theme_mode === 'dark',
+          },
+          preferences.theme_mode
+        ),
       },
       templates: {
         default_resume_template_id: preferences.default_resume_template_id,
         default_cover_letter_template_id: preferences.default_cover_letter_template_id,
       },
+      ...(profile?.system_preferences?.llm && { llm: profile.system_preferences.llm }),
+      ...(profile?.system_preferences?.privacy && {
+        privacy: profile.system_preferences.privacy,
+      }),
+      ...(profile?.system_preferences?.notifications && {
+        notifications: profile.system_preferences.notifications,
+      }),
     };
-
-    if (profile?.system_preferences?.privacy) {
-      systemPreferencesData.privacy = profile.system_preferences.privacy;
-    }
-    if (profile?.system_preferences?.notifications) {
-      systemPreferencesData.notifications = profile.system_preferences.notifications;
-    }
 
     await updatePromptPrefs.mutateAsync(promptPreferencesData);
     await updateSystemPrefs.mutateAsync(systemPreferencesData);
@@ -298,8 +300,7 @@ const ProfileEditPage: React.FC = () => {
       }
     } catch (err: unknown) {
       debug.error('Failed to update profile:', err);
-      const apiErr = err as { response?: { data?: { detail?: string } } };
-      showError(apiErr.response?.data?.detail || 'Failed to update profile. Please try again.');
+      showError(extractApiErrorMessage(err, 'Failed to update profile. Please try again.'));
     } finally {
       setLoading(false);
     }

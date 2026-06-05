@@ -113,23 +113,4 @@ export const mapPortfolioToEditForm = (portfolioData: Portfolio): PortfolioEditF
   return form;
 };
 
-export const extractApiErrorMessage = (err: unknown, fallback: string): string => {
-  const error = err as { response?: { data?: { detail?: unknown } }; message?: string };
-
-  if (error.response?.data?.detail) {
-    if (typeof error.response.data.detail === 'string') {
-      return error.response.data.detail;
-    }
-    try {
-      return JSON.stringify(error.response.data.detail);
-    } catch {
-      return 'An unexpected error occurred. The error detail could not be displayed.';
-    }
-  }
-
-  if (error.message) {
-    return error.message;
-  }
-
-  return fallback;
-};
+export { extractApiErrorMessage } from './apiErrors';
