@@ -38,6 +38,7 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 import { useResume } from '../../hooks/useResume';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
+import { triggerUrlDownload } from '../../utils/pdfDownload';
 
 const CoverLetterViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -161,12 +162,7 @@ const CoverLetterViewPage: React.FC = () => {
       const pdfResponse = await getCoverLetterPdf(id);
       const filename = coverLetterTitle ? `${coverLetterTitle}.pdf` : `cover-letter-${id}.pdf`;
 
-      const link = document.createElement('a');
-      link.href = pdfResponse.pdf_url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await triggerUrlDownload(pdfResponse.pdf_url, filename);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       setPdfError('Failed to download PDF. Please try again.');

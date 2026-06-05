@@ -57,6 +57,7 @@ import { useResumes } from '../../hooks/useResumes';
 import { useUserPortfolio } from '../../hooks/usePortfolio';
 import { resumeKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
+import { triggerBlobDownload, triggerUrlDownload } from '../../utils/pdfDownload';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -370,23 +371,9 @@ const ResumesPage: React.FC = () => {
       const filename = resume ? `${resume.title}.pdf` : `resume-${resumeId}.pdf`;
 
       if (isPdfResponse(response)) {
-        // Direct download from URL
-        const link = document.createElement('a');
-        link.href = response.pdf_url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        await triggerUrlDownload(response.pdf_url, filename);
       } else if (isBlob(response)) {
-        // Create a download link from blob
-        const url = window.URL.createObjectURL(response);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        triggerBlobDownload(response, filename);
       } else {
         throw new Error('Unexpected response format from PDF service');
       }
@@ -879,20 +866,15 @@ const ResumesPage: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<PdfIcon />}
-              onClick={() => {
+              onClick={async () => {
                 if (pdfPreview.pdfUrl?.startsWith('http')) {
                   const resume = resumes.find((r) => r.id === selectedResumeId);
                   const filename = resume
                     ? `${resume.title}.pdf`
                     : `resume-${selectedResumeId}.pdf`;
-                  const link = document.createElement('a');
-                  link.href = pdfPreview.pdfUrl;
-                  link.setAttribute('download', filename);
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
+                  await triggerUrlDownload(pdfPreview.pdfUrl, filename);
                 } else {
-                  handleDownloadPdf(selectedResumeId);
+                  await handleDownloadPdf(selectedResumeId);
                 }
               }}
               size="small"

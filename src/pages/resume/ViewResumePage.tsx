@@ -59,7 +59,7 @@ import { Resume } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
-import { triggerUrlDownload } from '../../utils/pdfDownload';
+import { triggerBlobDownload, triggerUrlDownload } from '../../utils/pdfDownload';
 import ReactMarkdown from 'react-markdown';
 
 interface PdfResponse {
@@ -193,7 +193,7 @@ const ViewResumePage: React.FC = () => {
       let blobToDownload: Blob;
 
       if (isPdfResponse(response)) {
-        triggerUrlDownload(response.pdf_url, filename);
+        await triggerUrlDownload(response.pdf_url, filename);
         return;
       } else if (isBlob(response)) {
         blobToDownload = response;
@@ -201,15 +201,7 @@ const ViewResumePage: React.FC = () => {
         throw new Error('Unexpected response format from PDF service when downloading');
       }
 
-      // Common blob download logic
-      const url = window.URL.createObjectURL(blobToDownload);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove(); // Modern way to remove the element
-      window.URL.revokeObjectURL(url);
+      triggerBlobDownload(blobToDownload, filename);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       const downloadErrorMsg =
@@ -1576,7 +1568,7 @@ const ViewResumePage: React.FC = () => {
                 setGeneratingPdf(true);
                 try {
                   if (pdfPreview.pdfUrl?.startsWith('http')) {
-                    triggerUrlDownload(pdfPreview.pdfUrl, `${resume?.title || 'resume'}.pdf`);
+                    await triggerUrlDownload(pdfPreview.pdfUrl, `${resume?.title || 'resume'}.pdf`);
                   } else {
                     await handleDownloadPdf();
                   }

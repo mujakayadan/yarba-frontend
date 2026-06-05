@@ -57,6 +57,7 @@ import { getResumeById } from '../../services/resumeService';
 import { useCoverLetters } from '../../hooks/useCoverLetters';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
+import { triggerUrlDownload } from '../../utils/pdfDownload';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -250,12 +251,7 @@ const CoverLettersPage: React.FC = () => {
         ? `${getCoverLetterTitle(coverLetter)}.pdf`
         : `cover-letter-${coverLetterId}.pdf`;
 
-      const link = document.createElement('a');
-      link.href = pdfResponse.pdf_url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await triggerUrlDownload(pdfResponse.pdf_url, filename);
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       let errorMsg = 'Failed to generate PDF';
