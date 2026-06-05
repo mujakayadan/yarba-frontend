@@ -175,26 +175,37 @@ Refer to `/docs/api_documentation.md` for full endpoint documentation. Key endpo
 
 ## Form Handling
 
-- Use **Formik** for form state management
-- Use **Yup** for validation schemas
-- Display validation errors inline below form fields
-- Disable submit button during submission
-- Show loading indicator on submit button during async operations
+- **No form library:** Form state uses `useState` (or a dedicated hook for multi-section editors)
+- **Simple forms:** Controlled MUI fields, validate on submit, show errors via `Alert` or field `helperText`
+- **Complex editors:** Extract state into a hook (e.g. `usePortfolioEditForm`) and split UI into tab components
+- Disable submit button during submission; show loading indicator on the submit button during async work
+- Do not add Formik, Yup, or react-hook-form unless a specific form justifies the dependency — prefer **Zod** for shared schemas if validation becomes repetitive
 
 Example pattern:
 ```typescript
-const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().min(8, 'Min 8 characters').required('Required'),
-});
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [error, setError] = useState<string | null>(null);
+const [isSubmitting, setIsSubmitting] = useState(false);
 
-<Formik
-  initialValues={{ email: '', password: '' }}
-  validationSchema={validationSchema}
-  onSubmit={handleSubmit}
->
-  {/* form fields */}
-</Formik>
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError(null);
+
+  if (!email || !password) {
+    setError('Please fill in all required fields');
+    return;
+  }
+
+  setIsSubmitting(true);
+  try {
+    await submit(email, password);
+  } catch (err) {
+    setError(extractApiErrorMessage(err, 'Submission failed'));
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 ```
 
 ---
