@@ -1,107 +1,122 @@
 # Troubleshooting Guide
 
-This document provides solutions to common issues with the Yarba frontend application.
+Common issues when running the Yarba frontend locally or against a deployed backend.
 
-## Current Issues
+## Quick checks
 
-### 1. Infinite Login Attempts
+1. **Node.js 24+** — see `engines` in `package.json`.
+2. **Environment file** — copy `.env.example` to `.env.local` and fill in values. See [SECURITY.md](./SECURITY.md).
+3. **Backend running** — `VITE_API_URL` must point at a live Yarba backend (default `http://localhost:8000/api/v1`).
+4. **Dev server** — `npm run dev` or `npm start` (both run Vite on port 3000).
+5. **Browser console** — open DevTools (F12) → Console for runtime errors and debug output.
 
-**Problem:** When login fails, the application tries indefinitely, requiring you to close the page.
+After changing `.env.local`, restart the dev server. Vite reads `VITE_*` variables at startup.
 
-**Fix:** We've updated the code to prevent infinite retries:
+## Environment variables
 
-1. Added request tracking in `firebaseAuthService.ts`
-2. Added a 30-second cooldown period between retry attempts
-3. Preventing duplicate token exchange requests
+| Variable              | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `VITE_API_URL`        | Backend REST base URL                                                |
+| `VITE_DEBUG`          | Set to `true` to enable namespaced console logs via `createDebugger` |
+| `VITE_FIREBASE_*`     | Firebase web app config from the Firebase Console                    |
+| `VITE_CLOUDFRONT_URL` | CDN base for uploaded assets (optional locally)                      |
 
-After this update, if login fails, an error message will be displayed instead of causing the browser to freeze.
+If API calls fail immediately with network errors, confirm `VITE_API_URL` is set and the backend responds at that URL.
 
-### 2. No Console Logs in Development
+## Authentication & Firebase
 
-**Problem:** Console logs aren't visible when running the application.
+### Unauthorized domain (`auth/unauthorized-domain`)
 
-**Solutions:**
+1. Open [Firebase Console](https://console.firebase.google.com/) → your project.
+2. Go to **Authentication → Settings → Authorized domains**.
+3. Add every origin you use: `localhost`, production domain (e.g. `www.yarba.app`), and preview URLs (e.g. `*.vercel.app`).
 
-1. Use `npm run dev` - We've added a new script specifically for development that provides better logging
-2. Check browser console (F12 or right-click → Inspect → Console)
-3. Add `BROWSER=none` to `.env` file to prevent browser from opening automatically and see logs in terminal
-4. Use verbose mode: `npm start -- --verbose`
+See [SECURITY.md](./SECURITY.md) for Firebase setup guidance.
 
-### 3. Firebase Authentication Errors
+### Login or token exchange fails
 
-#### Unauthorized Domain Error
+Firebase login succeeds only after the backend exchanges the Firebase ID token for a Yarba JWT (`POST /auth/login`).
 
-**Problem:** Firebase returns "auth/unauthorized-domain" error.
+Token exchange is handled in `src/services/authService.ts`:
 
-**Solution:**
+- Duplicate in-flight requests are skipped.
+- After a failure, retries are blocked for **30 seconds** to avoid hammering the backend.
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select your project
-3. Navigate to Authentication → Settings → Authorized domains
-4. Add `localhost`, `www.yarba.app` and any other domains you're using
+If login fails, check the browser console for:
 
-#### CORS Errors
+- `[FirebaseAuth]` — form submit and Firebase errors
+- `[Auth]` / `[AuthContext]` — login flow and session state
+- `[API]` — request URL, status, and response body
 
-**Problem:** Backend API requests fail with CORS policy errors.
+Common causes:
 
-**Solution:**
+- Backend not running or wrong `VITE_API_URL`
+- Firebase config mismatch between `.env.local` and your Firebase project
+- Backend rejecting the ID token (check backend logs)
 
-1. Ensure backend CORS configuration includes frontend domains
-2. Verify protocol matches (http vs https)
-3. Check for exact domain match including subdomains
+### Session cleared unexpectedly (401)
 
-## Enhanced Debugging
+The Axios interceptor in `src/services/api.ts` clears the stored JWT on **401** and emits an auth event. `AuthContext` listens for this and resets session state — you may be redirected to `/login`.
 
-### Debug Mode
+## API & CORS errors
 
-We've added a comprehensive debugging system to help troubleshoot issues:
+**CORS policy errors** mean the backend is not allowing requests from your frontend origin.
 
-1. **Enable Debug Mode:**
-   - Use `npm run dev` or `npm run dev:win` (on Windows) to start the app with debugging enabled
-   - This sets the `REACT_APP_DEBUG=true` environment variable
+1. Ensure backend CORS includes your frontend URL (scheme + host + port).
+2. Match `http` vs `https` exactly.
+3. Include subdomains if you use them (e.g. `www` vs apex).
 
-2. **View Debug Output:**
-   - All debug logs will appear in your browser console
-   - Logs are grouped by component for easier reading
-   - API requests, Firebase operations, and authentication flows are all logged
+| Status                        | Typical cause                                                           |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| **401 Unauthorized**          | Missing, expired, or invalid JWT — backend did not accept the token     |
+| **403 Forbidden**             | Authenticated but not permitted for this resource                       |
+| **404 Not Found**             | Wrong path or resource does not exist for this user                     |
+| **422 Unprocessable Content** | Request body failed backend validation — inspect payload in Network tab |
+| **429 Too Many Requests**     | Rate limited — wait and retry                                           |
 
-3. **Debug Specific Components:**
-   Look for logs from these specific debuggers:
-   - `FirebaseAuth` - Login and registration components
-   - `AuthContext` - Authentication state management
-   - `API` - All API requests and responses
-   - `Firebase` - Firebase configuration and operations
-   - `AuthUtils` - Token management
+## Debug mode
 
-4. **Troubleshoot Firebase Token Exchange:**
-   - Look for `Token Exchange Process` log groups from the `FirebaseAuth` debugger
-   - These show detailed information about token exchange attempts:
-     - Request payloads
-     - Response data
-     - Error details
-     - Retry timing
+Enable verbose, namespaced logs:
 
-## Development Workflow
+```bash
+# In .env.local
+VITE_DEBUG=true
+```
 
-1. **Start the development server:**
+Then run `npm run dev` and filter the browser console by namespace:
 
-   ```
-   npm run dev
-   ```
+| Namespace      | Area                                  |
+| -------------- | ------------------------------------- |
+| `FirebaseAuth` | Login / register UI                   |
+| `AuthContext`  | Session bootstrap and auth state      |
+| `Auth`         | Token exchange and auth service calls |
+| `AuthUtils`    | Token storage helpers                 |
+| `API`          | All Axios requests and responses      |
+| `Firebase`     | Firebase initialization               |
 
-   Or on Windows:
+For token exchange details, look for `[Auth]` groups around JWT exchange and any cooldown messages after failures.
 
-   ```
-   npm run dev:win
-   ```
+### Firebase test page (development only)
 
-2. **Test authentication:**
-   - Open browser console (F12)
-   - Look for debug logs during login/registration
-   - Check for Firebase error messages or token exchange issues
+While running `npm run dev`, open `/firebase-test` for manual Firebase and token-exchange checks. This route is not available in production builds.
 
-3. **Common errors and their solutions:**
-   - **401 Unauthorized**: Backend doesn't recognize token - check token format
-   - **403 Forbidden**: User doesn't have permission - check user roles
-   - **422 Unprocessable Content**: Invalid data sent to backend - check request payload
-   - **CORS errors**: Backend not configured to accept requests from your domain
+## Build & type errors
+
+`npm run build` runs `tsc --noEmit` before the Vite production bundle. TypeScript errors block the build — fix reported file/line issues locally.
+
+Useful commands:
+
+```bash
+npm run lint          # ESLint
+npm run format:check  # Prettier
+npm test              # Vitest
+npm run preview       # Serve production build locally
+```
+
+## PDF preview issues
+
+Resume and cover letter previews use `react-pdf`. Worker setup is centralized in `src/utils/pdfConfig.ts` (`ensurePdfWorkerConfigured`). If PDFs fail to render:
+
+1. Hard-refresh the page.
+2. Check the console for worker or network errors loading the PDF file.
+3. Confirm the PDF URL is reachable (auth/CDN/CORS on the file host).

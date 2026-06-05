@@ -194,8 +194,6 @@ After `npm install`, the `prepare` script registers Git hooks automatically.
 | TypeScript | `npm run build` runs `tsc --noEmit`   |
 | Tests      | `npm test` — Vitest + Testing Library |
 
-Forms: [`.cursorrules`](./.cursorrules) recommends **Formik + Yup** for new forms; adopt when adding complex validation (not currently in `package.json`).
-
 ## Deployment
 
 Configured for **Vercel**. Set all `VITE_*` environment variables in the Vercel project settings. Production builds run strict TypeScript checking.
@@ -203,6 +201,8 @@ Configured for **Vercel**. Set all `VITE_*` environment variables in the Vercel 
 ## Development tools
 
 The Firebase debug page at `/firebase-test` is available only in development mode (`npm run dev`).
+
+See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common auth, API, env, and debug issues.
 
 ## License
 
