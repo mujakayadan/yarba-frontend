@@ -52,6 +52,7 @@ import {
 import {
   getResumeById,
   getResumePdf,
+  downloadResumePdf,
   deleteResume,
   regenerateResumeContent,
 } from '../../services/resumeService';
@@ -59,7 +60,7 @@ import { Resume } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
-import { triggerBlobDownload, triggerUrlDownload } from '../../utils/pdfDownload';
+import { triggerBlobDownload } from '../../utils/pdfDownload';
 import ReactMarkdown from 'react-markdown';
 
 interface PdfResponse {
@@ -187,21 +188,8 @@ const ViewResumePage: React.FC = () => {
         return;
       }
 
-      const response = await getResumePdf(id);
-      const filename = `${resume.title}.pdf`;
-
-      let blobToDownload: Blob;
-
-      if (isPdfResponse(response)) {
-        await triggerUrlDownload(response.pdf_url, filename);
-        return;
-      } else if (isBlob(response)) {
-        blobToDownload = response;
-      } else {
-        throw new Error('Unexpected response format from PDF service when downloading');
-      }
-
-      triggerBlobDownload(blobToDownload, filename);
+      const blob = await downloadResumePdf(id);
+      triggerBlobDownload(blob, `${resume.title}.pdf`);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       const downloadErrorMsg =
@@ -1564,26 +1552,7 @@ const ViewResumePage: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<PdfIcon />}
-              onClick={async () => {
-                setGeneratingPdf(true);
-                try {
-                  if (pdfPreview.pdfUrl?.startsWith('http')) {
-                    await triggerUrlDownload(pdfPreview.pdfUrl, `${resume?.title || 'resume'}.pdf`);
-                  } else {
-                    await handleDownloadPdf();
-                  }
-                } catch (e: unknown) {
-                  console.error('Error downloading PDF from modal:', e);
-                  if (!generationErrorDialogOpen) {
-                    setGenerationErrorMessage(
-                      'Could not download the PDF. Try regenerating it, or contact admin@yarba.app if it keeps failing.'
-                    );
-                    setGenerationErrorDialogOpen(true);
-                  }
-                } finally {
-                  setGeneratingPdf(false);
-                }
-              }}
+              onClick={handleDownloadPdf}
               size="small"
             >
               Download

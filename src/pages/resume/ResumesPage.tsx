@@ -48,7 +48,12 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { deleteResume, getResumePdf, updateResume } from '../../services/resumeService';
+import {
+  deleteResume,
+  downloadResumePdf,
+  getResumePdf,
+  updateResume,
+} from '../../services/resumeService';
 import { Portfolio } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
@@ -57,7 +62,7 @@ import { useResumes } from '../../hooks/useResumes';
 import { useUserPortfolio } from '../../hooks/usePortfolio';
 import { resumeKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerBlobDownload, triggerUrlDownload } from '../../utils/pdfDownload';
+import { triggerBlobDownload } from '../../utils/pdfDownload';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -365,18 +370,9 @@ const ResumesPage: React.FC = () => {
         return;
       }
 
-      const response = await getResumePdf(resumeId);
-
-      // Find the resume title for the filename
+      const blob = await downloadResumePdf(resumeId);
       const filename = resume ? `${resume.title}.pdf` : `resume-${resumeId}.pdf`;
-
-      if (isPdfResponse(response)) {
-        await triggerUrlDownload(response.pdf_url, filename);
-      } else if (isBlob(response)) {
-        triggerBlobDownload(response, filename);
-      } else {
-        throw new Error('Unexpected response format from PDF service');
-      }
+      triggerBlobDownload(blob, filename);
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       // Extract and display the error message
@@ -866,17 +862,7 @@ const ResumesPage: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<PdfIcon />}
-              onClick={async () => {
-                if (pdfPreview.pdfUrl?.startsWith('http')) {
-                  const resume = resumes.find((r) => r.id === selectedResumeId);
-                  const filename = resume
-                    ? `${resume.title}.pdf`
-                    : `resume-${selectedResumeId}.pdf`;
-                  await triggerUrlDownload(pdfPreview.pdfUrl, filename);
-                } else {
-                  await handleDownloadPdf(selectedResumeId);
-                }
-              }}
+              onClick={() => handleDownloadPdf(selectedResumeId)}
               size="small"
             >
               Download

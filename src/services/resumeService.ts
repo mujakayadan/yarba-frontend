@@ -144,6 +144,26 @@ export const getResumePdf = async (
   }
 };
 
+// Download resume PDF bytes through the API (same-origin; avoids CDN CORS)
+export const downloadResumePdf = async (id: string, timeout: number = 30): Promise<Blob> => {
+  try {
+    const response = await api.get(`/resumes/${id}/pdf/download?timeout=${timeout}`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.data instanceof Blob) {
+      try {
+        const errorText = await error.response.data.text();
+        throw new Error(errorText || 'Failed to download PDF');
+      } catch (blobError) {
+        throw error;
+      }
+    }
+    throw error;
+  }
+};
+
 // Generate resume content based on job description
 export const generateResumeContent = async (
   id: string,

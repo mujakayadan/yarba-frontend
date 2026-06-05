@@ -29,7 +29,11 @@ import {
   Delete as DeleteIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { getCoverLetterPdf, deleteCoverLetter } from '../../services/coverLetterService';
+import {
+  downloadCoverLetterPdf,
+  getCoverLetterPdf,
+  deleteCoverLetter,
+} from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common/PdfPreviewDialog';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
@@ -38,7 +42,7 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 import { useResume } from '../../hooks/useResume';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerUrlDownload } from '../../utils/pdfDownload';
+import { triggerBlobDownload } from '../../utils/pdfDownload';
 
 const CoverLetterViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -159,10 +163,9 @@ const CoverLetterViewPage: React.FC = () => {
 
     setGeneratingPdf(true);
     try {
-      const pdfResponse = await getCoverLetterPdf(id);
+      const blob = await downloadCoverLetterPdf(id);
       const filename = coverLetterTitle ? `${coverLetterTitle}.pdf` : `cover-letter-${id}.pdf`;
-
-      await triggerUrlDownload(pdfResponse.pdf_url, filename);
+      triggerBlobDownload(blob, filename);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       setPdfError('Failed to download PDF. Please try again.');

@@ -48,7 +48,11 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { deleteCoverLetter, getCoverLetterPdf } from '../../services/coverLetterService';
+import {
+  deleteCoverLetter,
+  downloadCoverLetterPdf,
+  getCoverLetterPdf,
+} from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
@@ -57,7 +61,7 @@ import { getResumeById } from '../../services/resumeService';
 import { useCoverLetters } from '../../hooks/useCoverLetters';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerUrlDownload } from '../../utils/pdfDownload';
+import { triggerBlobDownload } from '../../utils/pdfDownload';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -245,13 +249,12 @@ const CoverLettersPage: React.FC = () => {
     console.log('Download PDF for cover letter:', coverLetterId);
     setGeneratingPdf(true);
     try {
-      const pdfResponse = await getCoverLetterPdf(coverLetterId);
+      const blob = await downloadCoverLetterPdf(coverLetterId);
       const coverLetter = coverLetters.find((cl) => cl.id === coverLetterId);
       const filename = coverLetter
         ? `${getCoverLetterTitle(coverLetter)}.pdf`
         : `cover-letter-${coverLetterId}.pdf`;
-
-      await triggerUrlDownload(pdfResponse.pdf_url, filename);
+      triggerBlobDownload(blob, filename);
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       let errorMsg = 'Failed to generate PDF';

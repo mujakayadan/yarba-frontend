@@ -76,6 +76,26 @@ export const getCoverLetterPdf = async (
   return response.data;
 };
 
+// Download cover letter PDF bytes through the API (same-origin; avoids CDN CORS)
+export const downloadCoverLetterPdf = async (id: string): Promise<Blob> => {
+  try {
+    const response = await api.get(`/cover-letters/${id}/pdf/download`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.data instanceof Blob) {
+      try {
+        const errorText = await error.response.data.text();
+        throw new Error(errorText || 'Failed to download PDF');
+      } catch (blobError) {
+        throw error;
+      }
+    }
+    throw error;
+  }
+};
+
 // Upload PDF for a cover letter
 export const uploadCoverLetterPdf = async (
   id: string,
