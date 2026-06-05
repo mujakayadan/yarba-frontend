@@ -326,8 +326,6 @@ const ProfileEditPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <ViewPageHeader title="Edit Profile" />
-
       <EditPageActionBar
         backLabel="Back to Profile"
         onBack={handleCancel}
