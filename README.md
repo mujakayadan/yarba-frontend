@@ -98,7 +98,7 @@ sequenceDiagram
   FB-->>App: Firebase ID token
   App->>API: POST /api/v1/auth/login
   API-->>App: JWT + user info
-  App->>App: Store JWT; attach on requests
+  App->>App: Store JWT and attach on requests
   Note over App,API: 401 clears token and redirects to /login
 ```
 
