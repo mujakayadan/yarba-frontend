@@ -42,8 +42,6 @@ const PortfolioEditPage: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <ViewPageHeader title="Edit Portfolio" />
-
       <EditPageActionBar
         backLabel="Back to Portfolio"
         onBack={form.handleCancel}
