@@ -18,7 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useAuth } from '../../contexts/AuthContext';
-import { getFirebaseErrorMessage } from '../../utils/errorHandler';
+import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorHandler';
 import { createDebugger } from '../../utils/debug';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -141,7 +141,8 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         navigate(setupRoute, { replace: true });
       }
     } catch (error: any) {
-      const errorMsg = getFirebaseErrorMessage(error);
+      const errorMsg =
+        mode === 'register' ? getAuthErrorMessage(error) : getFirebaseErrorMessage(error);
       debug.error(`${mode} error:`, error);
       setLocalError(errorMsg);
     } finally {

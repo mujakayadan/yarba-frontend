@@ -263,7 +263,15 @@ export interface LoginResponse {
   user?: User;
   isNewUser?: boolean;
   is_new_user?: boolean;
+  registration_resumed?: boolean;
   current_setup_step?: number;
+}
+
+export interface ApiErrorResponse {
+  status?: string;
+  message?: string;
+  error_code?: string;
+  detail?: unknown;
 }
 
 export interface ResumeCreateRequest {

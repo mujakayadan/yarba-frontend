@@ -300,20 +300,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const result = await registerWithEmail({ email, password });
+
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
+      const { getFirebaseAuth } = await import('../firebaseConfig');
+      const auth = await getFirebaseAuth();
+      await signInWithEmailAndPassword(auth, email, password);
+
       const fbUser = await getCurrentFirebaseUser();
       setFirebaseUser(fbUser);
-      debug.log('Firebase registration successful');
+      debug.log(
+        result.registration_resumed
+          ? 'Registration resumed for existing Firebase account'
+          : 'Registration successful'
+      );
       setIsAuthenticated(true);
 
       if (result.user) {
         setUser({ ...result.user, current_setup_step: result.current_setup_step });
       }
 
-      // Determine the setup step from the registration response
       updateSetupState(result.current_setup_step);
 
-      // Return the appropriate setup route for immediate redirect
-      return { setupRoute: setupRoute || '/dashboard' };
+      const step = result.current_setup_step;
+      const routeFromStep =
+        typeof step === 'number' ? setupStepToRoute[step as UserSetupStep] : null;
+
+      return { setupRoute: routeFromStep || '/dashboard' };
     } catch (err: any) {
       debug.error('Registration error:', err);
       setError(err.message);

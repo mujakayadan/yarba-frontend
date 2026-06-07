@@ -1,6 +1,20 @@
+import { ApiRequestError } from './apiErrors';
+
 /**
  * Utility for handling Firebase error messages
  */
+
+/**
+ * Extract a user-friendly message from backend auth API errors.
+ * Falls back to Firebase error formatting when applicable.
+ */
+export const getAuthErrorMessage = (error: unknown): string => {
+  if (error instanceof ApiRequestError) {
+    return error.message;
+  }
+
+  return getFirebaseErrorMessage(error);
+};
 
 /**
  * Extract a user-friendly error message from Firebase errors

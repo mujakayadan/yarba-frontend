@@ -1,6 +1,7 @@
 import api from './api';
 import { storeToken } from '../utils/auth';
 import { RegisterRequest, LoginRequest, LoginResponse, User } from '../types/models';
+import { ApiRequestError, extractApiErrorBody, resolveAuthErrorMessage } from '../utils/apiErrors';
 import axios from 'axios';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { getFirebaseAuth } from '../firebaseConfig';
@@ -115,9 +116,22 @@ export const registerWithEmail = async (data: RegisterRequest): Promise<LoginRes
     throw new Error('Registration completed but failed to log in automatically.');
   } catch (error) {
     debug.error('Backend registration error:', error);
-    if (axios.isAxiosError(error) && error.response) {
-      const errorDetail = error.response.data?.detail || error.message;
-      throw new Error(errorDetail || 'Registration failed due to a server error.');
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        const body = extractApiErrorBody(error.response.data);
+        const { message, errorCode } = resolveAuthErrorMessage(
+          body,
+          'Registration failed due to a server error.'
+        );
+        throw new ApiRequestError(message, {
+          errorCode,
+          status: error.response.status,
+        });
+      }
+      throw new ApiRequestError(
+        'Unable to reach the server. Please check your connection and try again.',
+        { errorCode: 'network_error' }
+      );
     }
     throw error;
   }
