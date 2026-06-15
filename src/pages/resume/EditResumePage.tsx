@@ -30,6 +30,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { EditPageActionBar } from '../../components/common/EditPageActionBar';
 import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
+import { generateResumeTitle } from '../../utils/resumeTitle';
 
 // Helpers placed outside the component to avoid initialization order issues
 const getEmptyResumeContentSkeleton = () => ({
@@ -113,6 +114,15 @@ const EditResumePage: React.FC = () => {
     if (!id) return;
     navigate(`/resumes/${id}`);
   };
+
+  const handleSyncResumeName = () => {
+    setTitle(generateResumeTitle(companyName, jobTitle));
+  };
+
+  const syncedResumeName = useMemo(
+    () => generateResumeTitle(companyName, jobTitle),
+    [companyName, jobTitle]
+  );
 
   // Portfolio selection removed from editing on this page per request
 
@@ -210,12 +220,12 @@ const EditResumePage: React.FC = () => {
         <Divider sx={{ mb: 2 }} />
 
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
-              label="Title"
+              label="Company Name"
               fullWidth
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
           </Grid>
 
@@ -227,13 +237,25 @@ const EditResumePage: React.FC = () => {
               onChange={(e) => setJobTitle(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+
+          <Grid item xs={12}>
             <TextField
-              label="Company Name"
+              label="Resume Name"
               fullWidth
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              helperText="Used in the page heading and PDF filename."
             />
+            <Box sx={{ mt: 1 }}>
+              <Button
+                variant="text"
+                size="small"
+                onClick={handleSyncResumeName}
+                disabled={title === syncedResumeName}
+              >
+                Sync from company & job
+              </Button>
+            </Box>
           </Grid>
 
           {/* Template ID and Portfolio ID fields removed per request */}
