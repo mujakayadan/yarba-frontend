@@ -42,16 +42,18 @@ const PersonalInfoSetupPage: React.FC = () => {
   const isFullNameEmpty = formData.fullName.trim() === '';
 
   useEffect(() => {
-    if (profile && profile.personal_information) {
-      setFormData({
-        fullName: profile.personal_information.full_name || user?.full_name || '',
-        phone: profile.personal_information.phone || '',
-        address: profile.personal_information.address || '',
-        website: profile.personal_information.website || '',
-        linkedin: profile.personal_information.linkedin || '',
-        github: profile.personal_information.github || '',
-      });
+    if (!profile || !user || profile.user_id !== user.id || !profile.personal_information) {
+      return;
     }
+
+    setFormData({
+      fullName: profile.personal_information.full_name || user.full_name || '',
+      phone: profile.personal_information.phone || '',
+      address: profile.personal_information.address || '',
+      website: profile.personal_information.website || '',
+      linkedin: profile.personal_information.linkedin || '',
+      github: profile.personal_information.github || '',
+    });
   }, [profile, user]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +157,7 @@ const PersonalInfoSetupPage: React.FC = () => {
           </Alert>
         )}
 
-        <Box component="form" noValidate sx={{ mt: 1 }}>
+        <Box component="form" noValidate autoComplete="off" sx={{ mt: 1 }}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextField

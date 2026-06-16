@@ -9,9 +9,9 @@ export const useUserProfile = () => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: profileKeys.me(),
+    queryKey: profileKeys.me(user?.id),
     queryFn: getUserProfile,
-    enabled: !!user,
+    enabled: !!user?.id,
     staleTime: PROFILE_STALE_TIME,
   });
 };

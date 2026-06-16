@@ -32,7 +32,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     try {
       return await queryClient.fetchQuery({
-        queryKey: profileKeys.me(),
+        queryKey: profileKeys.me(user.id),
         queryFn: getUserProfile,
       });
     } catch (err: unknown) {

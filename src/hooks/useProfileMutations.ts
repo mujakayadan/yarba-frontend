@@ -14,7 +14,7 @@ import {
 import { Profile } from '../types/models';
 
 const invalidateProfile = () => {
-  queryClient.invalidateQueries({ queryKey: profileKeys.me() });
+  queryClient.invalidateQueries({ queryKey: profileKeys.all });
 };
 
 export const useProfileMutations = () => {

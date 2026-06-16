@@ -11,6 +11,7 @@ import {
 import { createDebugger } from '../utils/debug';
 import { UpdateSetupProgressRequest, User, UserSetupProgressResponse } from '../types/models';
 import { AUTH_UNAUTHORIZED_EVENT } from '../utils/authEvents';
+import { clearAuthenticatedUserCache } from '../lib/clearUserQueryCache';
 
 const debug = createDebugger('AuthContext');
 
@@ -201,6 +202,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const handleUnauthorized = () => {
       debug.warn('Unauthorized API response received');
+      clearAuthenticatedUserCache();
       localStorage.removeItem('auth_token');
       setIsAuthenticated(false);
       setUser(null);
@@ -251,6 +253,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Starting login process for:', email);
       setLoading(true);
       setError(null);
+      clearAuthenticatedUserCache();
 
       // Check if we're offline first
       if (checkNetworkConnectivity()) {
@@ -289,6 +292,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Starting registration process for:', email);
       setLoading(true);
       setError(null);
+      clearAuthenticatedUserCache();
 
       // Check if we're offline first
       if (checkNetworkConnectivity()) {
@@ -342,6 +346,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.log('Starting Google sign-in flow');
       setLoading(true);
       setError(null);
+      clearAuthenticatedUserCache();
 
       if (checkNetworkConnectivity()) {
         const errorMsg =
@@ -386,6 +391,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       await logout();
 
+      clearAuthenticatedUserCache();
       // Clean up local state
       localStorage.removeItem('auth_token');
       delete api.defaults.headers.common['Authorization'];

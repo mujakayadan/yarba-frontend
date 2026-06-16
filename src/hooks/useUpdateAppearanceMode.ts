@@ -36,10 +36,11 @@ export const useUpdateAppearanceMode = () => {
       });
     },
     onMutate: async ({ profile, theme_mode }) => {
-      await queryClient.cancelQueries({ queryKey: profileKeys.me() });
-      const previous = queryClient.getQueryData<Profile>(profileKeys.me());
+      const profileQueryKey = profileKeys.me(profile.user_id);
+      await queryClient.cancelQueries({ queryKey: profileQueryKey });
+      const previous = queryClient.getQueryData<Profile>(profileQueryKey);
       if (previous) {
-        queryClient.setQueryData<Profile>(profileKeys.me(), {
+        queryClient.setQueryData<Profile>(profileQueryKey, {
           ...previous,
           system_preferences: {
             ...previous.system_preferences,
@@ -50,16 +51,16 @@ export const useUpdateAppearanceMode = () => {
           },
         });
       }
-      return { previous };
+      return { previous, profileQueryKey };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(profileKeys.me(), context.previous);
+      if (context?.previous && context.profileQueryKey) {
+        queryClient.setQueryData(context.profileQueryKey, context.previous);
       }
       showError('Failed to update appearance. Please try again.');
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: profileKeys.me() });
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: profileKeys.me(variables.profile.user_id) });
     },
   });
 };
