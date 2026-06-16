@@ -26,6 +26,7 @@ import {
   deployPortfolioWebsite,
   deletePortfolioWebsite,
   getDeploymentStatus,
+  getPortfolioWebsite,
 } from '../services/websiteService';
 import {
   PortfolioWebsiteResponse,
@@ -87,11 +88,14 @@ const WebsitePage: React.FC = () => {
   const {
     data: website,
     isLoading: websiteQueryLoading,
+    isFetching: websiteQueryFetching,
     error: websiteQueryError,
-    refetch,
   } = usePortfolioWebsite();
   const [actionLoading, setActionLoading] = useState(false);
   const isLoading = websiteQueryLoading || actionLoading;
+  const isRefreshingWebsite = websiteQueryFetching && !websiteQueryLoading;
+  const showManageWebsiteLoading =
+    activeStep === 2 && !website && (isLoading || isRefreshingWebsite || actionLoading);
   const [error, setError] = useState<string | null>(null);
 
   const setWebsite = useCallback((value: PortfolioWebsiteResponse | null) => {
@@ -116,16 +120,27 @@ const WebsitePage: React.FC = () => {
   const DEFAULT_POLL_INTERVAL = 5000;
 
   const fetchUserWebsite = useCallback(async () => {
-    const { data: existingWebsite } = await refetch();
+    const previousWebsite = queryClient.getQueryData<PortfolioWebsiteResponse | null>(
+      websiteKeys.portfolio()
+    );
+
+    const existingWebsite = await getPortfolioWebsite();
+
     if (existingWebsite) {
+      setWebsite(existingWebsite);
       setActiveStep(2);
       setSelectedTheme(existingWebsite.config.theme);
       setSubdomain(existingWebsite.subdomain);
-      if (isDeploymentInProgress(existingWebsite.deployment_status)) {
-        pollDeploymentStatus();
-      }
+      return;
     }
-  }, [refetch]);
+
+    if (previousWebsite) {
+      setWebsite(previousWebsite);
+      return;
+    }
+
+    setWebsite(null);
+  }, [setWebsite]);
 
   useEffect(() => {
     if (website) {
@@ -293,11 +308,26 @@ const WebsitePage: React.FC = () => {
       try {
         const statusData = await getDeploymentStatus();
 
-        updateWebsite((prev) => (prev ? { ...prev, deployment_status: statusData } : null));
+        updateWebsite((prev) => {
+          if (!prev) {
+            return null;
+          }
+
+          const next: PortfolioWebsiteResponse = {
+            ...prev,
+            deployment_status: statusData,
+          };
+
+          if (statusData.status === 'success' && statusData.deployment_url) {
+            next.website_url = statusData.deployment_url;
+          }
+
+          return next;
+        });
 
         if (!isDeploymentInProgress(statusData)) {
           stopPolling();
-          fetchUserWebsite();
+          void fetchUserWebsite();
           return;
         }
 
@@ -430,7 +460,7 @@ const WebsitePage: React.FC = () => {
       label: 'Manage Website',
       content: (
         <Box sx={{ mt: 2 }}>
-          {isLoading && !website ? (
+          {showManageWebsiteLoading ? (
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <CircularProgress />
               <Typography sx={{ mt: 2 }}>Setting up your website...</Typography>

@@ -26,13 +26,25 @@ export const createPortfolioWebsite = async (
 // Function to get the user's portfolio website
 export const getPortfolioWebsite = async (): Promise<PortfolioWebsiteResponse | null> => {
   try {
-    const response = await api.get<PortfolioWebsiteResponse>(`${API_BASE_URL}/`);
-    return response.data;
-  } catch (error: any) {
-    if (error.response && error.response.status === 404) {
-      return null; // No website found for the user
+    const response = await api.get<PortfolioWebsiteResponse>(`${API_BASE_URL}/`, {
+      // Avoid stale browser cache after create/deploy (backend may cache empty responses).
+      params: { _: Date.now() },
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+      },
+    });
+    return response.data ?? null;
+  } catch (error: unknown) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      (error as { response?: { status?: number } }).response?.status === 404
+    ) {
+      return null;
     }
-    throw error; // Re-throw other errors
+    throw error;
   }
 };
 
