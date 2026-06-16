@@ -10,9 +10,13 @@ import {
   CircularProgress,
   Alert,
   Paper,
+  Divider,
 } from '@mui/material';
+import { ProfilePictureUploadSection } from '../../../components/profile/ProfilePictureUploadSection';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';
+import { useProfileMutations } from '../../../hooks/useProfileMutations';
+import { extractApiErrorMessage } from '../../../utils/apiErrors';
 
 interface PersonalInfoFormData {
   fullName: string;
@@ -27,6 +31,7 @@ const PersonalInfoSetupPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, updateProfile, updateUserSetupProgress } = useAuth();
   const { profile, loading: profileLoading, refreshProfile } = useProfile();
+  const { uploadPicture, deletePicture } = useProfileMutations();
   const [formData, setFormData] = useState<PersonalInfoFormData>({
     fullName: user?.full_name || user?.username || '',
     phone: '',
@@ -37,9 +42,11 @@ const PersonalInfoSetupPage: React.FC = () => {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageVersion, setImageVersion] = useState(Date.now());
 
-  // Derived state for readability
   const isFullNameEmpty = formData.fullName.trim() === '';
+  const isMediaBusy = uploadPicture.isPending || deletePicture.isPending;
+  const isFormBusy = saving || isMediaBusy;
 
   useEffect(() => {
     if (!profile || !user || profile.user_id !== user.id || !profile.personal_information) {
@@ -80,13 +87,33 @@ const PersonalInfoSetupPage: React.FC = () => {
       };
       await updateProfile(profileUpdateData);
       await refreshProfile();
-      console.log('Personal info saved:', profileUpdateData);
       return true;
-    } catch (err: any) {
-      console.error('Failed to save personal info:', err);
-      setError(err.message || 'Failed to save personal information.');
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Failed to save personal information.'));
       setSaving(false);
       return false;
+    }
+  };
+
+  const handleProfilePictureUpload = async (file: File) => {
+    setError(null);
+    try {
+      await uploadPicture.mutateAsync(file);
+      await refreshProfile();
+      setImageVersion(Date.now());
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Failed to upload profile picture.'));
+    }
+  };
+
+  const handleProfilePictureRemove = async () => {
+    setError(null);
+    try {
+      await deletePicture.mutateAsync();
+      await refreshProfile();
+      setImageVersion(Date.now());
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Failed to remove profile picture.'));
     }
   };
 
@@ -103,9 +130,8 @@ const PersonalInfoSetupPage: React.FC = () => {
       try {
         await updateUserSetupProgress({ current_setup_step: 2 });
         navigate('/user/setup/prompt-preferences'); // Navigate to the new prompt preferences page
-      } catch (err: any) {
-        console.error('Failed to update setup progress:', err);
-        setError(err.message || 'Failed to proceed to the next step.');
+      } catch (err: unknown) {
+        setError(extractApiErrorMessage(err, 'Failed to proceed to the next step.'));
       } finally {
         setSaving(false); // Ensure saving is set to false after this operation too
       }
@@ -168,7 +194,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="Full Name"
                 value={formData.fullName}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -192,7 +218,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="Phone Number (Optional)"
                 value={formData.phone}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -203,7 +229,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="Address (Optional)"
                 value={formData.address}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -214,7 +240,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="Personal Website/Portfolio URL (Optional)"
                 value={formData.website}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -225,7 +251,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="LinkedIn Profile URL (Optional)"
                 value={formData.linkedin}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -236,7 +262,21 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="GitHub Profile URL (Optional)"
                 value={formData.github}
                 onChange={handleChange}
-                disabled={saving}
+                disabled={isFormBusy}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 1 }} />
+              <ProfilePictureUploadSection
+                profilePictureKey={profile?.profile_picture_key}
+                displayName={formData.fullName}
+                userEmail={user?.email}
+                imageVersion={imageVersion}
+                disabled={isFormBusy}
+                uploading={uploadPicture.isPending}
+                removing={deletePicture.isPending}
+                onUpload={handleProfilePictureUpload}
+                onRemove={handleProfilePictureRemove}
               />
             </Grid>
           </Grid>
@@ -244,7 +284,7 @@ const PersonalInfoSetupPage: React.FC = () => {
             <Button
               variant="contained"
               onClick={handleSaveAndNext}
-              disabled={saving} // Only disable if actively saving, validation handles empty field
+              disabled={isFormBusy}
               startIcon={saving ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {saving ? 'Saving...' : 'Next'}
