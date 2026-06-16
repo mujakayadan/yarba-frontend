@@ -18,8 +18,19 @@ import {
   Step,
   StepLabel,
   StepContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
-import { CheckCircleOutline, ErrorOutline, Language, Refresh } from '@mui/icons-material';
+import {
+  CheckCircleOutline,
+  Delete as DeleteIcon,
+  ErrorOutline,
+  Language,
+  Refresh,
+} from '@mui/icons-material';
 import {
   createPortfolioWebsite,
   checkSubdomainAvailability,
@@ -77,6 +88,8 @@ function logWebsiteActionError(context: string, err: unknown) {
   console.error(context, detail ?? err);
 }
 
+type WebsiteConfirmAction = 'redeploy' | 'delete';
+
 const WebsitePage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState<string>(THEMES[0].value);
@@ -97,6 +110,7 @@ const WebsitePage: React.FC = () => {
   const showManageWebsiteLoading =
     activeStep === 2 && !website && (isLoading || isRefreshingWebsite || actionLoading);
   const [error, setError] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<WebsiteConfirmAction | null>(null);
 
   const setWebsite = useCallback((value: PortfolioWebsiteResponse | null) => {
     queryClient.setQueryData(websiteKeys.portfolio(), value);
@@ -245,14 +259,6 @@ const WebsitePage: React.FC = () => {
   const handleRedeploy = async () => {
     if (!website) return;
 
-    if (
-      !window.confirm(
-        'Redeploy will delete all existing files and regenerate your website from scratch. Continue?'
-      )
-    ) {
-      return;
-    }
-
     setActionLoading(true);
     setError(null);
     try {
@@ -266,17 +272,13 @@ const WebsitePage: React.FC = () => {
       setError(WEBSITE_ACTION_ERROR);
     } finally {
       setActionLoading(false);
+      setConfirmAction(null);
     }
   };
 
   const handleDelete = async () => {
     if (!website) return;
-    if (
-      !window.confirm(
-        'Are you sure you want to delete your portfolio website? This action cannot be undone.'
-      )
-    )
-      return;
+
     setActionLoading(true);
     setError(null);
     try {
@@ -293,7 +295,26 @@ const WebsitePage: React.FC = () => {
       setError(WEBSITE_ACTION_ERROR);
     } finally {
       setActionLoading(false);
+      setConfirmAction(null);
     }
+  };
+
+  const handleConfirmAction = async () => {
+    if (confirmAction === 'redeploy') {
+      await handleRedeploy();
+      return;
+    }
+
+    if (confirmAction === 'delete') {
+      await handleDelete();
+    }
+  };
+
+  const handleConfirmCancel = () => {
+    if (actionLoading) {
+      return;
+    }
+    setConfirmAction(null);
   };
 
   const pollDeploymentStatus = useCallback(() => {
@@ -508,7 +529,7 @@ const WebsitePage: React.FC = () => {
               <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button
                   variant="contained"
-                  onClick={handleRedeploy}
+                  onClick={() => setConfirmAction('redeploy')}
                   disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
                   startIcon={isLoading ? <CircularProgress size={20} /> : <Refresh />}
                 >
@@ -517,7 +538,7 @@ const WebsitePage: React.FC = () => {
                 <Button
                   variant="outlined"
                   color="error"
-                  onClick={handleDelete}
+                  onClick={() => setConfirmAction('delete')}
                   disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
                 >
                   Delete Website
@@ -587,6 +608,65 @@ const WebsitePage: React.FC = () => {
           ))}
         </Stepper>
       </Paper>
+
+      <Dialog
+        open={confirmAction !== null}
+        onClose={handleConfirmCancel}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="website-confirm-dialog-title"
+      >
+        <DialogTitle id="website-confirm-dialog-title">
+          {confirmAction === 'redeploy' ? 'Redeploy website?' : 'Delete website?'}
+        </DialogTitle>
+        <DialogContent>
+          {confirmAction === 'redeploy' ? (
+            <>
+              <DialogContentText sx={{ mb: 2 }}>
+                This will delete all existing files and regenerate your website from scratch. Your
+                subdomain and live URL will stay the same.
+              </DialogContentText>
+              <Alert severity="warning">
+                Redeploy can take a few minutes. The site may be briefly unavailable while it
+                rebuilds.
+              </Alert>
+            </>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to delete your portfolio website? This action cannot be undone
+              and will remove your live site.
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleConfirmCancel} disabled={actionLoading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmAction}
+            variant="contained"
+            color={confirmAction === 'delete' ? 'error' : 'primary'}
+            disabled={actionLoading}
+            startIcon={
+              actionLoading ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : confirmAction === 'redeploy' ? (
+                <Refresh />
+              ) : (
+                <DeleteIcon />
+              )
+            }
+          >
+            {actionLoading
+              ? confirmAction === 'redeploy'
+                ? 'Redeploying...'
+                : 'Deleting...'
+              : confirmAction === 'redeploy'
+                ? 'Redeploy'
+                : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
