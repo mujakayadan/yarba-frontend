@@ -13,7 +13,14 @@ import {
   IconButton,
   InputAdornment,
 } from '@mui/material';
-import { Visibility, VisibilityOff, Key as KeyIcon, Save as SaveIcon } from '@mui/icons-material';
+import {
+  Visibility,
+  VisibilityOff,
+  Key as KeyIcon,
+  Save as SaveIcon,
+  VpnKey as TokenIcon,
+} from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { changePassword } from '../../services/authService';
@@ -90,6 +97,21 @@ const UserPage: React.FC = () => {
     <Box sx={{ p: 3 }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <TokenIcon color="primary" sx={{ mr: 1 }} />
+              <Typography variant="h6">Agent Access Tokens</Typography>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="body2" color="text.secondary" paragraph>
+              Create personal access tokens for apply automation agents. Tokens are scoped and can
+              be revoked at any time.
+            </Typography>
+            <Button component={RouterLink} to="/user/agent-tokens" variant="outlined">
+              Manage agent tokens
+            </Button>
+          </Paper>
+
           <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <KeyIcon color="primary" sx={{ mr: 1 }} />

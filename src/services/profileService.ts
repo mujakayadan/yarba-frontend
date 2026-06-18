@@ -1,5 +1,12 @@
 import api from './api';
 import { Profile } from '../types/models';
+import type {
+  ApplicationPreferences,
+  ApplyCredentialsStatus,
+  Demographics,
+  LogisticsPreferences,
+  WorkEligibility,
+} from '../types/application';
 
 // Define a type specifically for the Personal Information response
 export type PersonalInformation = Profile['personal_information'];
@@ -110,4 +117,55 @@ export const getSignatureUrl = async (): Promise<{ signature_key: string }> => {
 export const deleteSignature = async (): Promise<{ signature_key: null }> => {
   const response = await api.delete('/profiles/me/signature');
   return response.data;
+};
+
+// Application preferences (eligibility, logistics, EEO)
+
+export const getApplicationPreferences = async (): Promise<ApplicationPreferences> => {
+  const response = await api.get('/profiles/me/application-preferences');
+  return response.data;
+};
+
+export const updateApplicationPreferences = async (payload: {
+  work_eligibility?: WorkEligibility;
+  logistics?: LogisticsPreferences;
+}): Promise<ApplicationPreferences> => {
+  const response = await api.put('/profiles/me/application-preferences', payload);
+  return response.data;
+};
+
+export const updateDemographicConsent = async (
+  consented: boolean
+): Promise<ApplicationPreferences> => {
+  const response = await api.put('/profiles/me/application-preferences/consent', {
+    consented,
+  });
+  return response.data;
+};
+
+export const getDemographics = async (): Promise<Demographics> => {
+  const response = await api.get('/profiles/me/application-preferences/demographics');
+  return response.data;
+};
+
+export const updateDemographics = async (payload: Demographics): Promise<Demographics> => {
+  const response = await api.put('/profiles/me/application-preferences/demographics', payload);
+  return response.data;
+};
+
+export const deleteDemographics = async (): Promise<void> => {
+  await api.delete('/profiles/me/application-preferences/demographics');
+};
+
+export const getApplyCredentialsStatus = async (): Promise<ApplyCredentialsStatus> => {
+  const response = await api.get('/profiles/me/application-preferences/apply-credentials');
+  return response.data;
+};
+
+export const updateApplyCredentials = async (password: string): Promise<void> => {
+  await api.put('/profiles/me/application-preferences/apply-credentials', { password });
+};
+
+export const deleteApplyCredentials = async (): Promise<void> => {
+  await api.delete('/profiles/me/application-preferences/apply-credentials');
 };

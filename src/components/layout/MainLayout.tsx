@@ -29,6 +29,7 @@ import {
   Mail as CoverLetterIcon,
   Person as ProfileIcon,
   Work as PortfolioIcon,
+  Assignment as ApplicationsIcon,
   Palette as TemplatesIcon,
   Settings as SettingsIcon,
   ExitToApp as LogoutIcon,
@@ -61,18 +62,10 @@ const navItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Resumes', icon: <ResumeIcon />, path: '/resumes' },
   { text: 'Cover Letters', icon: <CoverLetterIcon />, path: '/cover-letters' },
+  { text: 'Applications', icon: <ApplicationsIcon />, path: '/applications' },
   { text: 'Portfolio', icon: <PortfolioIcon />, path: '/portfolio' },
   { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
   { text: 'Website', icon: <LanguageIcon />, path: '/website' },
-  // To add nested navigation in the future, we could use this structure:
-  // {
-  //   text: 'Settings',
-  //   icon: <SettingsIcon />,
-  //   children: [
-  //     { text: 'User Settings', icon: <AccountIcon />, path: '/user' },
-  //     { text: 'Templates', icon: <TemplatesIcon />, path: '/templates' },
-  //   ]
-  // },
 ];
 
 interface MainLayoutProps {

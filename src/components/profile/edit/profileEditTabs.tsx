@@ -36,6 +36,11 @@ export const PROFILE_EDIT_TABS: readonly ProfileEditTabConfig[] = [
     icon: PROFILE_VIEW_TAB_ITEMS[3].icon,
     Tab: lazyTab(() => import('./ProfileMediaEditTab'), 'ProfileMediaEditTab'),
   },
+  {
+    label: PROFILE_VIEW_TAB_ITEMS[4].label,
+    icon: PROFILE_VIEW_TAB_ITEMS[4].icon,
+    Tab: lazyTab(() => import('./ApplicationPreferencesEditTab'), 'ApplicationPreferencesEditTab'),
+  },
 ];
 
 export { PROFILE_VIEW_TABS };

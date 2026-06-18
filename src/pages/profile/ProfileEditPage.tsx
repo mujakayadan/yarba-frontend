@@ -41,7 +41,8 @@ import { createDebugger } from '../../utils/debug';
 
 const debug = createDebugger('ProfileEditPage');
 
-const MEDIA_TAB_INDEX = PROFILE_VIEW_TABS.length - 1;
+const MEDIA_TAB_INDEX = PROFILE_VIEW_TABS.length - 2;
+const APPLICATION_TAB_INDEX = PROFILE_VIEW_TABS.length - 1;
 
 const ProfileEditPage: React.FC = () => {
   const navigate = useNavigate();
@@ -201,6 +202,7 @@ const ProfileEditPage: React.FC = () => {
   const ActiveTab = PROFILE_EDIT_TABS[renderedTab]?.Tab;
   const uploading = uploadPicture.isPending || uploadSignatureMutation.isPending;
   const isMediaTab = tabValue === MEDIA_TAB_INDEX;
+  const isSelfSavingTab = isMediaTab || tabValue === APPLICATION_TAB_INDEX;
 
   const handleSavePreferences = async () => {
     const promptPreferencesData: Partial<NonNullable<Profile['prompt_preferences']>> = {
@@ -271,7 +273,7 @@ const ProfileEditPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (isMediaTab) {
+    if (isSelfSavingTab) {
       return;
     }
 
@@ -332,13 +334,19 @@ const ProfileEditPage: React.FC = () => {
         onBack={handleCancel}
         onSave={handleSave}
         saving={loading}
-        showSave={!isMediaTab}
+        showSave={!isSelfSavingTab}
       />
 
       {isMediaTab && (
         <Alert severity="info" sx={{ mb: 3 }}>
           Profile picture and signature uploads save immediately. Use the upload and delete controls
           in this tab.
+        </Alert>
+      )}
+
+      {tabValue === APPLICATION_TAB_INDEX && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Application settings save using the buttons within this tab.
         </Alert>
       )}
 

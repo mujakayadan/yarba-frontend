@@ -4,6 +4,7 @@ import {
   Settings as SettingsIcon,
   AutoStories as LifeStoryIcon,
   PhotoCamera as PhotoCameraIcon,
+  WorkOutline as ApplicationIcon,
 } from '@mui/icons-material';
 import type { ProfileViewTabProps } from '../../../types/profileView';
 
@@ -26,6 +27,7 @@ export const PROFILE_VIEW_TAB_ITEMS: readonly ProfileViewTabItem[] = [
   { label: 'Preferences', icon: SettingsIcon },
   { label: 'Life Story', icon: LifeStoryIcon },
   { label: 'Profile Picture & Signature', icon: PhotoCameraIcon },
+  { label: 'Application Settings', icon: ApplicationIcon },
 ];
 
 export const PROFILE_VIEW_TABS: readonly ProfileViewTabConfig[] = [
@@ -48,5 +50,10 @@ export const PROFILE_VIEW_TABS: readonly ProfileViewTabConfig[] = [
     label: PROFILE_VIEW_TAB_ITEMS[3].label,
     icon: PROFILE_VIEW_TAB_ITEMS[3].icon,
     Tab: lazyTab(() => import('./ProfileMediaViewTab'), 'ProfileMediaViewTab'),
+  },
+  {
+    label: PROFILE_VIEW_TAB_ITEMS[4].label,
+    icon: PROFILE_VIEW_TAB_ITEMS[4].icon,
+    Tab: lazyTab(() => import('./ApplicationPreferencesViewTab'), 'ApplicationPreferencesViewTab'),
   },
 ];

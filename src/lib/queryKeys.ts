@@ -50,3 +50,27 @@ export const websiteKeys = {
   all: ['website'] as const,
   portfolio: () => [...websiteKeys.all, 'portfolio'] as const,
 };
+
+export type ApplicationListParams = {
+  skip?: number;
+  limit?: number;
+  status?: string;
+};
+
+export const applicationKeys = {
+  all: ['applications'] as const,
+  list: (params: ApplicationListParams = {}) => [...applicationKeys.all, 'list', params] as const,
+  detail: (id: string) => [...applicationKeys.all, 'detail', id] as const,
+};
+
+export const agentTokenKeys = {
+  all: ['agentTokens'] as const,
+  list: () => [...agentTokenKeys.all, 'list'] as const,
+};
+
+export const applicationPreferencesKeys = {
+  all: ['applicationPreferences'] as const,
+  me: () => [...applicationPreferencesKeys.all, 'me'] as const,
+  demographics: () => [...applicationPreferencesKeys.all, 'demographics'] as const,
+  applyCredentials: () => [...applicationPreferencesKeys.all, 'applyCredentials'] as const,
+};

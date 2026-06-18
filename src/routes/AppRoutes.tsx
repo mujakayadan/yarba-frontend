@@ -39,6 +39,8 @@ const TermsPage = lazy(() => import('../pages/footer/TermsPage'));
 const ContactPage = lazy(() => import('../pages/footer/ContactPage'));
 const UploadPortfolioPage = lazy(() => import('../pages/portfolio/UploadPortfolioPage'));
 const WebsitePage = lazy(() => import('../pages/WebsitePage'));
+const ApplicationsPage = lazy(() => import('../pages/applications/ApplicationsPage'));
+const AgentTokensPage = lazy(() => import('../pages/user/AgentTokensPage'));
 const PersonalInfoSetupPage = lazy(() => import('../pages/user/setup/PersonalInfoSetupPage'));
 const PromptPreferencesSetupPage = lazy(
   () => import('../pages/user/setup/PromptPreferencesSetupPage')
@@ -127,6 +129,7 @@ const AppRoutes: React.FC = () => (
         <Route path="/cover-letters/new" element={<CoverLetterNewPage />} />
         <Route path="/cover-letters/:id" element={<CoverLetterViewPage />} />
         <Route path="/cover-letters/:id/edit" element={<CoverLetterEditPage />} />
+        <Route path="/applications" element={<ApplicationsPage />} />
         <Route path="/portfolio" element={<PortfolioViewPage />} />
         <Route path="/portfolio/upload" element={<UploadPortfolioPage />} />
         <Route path="/portfolio/create" element={<PortfolioCreatePage />} />
@@ -135,6 +138,7 @@ const AppRoutes: React.FC = () => (
         <Route path="/portfolio/:id" element={<PortfolioViewPage />} />
         <Route path="/templates" element={<TemplatesPage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/user/agent-tokens" element={<AgentTokensPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
         <Route path="/website" element={<WebsitePage />} />
