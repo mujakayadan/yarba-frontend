@@ -96,10 +96,6 @@ Then run `npm run dev` and filter the browser console by namespace:
 
 For token exchange details, look for `[Auth]` groups around JWT exchange and any cooldown messages after failures.
 
-### Firebase test page (development only)
-
-While running `npm run dev`, open `/firebase-test` for manual Firebase and token-exchange checks. This route is not available in production builds.
-
 ## Build & type errors
 
 `npm run build` runs `tsc --noEmit` before the Vite production bundle. TypeScript errors block the build — fix reported file/line issues locally.

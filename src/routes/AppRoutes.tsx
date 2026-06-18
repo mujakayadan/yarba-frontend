@@ -4,7 +4,6 @@ import { Box, CircularProgress } from '@mui/material';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
-import { isDev } from '../config/env';
 
 const PortfolioEditLegacyRedirect = () => {
   const { search } = useLocation();
@@ -19,7 +18,6 @@ const TemplatesPage = lazy(() => import('../pages/TemplatesPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const ViewResumePage = lazy(() => import('../pages/resume/ViewResumePage'));
 const EditResumePage = lazy(() => import('../pages/resume/EditResumePage'));
-const FirebaseTestPage = lazy(() => import('../pages/FirebaseTestPage'));
 const CreateResumePage = lazy(() => import('../pages/resume/CreateResumePage'));
 const ProfileEditPage = lazy(() => import('../pages/profile/ProfileEditPage'));
 const PortfolioCreatePage = lazy(() => import('../pages/portfolio/PortfolioCreatePage'));
@@ -120,7 +118,6 @@ const AppRoutes: React.FC = () => (
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
-        {isDev && <Route path="/firebase-test" element={<FirebaseTestPage />} />}
         <Route path="/resumes" element={<ResumesPage />} />
         <Route path="/resumes/new" element={<CreateResumePage />} />
         <Route path="/resumes/:id" element={<ViewResumePage />} />

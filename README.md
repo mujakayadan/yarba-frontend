@@ -200,8 +200,6 @@ Configured for **Vercel**. Set all `VITE_*` environment variables in the Vercel 
 
 ## Development tools
 
-The Firebase debug page at `/firebase-test` is available only in development mode (`npm run dev`).
-
 See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common auth, API, env, and debug issues.
 
 ## License

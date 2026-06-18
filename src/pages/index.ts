@@ -15,7 +15,6 @@ export { default as ViewResumePage } from './resume/ViewResumePage';
 export { default as EditResumePage } from './resume/EditResumePage';
 export { default as PortfolioPage } from './portfolio/PortfolioPage';
 export { default as TemplatesPage } from './TemplatesPage';
-export { default as FirebaseTestPage } from './FirebaseTestPage';
 export { default as CreateResumePage } from './resume/CreateResumePage';
 export { default as AboutPage } from './footer/AboutPage';
 
