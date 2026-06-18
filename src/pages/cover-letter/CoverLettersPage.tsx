@@ -156,14 +156,12 @@ const CoverLettersPage: React.FC = () => {
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    console.log(`Page changing from ${page} to ${value}`);
     setPage(value);
     window.scrollTo(0, 0); // Scroll to top when changing pages
   };
 
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     const newPageSize = event.target.value as number;
-    console.log(`Page size changing from ${pageSize} to ${newPageSize}`);
     // Calculate what page we should be on to show same items when possible
     const firstItemIndex = (page - 1) * pageSize;
     const newPage = Math.floor(firstItemIndex / newPageSize) + 1;
@@ -172,7 +170,6 @@ const CoverLettersPage: React.FC = () => {
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, coverLetterId: string) => {
-    console.log('Menu opened for cover letter ID:', coverLetterId);
     setAnchorEl(event.currentTarget);
     setSelectedCoverLetterId(coverLetterId);
   };
@@ -196,7 +193,6 @@ const CoverLettersPage: React.FC = () => {
   };
 
   const handleDeleteClick = () => {
-    console.log('Delete clicked, selectedCoverLetterId:', selectedCoverLetterId);
     setDeleteDialogOpen(true);
   };
 
@@ -241,12 +237,10 @@ const CoverLettersPage: React.FC = () => {
 
   const handleDuplicateCoverLetter = (coverLetterId: string) => {
     // Future implementation for duplicating cover letters
-    console.log('Duplicate cover letter:', coverLetterId);
     handleMenuClose();
   };
 
   const handleDownloadPdf = async (coverLetterId: string) => {
-    console.log('Download PDF for cover letter:', coverLetterId);
     setGeneratingPdf(true);
     try {
       const blob = await downloadCoverLetterPdf(coverLetterId);
@@ -284,7 +278,6 @@ const CoverLettersPage: React.FC = () => {
   };
 
   const handleViewPdf = async (coverLetterId: string) => {
-    console.log('View PDF for cover letter:', coverLetterId);
     setGeneratingPdf(true);
     try {
       const coverLetter = coverLetters.find((cl) => cl.id === coverLetterId);

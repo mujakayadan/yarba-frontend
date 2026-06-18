@@ -176,14 +176,12 @@ const ResumesPage: React.FC = () => {
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    console.log(`Page changing from ${page} to ${value}`);
     setPage(value);
     window.scrollTo(0, 0); // Scroll to top when changing pages
   };
 
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     const newPageSize = event.target.value as number;
-    console.log(`Page size changing from ${pageSize} to ${newPageSize}`);
     // Calculate what page we should be on to show same items when possible
     const firstItemIndex = (page - 1) * pageSize;
     const newPage = Math.floor(firstItemIndex / newPageSize) + 1;
@@ -192,7 +190,6 @@ const ResumesPage: React.FC = () => {
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, resumeId: string) => {
-    console.log('Menu opened for resume ID:', resumeId);
     setAnchorEl(event.currentTarget);
     setSelectedResumeId(resumeId);
   };
@@ -216,7 +213,6 @@ const ResumesPage: React.FC = () => {
   };
 
   const handleDeleteClick = () => {
-    console.log('Delete clicked, selectedResumeId:', selectedResumeId);
     setDeleteDialogOpen(true);
   };
 
@@ -261,7 +257,6 @@ const ResumesPage: React.FC = () => {
 
   const handleDuplicateResume = (resumeId: string) => {
     // This would need to call a backend API to duplicate the resume
-    console.log('Duplicate resume:', resumeId);
     handleMenuClose();
   };
 
@@ -306,7 +301,6 @@ const ResumesPage: React.FC = () => {
     try {
       // Log the resume details before requesting PDF
       const resume = resumes.find((r) => r.id === resumeId);
-      console.log('Requesting PDF for resume:', resume);
 
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
@@ -359,7 +353,6 @@ const ResumesPage: React.FC = () => {
     try {
       // Log the resume details before requesting PDF
       const resume = resumes.find((r) => r.id === resumeId);
-      console.log('Requesting PDF for resume:', resume);
 
       // Check if portfolio_id exists and is valid
       if (!resume?.portfolio_id) {
