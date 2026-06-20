@@ -107,6 +107,19 @@ export const PersonalInfoViewTab: React.FC<ProfileViewTabProps> = ({
       ) : (
         <Chip label="Website" disabled variant="outlined" />
       )}
+
+      {profile.personal_information?.calendly_url ? (
+        <Chip
+          label="Calendly"
+          component="a"
+          href={profile.personal_information.calendly_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          clickable
+        />
+      ) : (
+        <Chip label="Calendly" disabled variant="outlined" />
+      )}
     </Box>
   </>
 );

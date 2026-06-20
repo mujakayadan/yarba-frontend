@@ -11,7 +11,7 @@ export const LifeStoryEditTab: React.FC<ProfileEditTabProps> = ({
     <EditSectionHeader
       first
       title="Life Story"
-      description="Share your career journey, motivations, and aspirations. The AI uses this background when tailoring resumes and cover letters to specific roles, so the more context you provide, the more personalized your documents will be."
+      description="Share your career journey, motivations, and aspirations. The AI uses this for resumes, cover letters, and your portfolio website chatbot."
     />
 
     <TextField

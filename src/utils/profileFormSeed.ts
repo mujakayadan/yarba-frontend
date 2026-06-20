@@ -10,6 +10,7 @@ export const emptyPersonalInfo = () => ({
   linkedin: '',
   github: '',
   website: '',
+  calendly_url: '',
 });
 
 export const seedPersonalInfoFromProfile = (profileData: Profile) => {
@@ -25,6 +26,7 @@ export const seedPersonalInfoFromProfile = (profileData: Profile) => {
     linkedin: pi.linkedin || '',
     github: pi.github || '',
     website: pi.website || '',
+    calendly_url: pi.calendly_url || '',
   };
 };
 

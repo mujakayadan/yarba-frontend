@@ -10,6 +10,7 @@ export interface ProfilePersonalInfoForm {
   linkedin: string;
   github: string;
   website: string;
+  calendly_url: string;
 }
 
 export interface ProfilePreferencesForm {

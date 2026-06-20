@@ -116,6 +116,18 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
           helperText="Portfolio, blog, or personal site"
         />
       </Box>
+      <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
+        <TextField
+          fullWidth
+          label="Calendly Link"
+          name="calendly_url"
+          value={personalInfo.calendly_url}
+          onChange={onPersonalInfoChange}
+          margin="normal"
+          placeholder="https://calendly.com/your-name/30min"
+          helperText="Optional. Shared by your portfolio chatbot when visitors ask to meet"
+        />
+      </Box>
     </Stack>
   </>
 );

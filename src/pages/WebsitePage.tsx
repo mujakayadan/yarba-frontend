@@ -49,6 +49,7 @@ import { usePortfolioWebsite } from '../hooks/useWebsite';
 import { websiteKeys } from '../lib/queryKeys';
 import { queryClient } from '../providers/QueryProvider';
 import { defaultWebsiteColors } from '../theme/tokens';
+import WebsiteChatbotSettings from '../components/website/WebsiteChatbotSettings';
 
 const THEMES = [
   {
@@ -74,6 +75,7 @@ const DEFAULT_CONFIG: PortfolioWebsiteConfig = {
   enabled_sections: ['about', 'experience', 'education', 'skills', 'projects', 'contact'],
   section_order: ['about', 'experience', 'education', 'skills', 'projects', 'contact'],
   contact_form_enabled: true,
+  chatbot_enabled: false,
 };
 
 const SUPPORT_EMAIL = 'admin@yarba.app';
@@ -547,6 +549,17 @@ const WebsitePage: React.FC = () => {
               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                 <strong>Redeploy:</strong> Deletes all files and rebuilds your website from scratch.
               </Typography>
+              <WebsiteChatbotSettings
+                website={website}
+                disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
+                onUpdated={(updated) => {
+                  setWebsite(updated);
+                  if (isDeploymentInProgress(updated.deployment_status)) {
+                    pollDeploymentStatus();
+                  }
+                }}
+                onDeploymentStarted={pollDeploymentStatus}
+              />
             </Paper>
           ) : (
             <Alert severity="info">No website found. Please go back to create one.</Alert>

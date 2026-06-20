@@ -289,6 +289,7 @@ const ProfileEditPage: React.FC = () => {
           linkedin: personalInfo.linkedin,
           github: personalInfo.github,
           website: personalInfo.website,
+          calendly_url: personalInfo.calendly_url || undefined,
         });
         showSuccess('Personal information updated successfully!');
         navigate(`/profile${tabSearchParam(tabValue)}`);

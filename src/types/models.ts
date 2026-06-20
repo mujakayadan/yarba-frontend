@@ -32,6 +32,7 @@ export interface Profile {
     website?: string;
     linkedin?: string;
     github?: string;
+    calendly_url?: string;
   };
   profile_picture_key?: string;
   signature_key?: string;
@@ -337,6 +338,8 @@ export interface PortfolioWebsiteConfig {
   enabled_sections: string[]; // e.g., about, experience, education, skills, projects, contact
   section_order: string[]; // same as enabled_sections, defining display order
   contact_form_enabled: boolean; // default: true
+  chatbot_enabled?: boolean; // default: false
+  chatbot_welcome_message?: string | null;
 }
 
 export interface PortfolioWebsiteResponse {
