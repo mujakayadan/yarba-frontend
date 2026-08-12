@@ -1,56 +1,59 @@
-# Yarba Frontend
+# YARBA Frontend
 
-Frontend for **Yarba** — an AI-powered resume, cover letter, portfolio, and job-application platform.
+Frontend for **YARBA** — an AI-powered resume, cover letter, portfolio, and job-application platform.
+
+[![CI](https://github.com/mujakayadan/yarba-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/mujakayadan/yarba-frontend/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Elastic%202.0-005571)](LICENSE)
 
 ## Features
 
-The web app is the primary UI for [yarba-backend](https://github.com/mucahitkayadan/yarba-backend). Highlights:
+The web app is the primary UI for [yarba-backend](https://github.com/mujakayadan/yarba-backend). Highlights:
 
-| Area | What you can do |
-|------|-----------------|
-| **Portfolio** | Build and edit your career dataset (experience, skills, projects, life story) — the source of truth for all AI output |
-| **Resumes & cover letters** | Generate tailored LaTeX PDFs from portfolio + job posting; edit and download |
-| **Job scraping** | Paste a job URL to extract title and description for resume/cover-letter tailoring |
-| **Applications** | Track job applications and statuses |
-| **One-click portfolio website** | Choose theme → subdomain → **Create & Deploy** → live site at `{subdomain}.yarba.app` |
-| **Portfolio chatbot** | Enable an AI assistant on your deployed site (Settings on Website page); uses portfolio + life story; optional Calendly link in profile |
-| **Profile & preferences** | Personal info, life story, LLM/prompt preferences, application settings (for autofill), agent tokens (PATs) |
-| **Onboarding** | Guided setup: personal info, portfolio upload/review, life story, preferences |
+| Area                            | What you can do                                                                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Portfolio**                   | Build and edit your career dataset (experience, skills, projects, life story) — the source of truth for all AI output                   |
+| **Resumes & cover letters**     | Generate tailored LaTeX PDFs from portfolio + job posting; edit and download                                                            |
+| **Job scraping**                | Paste a job URL to extract title and description for resume/cover-letter tailoring                                                      |
+| **Applications**                | Track job applications and statuses                                                                                                     |
+| **One-click portfolio website** | Choose theme → subdomain → **Create & Deploy** → live site at `{subdomain}.yarba.app`                                                   |
+| **Portfolio chatbot**           | Enable an AI assistant on your deployed site (Settings on Website page); uses portfolio + life story; optional Calendly link in profile |
+| **Profile & preferences**       | Personal info, life story, LLM/prompt preferences, application settings (for autofill), agent tokens (PATs)                             |
+| **Onboarding**                  | Guided setup: personal info, portfolio upload/review, life story, preferences                                                           |
 
-Browser **auto-apply** (Playwright agent) runs via the backend CLI (`scripts/apply.py`) — see the [backend AGENTS.md](https://github.com/mucahitkayadan/yarba-backend/blob/main/AGENTS.md). The dashboard exposes agent tokens and application settings that feed that workflow.
+Browser **auto-apply** (Playwright agent) runs via the backend CLI (`scripts/apply.py`) — see the [backend AGENTS.md](https://github.com/mujakayadan/yarba-backend/blob/main/AGENTS.md). The dashboard exposes agent tokens and application settings that feed that workflow.
 
 ## Related repositories
 
-| Repo                 | URL                                                                                          |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| Frontend (this repo) | [github.com/mucahitkayadan/yarba-frontend](https://github.com/mucahitkayadan/yarba-frontend) |
-| Backend              | [github.com/mucahitkayadan/yarba-backend](https://github.com/mucahitkayadan/yarba-backend)   |
+| Repo                 | URL                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| Frontend (this repo) | [github.com/mujakayadan/yarba-frontend](https://github.com/mujakayadan/yarba-frontend) |
+| Backend              | [github.com/mujakayadan/yarba-backend](https://github.com/mujakayadan/yarba-backend)   |
 
 ```bash
 # Frontend
-git clone https://github.com/mucahitkayadan/yarba-frontend.git
+git clone https://github.com/mujakayadan/yarba-frontend.git
 
 # Backend
-git clone https://github.com/mucahitkayadan/yarba-backend.git
+git clone https://github.com/mujakayadan/yarba-backend.git
 ```
 
 ## Prerequisites
 
 - Node.js 24+
 - npm 8+
-- [Yarba backend](https://github.com/mucahitkayadan/yarba-backend) running locally or deployed
+- [YARBA backend](https://github.com/mujakayadan/yarba-backend) running locally or deployed
 - A Firebase project with Authentication enabled
 
 ## Setup
 
 ```bash
-git clone https://github.com/mucahitkayadan/yarba-frontend.git
+git clone https://github.com/mujakayadan/yarba-frontend.git
 cd yarba-frontend
 npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your backend URL (e.g. `http://localhost:8000/api/v1`) and Firebase web app config from the Firebase Console. See the [backend README](https://github.com/mucahitkayadan/yarba-backend) for API setup.
+Edit `.env.local` with your backend URL (e.g. `http://localhost:8000/api/v1`) and Firebase web app config from the Firebase Console. See the [backend README](https://github.com/mujakayadan/yarba-backend) and [Firebase setup guide](https://github.com/mujakayadan/yarba-backend/blob/main/docs/firebase_setup.md) for API and authentication setup.
 
 See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
@@ -68,7 +71,7 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Stack
 
-Yarba frontend is a **React + TypeScript** SPA built with **Vite**, styled with **MUI**, and wired to a **FastAPI** backend and **Firebase** auth. See [`.cursorrules`](./.cursorrules) for detailed coding conventions.
+YARBA frontend is a **React + TypeScript** SPA built with **Vite**, styled with **MUI**, and wired to a **FastAPI** backend and **Firebase** auth. See [`.cursorrules`](./.cursorrules) for detailed coding conventions.
 
 ### Architecture overview
 
@@ -96,7 +99,7 @@ flowchart TB
     Vite --> Vercel
   end
 
-  Services --> API["Yarba backend<br/>FastAPI REST"]
+  Services --> API["YARBA backend<br/>FastAPI REST"]
   client --> Firebase
   client --> Vite
 ```
@@ -135,11 +138,11 @@ sequenceDiagram
 
 ### Backend & related repos
 
-| Piece                                                            | Stack                       | Role                                                |
-| ---------------------------------------------------------------- | --------------------------- | --------------------------------------------------- |
-| [yarba-backend](https://github.com/mucahitkayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after Firebase login |
-| API contracts                                                    | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas      |
-| Docs                                                             | `docs/api_documentation.md` | Endpoint reference                                  |
+| Piece                                                         | Stack                       | Role                                                |
+| ------------------------------------------------------------- | --------------------------- | --------------------------------------------------- |
+| [yarba-backend](https://github.com/mujakayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after Firebase login |
+| API contracts                                                 | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas      |
+| Docs                                                          | `docs/api_documentation.md` | Endpoint reference                                  |
 
 ### State management
 
@@ -202,7 +205,8 @@ After `npm install`, the `prepare` script registers Git hooks automatically.
 
 **Editor:** ESLint extension for diagnostics; Prettier as default formatter with format-on-save.
 
-**CI (optional):** `npm run lint && npm run format:check && npm run build`
+CI runs `npm run lint`, `npm run format:check`, `npm run build`, and `npm test`
+for every pull request and push to `main`.
 
 ### Other quality tooling
 
@@ -219,6 +223,15 @@ Configured for **Vercel**. Set all `VITE_*` environment variables in the Vercel 
 
 See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common auth, API, env, and debug issues.
 
+## Documentation and contributing
+
+- [API reference](docs/api_documentation.md)
+- [Data models](docs/data_models.md)
+- [Security policy](SECURITY.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Agent guide](AGENTS.md)
+
 ## License
 
-This project is licensed under the [Elastic License 2.0](./LICENSE) (ELv2). The source is available for use, study, and contribution, but you may not provide it to third parties as a hosted or managed service that offers a substantial set of Yarba’s features. Third-party dependencies retain their own licenses.
+This project is licensed under the [Elastic License 2.0](./LICENSE) (ELv2). The source is available for use, study, and contribution, but you may not provide it to third parties as a hosted or managed service that offers a substantial set of YARBA’s features. Third-party dependencies retain their own licenses.

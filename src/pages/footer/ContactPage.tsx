@@ -2,7 +2,7 @@ import React from 'react';
 import EmailIcon from '@mui/icons-material/Email';
 import { Box, Button, Container, Divider, Paper, Typography } from '@mui/material';
 
-const CONTACT_EMAIL = 'mujakayadan@outlook.com';
+const CONTACT_EMAIL = 'admin@yarba.app';
 
 const ContactPage: React.FC = () => {
   return (

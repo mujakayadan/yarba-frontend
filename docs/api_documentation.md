@@ -1,6 +1,6 @@
-# ResumeBuilderTeX API Documentation
+# YARBA API Documentation
 
-This document provides an overview of all available API endpoints for the ResumeBuilderTeX application.
+This document provides an overview of all available API endpoints for YARBA.
 
 ## Base URL
 
@@ -1533,14 +1533,14 @@ Returns the extracted job details.
 
 Prefix: `/api/v1/applications`. Used by the dashboard **Applications** page and the `scripts/apply.py` CLI (via PAT with `applications:*` scopes).
 
-| Endpoint | Method | Summary |
-|----------|--------|---------|
-| `/prepare` | POST | Scrape job (if URL given), tailor resume, return autofill payload + application record |
-| `/profile` | GET | Build autofill profile for an existing resume (optional cover letter, job URL) |
-| `/` | GET | List user's job applications (paginated) |
-| `/` | POST | Create application record |
-| `/{application_id}` | GET | Get application by ID |
-| `/{application_id}` | PATCH | Update application status/metadata |
+| Endpoint            | Method | Summary                                                                                |
+| ------------------- | ------ | -------------------------------------------------------------------------------------- |
+| `/prepare`          | POST   | Scrape job (if URL given), tailor resume, return autofill payload + application record |
+| `/profile`          | GET    | Build autofill profile for an existing resume (optional cover letter, job URL)         |
+| `/`                 | GET    | List user's job applications (paginated)                                               |
+| `/`                 | POST   | Create application record                                                              |
+| `/{application_id}` | GET    | Get application by ID                                                                  |
+| `/{application_id}` | PATCH  | Update application status/metadata                                                     |
 
 **Prepare request (typical auto-apply flow):**
 
@@ -1553,7 +1553,7 @@ Prefix: `/api/v1/applications`. Used by the dashboard **Applications** page and 
 }
 ```
 
-Agent tokens are managed at `/api/v1/auth/agent-tokens`. See [backend AGENTS.md](https://github.com/mucahitkayadan/yarba-backend/blob/main/AGENTS.md) for the local Playwright apply CLI.
+Agent tokens are managed at `/api/v1/auth/agent-tokens`. See [backend AGENTS.md](https://github.com/mujakayadan/yarba-backend/blob/main/AGENTS.md) for the local Playwright apply CLI.
 
 ## LinkedIn Integration
 

@@ -119,7 +119,11 @@ const ConversationDialog: React.FC<{
                   {message.content}
                 </Typography>
               </Paper>
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 0.5, display: 'block' }}
+              >
                 {message.role === 'user' ? 'Visitor' : 'Assistant'} ·{' '}
                 {formatDate(message.created_at)}
               </Typography>
@@ -210,7 +214,9 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
       {!loading && stats && <StatsRow stats={stats} />}
 
       {!loading && conversations.length === 0 && (
-        <Alert severity="info">No stored conversations yet. They will appear after visitors chat.</Alert>
+        <Alert severity="info">
+          No stored conversations yet. They will appear after visitors chat.
+        </Alert>
       )}
 
       {!loading && conversations.length > 0 && (

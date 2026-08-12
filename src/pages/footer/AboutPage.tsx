@@ -174,7 +174,7 @@ const AboutPage: React.FC = () => {
                   </Link>
 
                   <Link
-                    href="https://github.com/mucahitkayadan"
+                    href="https://github.com/mujakayadan"
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
@@ -188,12 +188,12 @@ const AboutPage: React.FC = () => {
                     }}
                   >
                     <GitHubIcon sx={{ mr: 1 }} fontSize="small" />
-                    github.com/mucahitkayadan
+                    github.com/mujakayadan
                   </Link>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                     <EmailIcon sx={{ mr: 1 }} fontSize="small" />
-                    mujakayadan@outlook.com
+                    admin@yarba.app
                   </Box>
                 </Stack>
               </CardContent>
@@ -209,7 +209,7 @@ const AboutPage: React.FC = () => {
         </Typography>
         <Typography variant="body1">
           Have questions or want to learn more about YARBA? Contact us at{' '}
-          <strong>mujakayadan@outlook.com</strong>
+          <strong>admin@yarba.app</strong>
         </Typography>
       </Box>
     </Container>
