@@ -1,16 +1,12 @@
 import { Portfolio } from '../types/models';
 import {
-  AwardFormItem,
   CareerSummaryFormState,
   CertificationFormItem,
-  EducationFormItem,
   PortfolioEditFormState,
-  ProjectFormItem,
-  PublicationFormItem,
   SkillCategoryForm,
-  WorkExperienceFormItem,
 } from '../types/portfolioEdit';
 import { sortByDateDesc } from './dateSort';
+import { parseWorkExperiencePeriod } from './workExperienceDates';
 
 export const defaultCareerSummary = (): CareerSummaryFormState => ({
   job_titles: [],
@@ -52,15 +48,19 @@ export const mapPortfolioToEditForm = (portfolioData: Portfolio): PortfolioEditF
   }
 
   if (portfolioData.work_experience && portfolioData.work_experience.length > 0) {
-    const mapped = portfolioData.work_experience.map((exp: Record<string, unknown>) => ({
-      job_title: (exp.job_title as string) || (exp.position as string) || '',
-      company: (exp.company as string) || '',
-      location: (exp.location as string) || '',
-      time:
-        (exp.time as string) ||
-        `${(exp.start_date as string) || ''} - ${exp.current ? 'Present' : (exp.end_date as string) || ''}`,
-      responsibilities: (exp.responsibilities as string[]) || (exp.achievements as string[]) || [],
-    }));
+    const mapped = portfolioData.work_experience.map((exp) => {
+      const legacyPeriod = parseWorkExperiencePeriod(exp.time);
+      const current = exp.current || legacyPeriod.current;
+      return {
+        job_title: exp.job_title,
+        company: exp.company,
+        location: exp.location || '',
+        start_date: exp.start_date || legacyPeriod.startDate,
+        end_date: current ? '' : exp.end_date || legacyPeriod.endDate,
+        current,
+        responsibilities: exp.responsibilities || [],
+      };
+    });
     form.workExperience = sortByDateDesc(mapped);
   }
 

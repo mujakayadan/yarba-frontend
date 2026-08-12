@@ -124,14 +124,14 @@ export interface Portfolio {
     skills: string[];
   }[];
   work_experience: {
+    job_title: string;
     company: string;
-    position: string;
     location?: string;
-    start_date: string; // Format: "YYYY-MM"
+    time: string;
+    start_date?: string; // Format: "YYYY-MM"
     end_date?: string; // Format: "YYYY-MM"
     current: boolean;
-    description?: string;
-    achievements: string[];
+    responsibilities: string[];
   }[];
   education: {
     institution: string;

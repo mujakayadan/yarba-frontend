@@ -18,6 +18,8 @@ import { useToast } from '../contexts/ToastContext';
 import { useUserPortfolio } from './usePortfolio';
 import { usePortfolioMutations } from './usePortfolioMutations';
 import { PORTFOLIO_VIEW_TAB_ITEMS } from '../components/portfolio/view/portfolioViewTabs';
+import { sortByDateDesc } from '../utils/dateSort';
+import { hasWorkExperienceDateErrors } from '../utils/workExperienceDates';
 
 export const usePortfolioEditForm = () => {
   const navigate = useNavigate();
@@ -181,10 +183,16 @@ export const usePortfolioEditForm = () => {
           showSuccess('Skills updated successfully!');
           break;
         }
-        case 2:
-          updated = await mutations.updateWorkExperienceMutation.mutateAsync(workExperience);
+        case 2: {
+          if (workExperience.some(hasWorkExperienceDateErrors)) {
+            showError('Correct the work experience dates before saving.');
+            break;
+          }
+          const sortedWorkExperience = sortByDateDesc(workExperience);
+          updated = await mutations.updateWorkExperienceMutation.mutateAsync(sortedWorkExperience);
           showSuccess('Work experience updated successfully!');
           break;
+        }
         case 3:
           updated = await mutations.updateEducationMutation.mutateAsync(education);
           showSuccess('Education updated successfully!');

@@ -1,4 +1,5 @@
 const PRESENT_DATE_SORT_VALUE = Number.MAX_SAFE_INTEGER;
+const RANGE_SEPARATOR_PATTERN = /\s+(?:-|–|—|to)\s+/i;
 
 /**
  * Parses a variety of free-form date strings into a numeric timestamp
@@ -21,14 +22,17 @@ export const parseDateForSort = (value?: string): number | null => {
     return PRESENT_DATE_SORT_VALUE;
   }
 
-  const native = Date.parse(trimmed);
-  if (!Number.isNaN(native)) return native;
-
-  // MM/YYYY or MM-YYYY
-  const mmYYYY = lower.match(/^(\d{1,2})[/-](\d{4})$/);
+  // MM/YYYY, MM-YYYY, MM/YY, or MM-YY
+  const mmYYYY = lower.match(/^(\d{1,2})[/-](\d{2}|\d{4})$/);
   if (mmYYYY) {
     const month = Number(mmYYYY[1]);
-    const year = Number(mmYYYY[2]);
+    const parsedYear = Number(mmYYYY[2]);
+    const year =
+      mmYYYY[2].length === 2
+        ? parsedYear <= 69
+          ? 2000 + parsedYear
+          : 1900 + parsedYear
+        : parsedYear;
     if (month >= 1 && month <= 12) return new Date(year, month - 1, 1).getTime();
   }
 
@@ -43,6 +47,9 @@ export const parseDateForSort = (value?: string): number | null => {
   // Bare year
   const yearOnly = lower.match(/^(\d{4})$/);
   if (yearOnly) return new Date(Number(yearOnly[1]), 0, 1).getTime();
+
+  const native = Date.parse(trimmed);
+  if (!Number.isNaN(native)) return native;
 
   return null;
 };
@@ -79,7 +86,7 @@ export const getLatestDate = (item: DateableItem): number => {
   const endDate = parseDateForSort(item.end_date);
   if (endDate !== null) return endDate;
 
-  const timeRangeEnd = item.time?.split('-').pop();
+  const timeRangeEnd = item.time?.split(RANGE_SEPARATOR_PATTERN).pop();
   const timeEnd = parseDateForSort(timeRangeEnd);
   if (timeEnd !== null) return timeEnd;
 
