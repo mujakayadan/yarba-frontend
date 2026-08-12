@@ -1,36 +1,16 @@
-import Grid from '../mui/Grid';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  Typography,
   Container,
-  Paper,
-  Box,
   Button,
-  TextField,
   CircularProgress,
   Alert,
-  Card,
-  CardMedia,
-  CardContent,
-  Link,
-  Chip,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
 } from '@mui/material';
-import {
-  CheckCircleOutline,
-  Delete as DeleteIcon,
-  ErrorOutline,
-  Language,
-  Refresh,
-} from '@mui/icons-material';
+import { Delete as DeleteIcon, OpenInNew, Refresh } from '@mui/icons-material';
 import {
   createPortfolioWebsite,
   checkSubdomainAvailability,
@@ -44,40 +24,20 @@ import {
   PortfolioWebsiteConfig,
   DeploymentStatus,
 } from '../types/models';
-import debounce from 'lodash/debounce';
 import { usePortfolioWebsite } from '../hooks/useWebsite';
 import { websiteKeys } from '../lib/queryKeys';
 import { queryClient } from '../providers/QueryProvider';
 import { defaultWebsiteColors } from '../theme/tokens';
-import WebsiteChatbotSettings from '../components/website/WebsiteChatbotSettings';
-import WebsiteChatInsights from '../components/website/WebsiteChatInsights';
-
-const THEMES = [
-  {
-    name: 'Modern',
-    value: 'modern',
-    previewImage: '/assets/modern_preview.svg',
-    description: 'Clean, professional layout with timelines and project cards.',
-  },
-  {
-    name: 'Developer',
-    value: 'threejs',
-    previewImage: '/assets/threejs_preview.svg',
-    description: 'Dark developer aesthetic with animated accents and code-inspired styling.',
-  },
-  {
-    name: 'Bento',
-    value: 'bento',
-    previewImage: '/assets/bento_preview.svg',
-    description: 'Playful bento-grid layout with bold cards and soft gradients.',
-  },
-  {
-    name: 'Neon',
-    value: 'neon',
-    previewImage: '/assets/neon_preview.svg',
-    description: 'Cyberpunk-inspired theme with glowing panels and grid backgrounds.',
-  },
-];
+import { WEBSITE_THEMES } from '../components/website/WebsiteThemeSelector';
+import WebsiteSetupPanel from '../components/website/WebsiteSetupPanel';
+import WebsiteManagementPanel, {
+  WebsiteConfirmAction,
+  WebsiteManageSection,
+} from '../components/website/WebsiteManagementPanel';
+import { ViewPageHeader } from '../components/common/ViewPageHeader';
+import { PagePrimaryButton } from '../components/common/PagePrimaryButton';
+import { PageLoadingState } from '../components/common/PageState';
+import { extractApiErrorMessage } from '../utils/apiErrors';
 
 const DEFAULT_CONFIG: PortfolioWebsiteConfig = {
   theme: 'modern',
@@ -92,21 +52,16 @@ const DEFAULT_CONFIG: PortfolioWebsiteConfig = {
 
 const SUPPORT_EMAIL = 'admin@yarba.app';
 const WEBSITE_ACTION_ERROR = `Something went wrong. Please try again. If the problem persists, contact ${SUPPORT_EMAIL}.`;
-const DEPLOYMENT_FAILED_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=Portfolio%20Website%20Deployment%20Error`;
 
-function logWebsiteActionError(context: string, err: unknown) {
-  const detail =
-    err && typeof err === 'object' && 'response' in err
-      ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail
-      : undefined;
-  console.error(context, detail ?? err);
-}
-
-type WebsiteConfirmAction = 'redeploy' | 'delete';
+const getHttpStatus = (error: unknown): number | undefined =>
+  error && typeof error === 'object' && 'response' in error
+    ? (error as { response?: { status?: number } }).response?.status
+    : undefined;
 
 const WebsitePage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [selectedTheme, setSelectedTheme] = useState<string>(THEMES[0].value);
+  const [selectedTheme, setSelectedTheme] = useState<string>(WEBSITE_THEMES[0].value);
+  const [manageSection, setManageSection] = useState<WebsiteManageSection>('overview');
   const [subdomain, setSubdomain] = useState<string>('');
   const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null);
   const [subdomainError, setSubdomainError] = useState<string | null>(null);
@@ -115,14 +70,11 @@ const WebsitePage: React.FC = () => {
   const {
     data: website,
     isLoading: websiteQueryLoading,
-    isFetching: websiteQueryFetching,
     error: websiteQueryError,
   } = usePortfolioWebsite();
   const [actionLoading, setActionLoading] = useState(false);
   const isLoading = websiteQueryLoading || actionLoading;
-  const isRefreshingWebsite = websiteQueryFetching && !websiteQueryLoading;
-  const showManageWebsiteLoading =
-    activeStep === 2 && !website && (isLoading || isRefreshingWebsite || actionLoading);
+  const hasWebsite = Boolean(website);
   const [error, setError] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<WebsiteConfirmAction | null>(null);
 
@@ -171,29 +123,10 @@ const WebsitePage: React.FC = () => {
   }, [setWebsite]);
 
   useEffect(() => {
-    if (website) {
-      setActiveStep(2);
-      setSelectedTheme(website.config.theme);
-      setSubdomain(website.subdomain);
-      if (isDeploymentInProgress(website.deployment_status)) {
-        pollDeploymentStatus();
-      }
-    }
-  }, [website?.subdomain]);
-
-  useEffect(() => {
     if (websiteQueryError) {
-      console.error('Failed to fetch website data:', websiteQueryError);
       setError(WEBSITE_ACTION_ERROR);
     }
   }, [websiteQueryError]);
-
-  useEffect(() => {
-    const message = website?.deployment_status?.error_message;
-    if (website?.deployment_status?.status === 'failed' && message) {
-      console.error('Portfolio deployment failed:', message);
-    }
-  }, [website?.deployment_status?.status, website?.deployment_status?.error_message]);
 
   useEffect(() => {
     return () => {
@@ -201,18 +134,38 @@ const WebsitePage: React.FC = () => {
     };
   }, []);
 
-  const debouncedCheckSubdomain = useCallback(
-    debounce(async (name: string) => {
-      if (!name || name.length < 3) {
-        setSubdomainAvailable(null);
-        setSubdomainError('Subdomain must be at least 3 characters long.');
-        setSuggestedSubdomains([]);
-        return;
-      }
-      setIsCheckingSubdomain(true);
+  useEffect(() => {
+    if (hasWebsite) {
+      return;
+    }
+
+    if (!subdomain) {
+      setSubdomainAvailable(null);
       setSubdomainError(null);
+      setSuggestedSubdomains([]);
+      setIsCheckingSubdomain(false);
+      return;
+    }
+
+    if (subdomain.length < 3) {
+      setSubdomainAvailable(null);
+      setSubdomainError('Subdomain must be at least 3 characters long.');
+      setSuggestedSubdomains([]);
+      setIsCheckingSubdomain(false);
+      return;
+    }
+
+    let ignoreResult = false;
+    setIsCheckingSubdomain(true);
+    setSubdomainError(null);
+
+    const timeout = setTimeout(async () => {
       try {
-        const response = await checkSubdomainAvailability(name);
+        const response = await checkSubdomainAvailability(subdomain);
+        if (ignoreResult) {
+          return;
+        }
+
         setSubdomainAvailable(response.available);
         if (!response.available) {
           setSubdomainError('This subdomain is not available.');
@@ -220,23 +173,30 @@ const WebsitePage: React.FC = () => {
         } else {
           setSuggestedSubdomains([]);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        if (ignoreResult) {
+          return;
+        }
+
         setSubdomainAvailable(null);
-        setSubdomainError(err.message || 'Error checking subdomain.');
+        setSubdomainError(extractApiErrorMessage(err, 'Unable to check this address.'));
         setSuggestedSubdomains([]);
       } finally {
-        setIsCheckingSubdomain(false);
+        if (!ignoreResult) {
+          setIsCheckingSubdomain(false);
+        }
       }
-    }, 500), // 500ms debounce time
-    []
-  );
+    }, 500);
+
+    return () => {
+      ignoreResult = true;
+      clearTimeout(timeout);
+    };
+  }, [hasWebsite, subdomain]);
 
   const handleSubdomainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSubdomain = event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setSubdomain(newSubdomain);
-    if (newSubdomain) {
-      debouncedCheckSubdomain(newSubdomain);
-    }
   };
 
   const stopPolling = useCallback(() => {
@@ -263,8 +223,7 @@ const WebsitePage: React.FC = () => {
         pollDeploymentStatus();
       }
     } catch (err: unknown) {
-      logWebsiteActionError('Failed to create website:', err);
-      setError(WEBSITE_ACTION_ERROR);
+      setError(extractApiErrorMessage(err, WEBSITE_ACTION_ERROR));
     } finally {
       setActionLoading(false);
     }
@@ -282,8 +241,7 @@ const WebsitePage: React.FC = () => {
         pollDeploymentStatus();
       }
     } catch (err: unknown) {
-      logWebsiteActionError('Failed to redeploy website:', err);
-      setError(WEBSITE_ACTION_ERROR);
+      setError(extractApiErrorMessage(err, WEBSITE_ACTION_ERROR));
     } finally {
       setActionLoading(false);
       setConfirmAction(null);
@@ -300,13 +258,12 @@ const WebsitePage: React.FC = () => {
       setWebsite(null);
       setActiveStep(0);
       setSubdomain('');
-      setSelectedTheme(THEMES[0].value);
+      setSelectedTheme(WEBSITE_THEMES[0].value);
       setSubdomainAvailable(null);
       setSubdomainError(null);
       stopPolling();
     } catch (err: unknown) {
-      logWebsiteActionError('Failed to delete website:', err);
-      setError(WEBSITE_ACTION_ERROR);
+      setError(extractApiErrorMessage(err, WEBSITE_ACTION_ERROR));
     } finally {
       setActionLoading(false);
       setConfirmAction(null);
@@ -375,8 +332,8 @@ const WebsitePage: React.FC = () => {
 
         pollRetryCountRef.current += 1;
         deploymentPollTimeoutRef.current = setTimeout(performPoll, nextInterval);
-      } catch (err: any) {
-        if (err.response?.status === 429) {
+      } catch (err: unknown) {
+        if (getHttpStatus(err) === 429) {
           const backoffInterval = Math.max(10000, MIN_POLL_INTERVAL * 5);
           pollRetryCountRef.current += 1;
 
@@ -404,240 +361,108 @@ const WebsitePage: React.FC = () => {
 
     pollRetryCountRef.current = 0;
     performPoll();
-  }, [fetchUserWebsite, stopPolling]);
+  }, [fetchUserWebsite, stopPolling, updateWebsite]);
 
   const isDeploymentInProgress = (status: DeploymentStatus | undefined): boolean => {
     return !!status && (status.status === 'pending' || status.status === 'building');
   };
 
-  const steps = [
-    {
-      label: 'Select Theme',
-      content: (
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          {THEMES.map((theme) => (
-            <Grid item xs={12} sm={6} md={4} key={theme.value}>
-              <Card
-                sx={{
-                  border: selectedTheme === theme.value ? '2px solid' : '2px solid transparent',
-                  borderColor: selectedTheme === theme.value ? 'primary.main' : 'transparent',
-                  cursor: 'pointer',
-                  transition: 'border-color 0.2s',
-                }}
-                onClick={() => setSelectedTheme(theme.value)}
-              >
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={theme.previewImage}
-                  alt={theme.name}
-                  sx={{ objectFit: 'cover' }}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
-                    {theme.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {theme.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-          <Grid item xs={12} sx={{ textAlign: 'right' }}>
-            <Button variant="contained" onClick={() => setActiveStep(1)} disabled={!selectedTheme}>
-              Next
-            </Button>
-          </Grid>
-        </Grid>
-      ),
-    },
-    {
-      label: 'Choose Subdomain & Deploy',
-      content: (
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="Subdomain"
-            variant="outlined"
-            value={subdomain}
-            onChange={handleSubdomainChange}
-            helperText={
-              subdomainError ||
-              (subdomainAvailable === false && suggestedSubdomains.length > 0
-                ? `Try: ${suggestedSubdomains.join(', ')}`
-                : 'e.g., yourname.yarba.app (min 3 chars, a-z, 0-9, - allowed)')
-            }
-            error={subdomainAvailable === false || !!subdomainError}
-            InputProps={{
-              endAdornment: isCheckingSubdomain ? (
-                <CircularProgress size={20} />
-              ) : subdomainAvailable === true ? (
-                <CheckCircleOutline color="success" />
-              ) : subdomainAvailable === false ? (
-                <ErrorOutline color="error" />
-              ) : null,
-            }}
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            onClick={handleCreateAndDeploy}
-            disabled={isLoading || !subdomain || subdomainAvailable !== true}
-            startIcon={isLoading ? <CircularProgress size={20} /> : <Language />}
-          >
-            {isLoading ? 'Creating Website...' : 'Create & Deploy Website'}
-          </Button>
-        </Box>
-      ),
-    },
-    {
-      label: 'Manage Website',
-      content: (
-        <Box sx={{ mt: 2 }}>
-          {showManageWebsiteLoading ? (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <CircularProgress />
-              <Typography sx={{ mt: 2 }}>Setting up your website...</Typography>
-            </Box>
-          ) : website ? (
-            <Paper elevation={3} sx={{ p: 3 }}>
-              <Typography variant="h5" gutterBottom>
-                Your Portfolio Website is Live!
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Access it at:{' '}
-                <Link href={website.website_url} target="_blank" rel="noopener">
-                  {website.website_url}
-                </Link>
-              </Typography>
-              <Chip
-                label={`Deployment: ${website.deployment_status.status}`}
-                color={
-                  website.deployment_status.status === 'success'
-                    ? 'success'
-                    : isDeploymentInProgress(website.deployment_status)
-                      ? 'info'
-                      : 'error'
-                }
-                icon={
-                  isDeploymentInProgress(website.deployment_status) ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : undefined
-                }
-                sx={{ my: 1 }}
-              />
-              {website.deployment_status.status === 'failed' && (
-                <Alert severity="error" sx={{ my: 1 }}>
-                  We could not complete your website deployment. Please try Redeploy, or{' '}
-                  <Link href={DEPLOYMENT_FAILED_MAILTO}>{SUPPORT_EMAIL}</Link> if the problem
-                  persists.
-                </Alert>
-              )}
-              {isDeploymentInProgress(website.deployment_status) && (
-                <Alert severity="info" sx={{ my: 1 }}>
-                  Your website is currently {website.deployment_status.status}. This page will
-                  update automatically.
-                </Alert>
-              )}
-              <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Button
-                  variant="contained"
-                  onClick={() => setConfirmAction('redeploy')}
-                  disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                  startIcon={isLoading ? <CircularProgress size={20} /> : <Refresh />}
-                >
-                  {isLoading ? 'Redeploying...' : 'Redeploy'}
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => setConfirmAction('delete')}
-                  disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                >
-                  Delete Website
-                </Button>
-              </Box>
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                <strong>Redeploy:</strong> Deletes all files and rebuilds your website from scratch.
-              </Typography>
-              <WebsiteChatbotSettings
-                website={website}
-                disabled={isLoading || isDeploymentInProgress(website.deployment_status)}
-                onUpdated={(updated) => {
-                  setWebsite(updated);
-                  if (isDeploymentInProgress(updated.deployment_status)) {
-                    pollDeploymentStatus();
-                  }
-                }}
-                onDeploymentStarted={pollDeploymentStatus}
-              />
-              <WebsiteChatInsights
-                enabled={website.config.chatbot_enabled ?? false}
-                storageEnabled={website.config.chatbot_store_conversations ?? false}
-              />
-            </Paper>
-          ) : (
-            <Alert severity="info">No website found. Please go back to create one.</Alert>
-          )}
-        </Box>
-      ),
-    },
-  ];
+  const websiteSubdomain = website?.subdomain;
+  const websiteTheme = website?.config.theme;
+  const websiteDeploymentState = website?.deployment_status.status;
+
+  useEffect(() => {
+    if (!websiteSubdomain || !websiteTheme) {
+      return;
+    }
+
+    setActiveStep(2);
+    setSelectedTheme(websiteTheme);
+    setSubdomain(websiteSubdomain);
+    if (websiteDeploymentState === 'pending' || websiteDeploymentState === 'building') {
+      pollDeploymentStatus();
+    }
+  }, [pollDeploymentStatus, websiteDeploymentState, websiteSubdomain, websiteTheme]);
+
+  const deploymentStatus = website?.deployment_status.status;
+
+  const handleSuggestedSubdomain = (suggestion: string) => {
+    setSubdomain(suggestion);
+  };
 
   if (isLoading && !website && activeStep === 0) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
-        <CircularProgress />
-        <Typography>Loading website information...</Typography>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <PageLoadingState label="Loading your portfolio website…" />
       </Container>
     );
   }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom component="h1">
-          Portfolio Website Management
-        </Typography>
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+      <ViewPageHeader
+        title="Portfolio website"
+        description={
+          website
+            ? 'Manage your live portfolio, AI chatbot, and visitor conversations.'
+            : 'Publish a professional website from your Yarba portfolio in two quick steps.'
+        }
+        action={
+          website?.website_url && deploymentStatus === 'success' ? (
+            <PagePrimaryButton
+              component="a"
+              href={website.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              endIcon={<OpenInNew />}
+            >
+              Open website
+            </PagePrimaryButton>
+          ) : undefined
+        }
+      />
 
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((step, index) => (
-            <Step key={step.label} expanded={index === activeStep}>
-              <StepLabel
-                onClick={() => (!website || index < activeStep ? setActiveStep(index) : null)}
-                sx={{ cursor: !website || index < activeStep ? 'pointer' : 'default' }}
-              >
-                {step.label}
-              </StepLabel>
-              <StepContent>
-                {index === activeStep && step.content}
-                {index === activeStep && (
-                  <Box sx={{ mb: 2, mt: 2 }}>
-                    <div>
-                      {index > 0 && activeStep !== 2 && (
-                        <Button
-                          disabled={index === 0 || isLoading}
-                          onClick={() => setActiveStep((prev) => prev - 1)}
-                          sx={{ mt: 1, mr: 1 }}
-                        >
-                          Back
-                        </Button>
-                      )}
-                    </div>
-                  </Box>
-                )}
-              </StepContent>
-            </Step>
-          ))}
-        </Stepper>
-      </Paper>
-
+      {!website ? (
+        <WebsiteSetupPanel
+          activeStep={activeStep}
+          selectedTheme={selectedTheme}
+          subdomain={subdomain}
+          subdomainAvailable={subdomainAvailable}
+          subdomainError={subdomainError}
+          suggestedSubdomains={suggestedSubdomains}
+          isCheckingSubdomain={isCheckingSubdomain}
+          isLoading={isLoading}
+          error={error}
+          onThemeChange={setSelectedTheme}
+          onSubdomainChange={handleSubdomainChange}
+          onSuggestedSubdomain={handleSuggestedSubdomain}
+          onStepChange={setActiveStep}
+          onPublish={handleCreateAndDeploy}
+        />
+      ) : (
+        <>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+          <WebsiteManagementPanel
+            website={website}
+            section={manageSection}
+            isLoading={isLoading}
+            actionLoading={actionLoading}
+            onSectionChange={setManageSection}
+            onConfirmAction={setConfirmAction}
+            onWebsiteUpdated={(updated) => {
+              setWebsite(updated);
+              if (isDeploymentInProgress(updated.deployment_status)) {
+                pollDeploymentStatus();
+              }
+            }}
+            onDeploymentStarted={pollDeploymentStatus}
+          />
+        </>
+      )}
       <Dialog
         open={confirmAction !== null}
         onClose={handleConfirmCancel}

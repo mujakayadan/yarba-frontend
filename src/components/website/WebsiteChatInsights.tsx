@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Box,
+  Button,
   Chip,
   CircularProgress,
   Dialog,
@@ -189,11 +190,12 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
   }
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Divider sx={{ mb: 3 }} />
+    <Box>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
         <Forum color="primary" />
-        <Typography variant="h6">Visitor Conversations</Typography>
+        <Typography variant="h6" component="h2">
+          Visitor conversations
+        </Typography>
       </Stack>
       <Typography variant="body2" color="text.secondary" paragraph>
         Review what visitors asked your portfolio chatbot. Conversations are kept for 90 days.
@@ -228,16 +230,12 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
                 <TableCell>Preview</TableCell>
                 <TableCell align="right">Messages</TableCell>
                 <TableCell align="center">Scheduling</TableCell>
+                <TableCell align="right">Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {conversations.map((conversation) => (
-                <TableRow
-                  key={conversation.conversation_id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => void openConversation(conversation.conversation_id)}
-                >
+                <TableRow key={conversation.conversation_id} hover>
                   <TableCell>{formatDate(conversation.last_message_at)}</TableCell>
                   <TableCell sx={{ maxWidth: 360 }}>
                     <Typography variant="body2" noWrap title={conversation.preview}>
@@ -253,6 +251,15 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
                         —
                       </Typography>
                     )}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      onClick={() => void openConversation(conversation.conversation_id)}
+                      aria-label={`View conversation from ${formatDate(conversation.last_message_at)}`}
+                    >
+                      View
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

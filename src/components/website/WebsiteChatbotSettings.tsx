@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   FormControlLabel,
   Link,
   Stack,
@@ -89,11 +88,12 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Divider sx={{ mb: 3 }} />
+    <Box>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
         <SmartToy color="primary" />
-        <Typography variant="h6">Portfolio Chatbot</Typography>
+        <Typography variant="h6" component="h2">
+          Portfolio chatbot
+        </Typography>
       </Stack>
       <Typography variant="body2" color="text.secondary" paragraph>
         Add an AI assistant to your live portfolio site. Visitors can ask about your experience,

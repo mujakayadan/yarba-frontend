@@ -4,7 +4,10 @@ import { Button, type ButtonProps } from '@mui/material';
 /** Keeps view/edit primary actions (e.g. Edit Profile, Save Changes) the same width. */
 export const PAGE_PRIMARY_ACTION_MIN_WIDTH = 168;
 
-export const PagePrimaryButton: React.FC<ButtonProps> = ({ sx, ...props }) => (
+type PagePrimaryButtonProps = ButtonProps &
+  Pick<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'rel'>;
+
+export const PagePrimaryButton: React.FC<PagePrimaryButtonProps> = ({ sx, ...props }) => (
   <Button
     variant="contained"
     color="primary"
