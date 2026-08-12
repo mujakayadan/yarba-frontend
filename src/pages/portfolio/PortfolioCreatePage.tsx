@@ -154,8 +154,12 @@ const PortfolioCreatePage: React.FC = () => {
           </Alert>
 
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Button variant="contained" color="primary" onClick={() => navigate('/profile/create')}>
-              Create Profile First
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/settings/personal')}
+            >
+              Add personal information
             </Button>
           </Box>
         </Paper>

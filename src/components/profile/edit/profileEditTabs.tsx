@@ -1,46 +1,47 @@
-import { lazy, type ComponentType } from 'react';
-import type { ProfileEditTabProps } from '../../../types/profileEdit';
+import type { ComponentType } from 'react';
 import {
-  PROFILE_VIEW_TAB_ITEMS,
-  PROFILE_VIEW_TABS,
-  type ProfileViewTabItem,
-} from '../view/profileViewTabs';
+  AccountCircle as PersonalIcon,
+  AutoStories as StoryIcon,
+  Image as MediaIcon,
+  Settings as PreferencesIcon,
+  Work as ApplicationsIcon,
+} from '@mui/icons-material';
+import type { ProfileEditTabProps } from '../../../types/profileEdit';
+import type { IconTabBarItem } from '../../common/IconTabBar';
+import { PersonalInfoEditTab } from './PersonalInfoEditTab';
+import { PreferencesEditTab } from './PreferencesEditTab';
+import { LifeStoryEditTab } from './LifeStoryEditTab';
+import { ProfileMediaEditTab } from './ProfileMediaEditTab';
+import { ApplicationPreferencesEditTab } from './ApplicationPreferencesEditTab';
 
-export interface ProfileEditTabConfig extends ProfileViewTabItem {
+export interface ProfileEditTabConfig extends IconTabBarItem {
   Tab: ComponentType<ProfileEditTabProps>;
 }
 
-const lazyTab = (
-  loader: () => Promise<{ [key: string]: ComponentType<ProfileEditTabProps> }>,
-  name: string
-) => lazy(() => loader().then((module) => ({ default: module[name] })));
-
 export const PROFILE_EDIT_TABS: readonly ProfileEditTabConfig[] = [
   {
-    label: PROFILE_VIEW_TAB_ITEMS[0].label,
-    icon: PROFILE_VIEW_TAB_ITEMS[0].icon,
-    Tab: lazyTab(() => import('./PersonalInfoEditTab'), 'PersonalInfoEditTab'),
+    label: 'Personal information',
+    icon: PersonalIcon,
+    Tab: PersonalInfoEditTab,
   },
   {
-    label: PROFILE_VIEW_TAB_ITEMS[1].label,
-    icon: PROFILE_VIEW_TAB_ITEMS[1].icon,
-    Tab: lazyTab(() => import('./PreferencesEditTab'), 'PreferencesEditTab'),
+    label: 'AI & document defaults',
+    icon: PreferencesIcon,
+    Tab: PreferencesEditTab,
   },
   {
-    label: PROFILE_VIEW_TAB_ITEMS[2].label,
-    icon: PROFILE_VIEW_TAB_ITEMS[2].icon,
-    Tab: lazyTab(() => import('./LifeStoryEditTab'), 'LifeStoryEditTab'),
+    label: 'Story & voice',
+    icon: StoryIcon,
+    Tab: LifeStoryEditTab,
   },
   {
-    label: PROFILE_VIEW_TAB_ITEMS[3].label,
-    icon: PROFILE_VIEW_TAB_ITEMS[3].icon,
-    Tab: lazyTab(() => import('./ProfileMediaEditTab'), 'ProfileMediaEditTab'),
+    label: 'Picture & signature',
+    icon: MediaIcon,
+    Tab: ProfileMediaEditTab,
   },
   {
-    label: PROFILE_VIEW_TAB_ITEMS[4].label,
-    icon: PROFILE_VIEW_TAB_ITEMS[4].icon,
-    Tab: lazyTab(() => import('./ApplicationPreferencesEditTab'), 'ApplicationPreferencesEditTab'),
+    label: 'Application automation',
+    icon: ApplicationsIcon,
+    Tab: ApplicationPreferencesEditTab,
   },
 ];
-
-export { PROFILE_VIEW_TABS };

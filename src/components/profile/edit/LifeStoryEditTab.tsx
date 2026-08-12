@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import type { ProfileEditTabProps } from '../../../types/profileEdit';
 import { EditSectionHeader } from './EditSectionHeader';
 

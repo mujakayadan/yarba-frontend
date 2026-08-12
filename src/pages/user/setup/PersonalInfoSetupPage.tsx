@@ -17,6 +17,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';
 import { useProfileMutations } from '../../../hooks/useProfileMutations';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
+import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
 
 interface PersonalInfoFormData {
   fullName: string;
@@ -128,8 +129,8 @@ const PersonalInfoSetupPage: React.FC = () => {
 
     if (savedSuccessfully) {
       try {
-        await updateUserSetupProgress({ current_setup_step: 2 });
-        navigate('/user/setup/prompt-preferences'); // Navigate to the new prompt preferences page
+        await updateUserSetupProgress({ current_setup_step: 5 });
+        navigate('/user/setup/portfolio-upload');
       } catch (err: unknown) {
         setError(extractApiErrorMessage(err, 'Failed to proceed to the next step.'));
       } finally {
@@ -170,12 +171,11 @@ const PersonalInfoSetupPage: React.FC = () => {
           boxSizing: 'border-box',
         }}
       >
-        <Typography component="h1" variant="h4" align="center" gutterBottom>
-          Tell Us About Yourself
-        </Typography>
-        <Typography align="center" color="text.secondary" sx={{ mb: 4 }}>
-          This information will be used in building your resume.
-        </Typography>
+        <SetupStepHeader
+          activeStep={0}
+          title="Add your essentials"
+          description="Start with the contact details Yarba needs for resumes and applications. Only your name is required, and you can change everything later in Settings."
+        />
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>

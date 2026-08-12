@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import {
   Alert,
   Box,
+  Button,
   Chip,
   CircularProgress,
   FormControl,
@@ -26,6 +27,7 @@ import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { PageLoadingState } from '../../components/common/PageState';
 import { useApplications } from '../../hooks/useApplications';
 import type { JobApplication } from '../../types/application';
+import { Link as RouterLink } from 'react-router-dom';
 
 const PAGE_SIZE = 20;
 
@@ -93,11 +95,10 @@ const ApplicationsPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <ViewPageHeader title="Applications" />
-
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Track job applications prepared and submitted through Yarba automation agents.
-      </Typography>
+      <ViewPageHeader
+        title="Applications"
+        description="Track job applications prepared and submitted through Yarba automation agents."
+      />
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
         <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -144,6 +145,14 @@ const ApplicationsPage: React.FC = () => {
                       No applications yet. Agents will create records when they prepare or submit
                       applications.
                     </Typography>
+                    <Button
+                      component={RouterLink}
+                      to="/user/agent-tokens"
+                      variant="outlined"
+                      sx={{ mt: 2 }}
+                    >
+                      Set up agent access
+                    </Button>
                   </TableCell>
                 </TableRow>
               ) : (

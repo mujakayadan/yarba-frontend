@@ -1,6 +1,9 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, Box, Button, Typography } from '@mui/material';
 import { isChunkLoadError } from '../../utils/chunkLoadRecovery';
+import { createDebugger } from '../../utils/debug';
+
+const debug = createDebugger('ErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -19,7 +22,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('Unhandled application error:', error, errorInfo);
+    debug.error(
+      `Unhandled application error: ${error.message}\n${error.stack ?? ''}\n${
+        errorInfo.componentStack ?? ''
+      }`
+    );
   }
 
   handleRetry = (): void => {

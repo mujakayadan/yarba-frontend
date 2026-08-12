@@ -98,7 +98,7 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
       <Typography variant="body2" color="text.secondary" paragraph>
         Add an AI assistant to your live portfolio site. Visitors can ask about your experience,
         skills, and projects. The assistant uses your portfolio data and{' '}
-        <Link component={RouterLink} to="/profile/edit?tab=2">
+        <Link component={RouterLink} to="/settings/story">
           life story
         </Link>
         .
@@ -131,7 +131,7 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
           />
           <Alert severity="info" sx={{ mb: 2 }}>
             For scheduling requests, add a{' '}
-            <Link component={RouterLink} to="/profile/edit?tab=0">
+            <Link component={RouterLink} to="/settings/personal">
               Calendly link
             </Link>{' '}
             in your profile. Your profile picture is used as the chat avatar.
@@ -146,7 +146,12 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
             }
             label="Store visitor conversations (90 days)"
           />
-          <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 7, mb: 2 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            sx={{ ml: 7, mb: 2 }}
+          >
             Lets you review chat history on this page. Visitors see a short privacy notice in the
             widget.
           </Typography>

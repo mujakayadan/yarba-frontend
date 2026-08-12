@@ -27,16 +27,10 @@ import {
   Dashboard as DashboardIcon,
   Description as ResumeIcon,
   Mail as CoverLetterIcon,
-  Person as ProfileIcon,
   Work as PortfolioIcon,
   Assignment as ApplicationsIcon,
-  Palette as TemplatesIcon,
   Settings as SettingsIcon,
   ExitToApp as LogoutIcon,
-  AccountCircle as AccountIcon,
-  Key as KeyIcon,
-  Refresh as RefreshIcon,
-  Info as InfoIcon,
   Login as LoginIcon,
   Language as LanguageIcon,
 } from '@mui/icons-material';
@@ -64,8 +58,8 @@ const navItems = [
   { text: 'Cover Letters', icon: <CoverLetterIcon />, path: '/cover-letters' },
   { text: 'Applications', icon: <ApplicationsIcon />, path: '/applications' },
   { text: 'Portfolio', icon: <PortfolioIcon />, path: '/portfolio' },
-  { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
   { text: 'Website', icon: <LanguageIcon />, path: '/website' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
 
 interface MainLayoutProps {
@@ -118,10 +112,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
     }
   };
 
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
-
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -133,6 +123,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   const handleProfileNavigate = () => {
     handleClose();
   };
+
+  const isNavItemSelected = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const drawer = (
     <>
@@ -152,7 +145,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   setDrawerOpen(false);
                 }
               }}
-              selected={location.pathname === item.path}
+              selected={isNavItemSelected(item.path)}
               className="slide-up nav-item"
               sx={{
                 ...drawerNavItemSx,
@@ -163,7 +156,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             >
               <ListItemIcon
                 sx={{
-                  ...getDrawerNavIconSx(navVariant, location.pathname === item.path),
+                  ...getDrawerNavIconSx(navVariant, isNavItemSelected(item.path)),
                   mr: drawerOpen ? 2 : 'auto',
                   ml: drawerOpen ? 0 : 0,
                 }}
@@ -342,12 +335,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   user.username?.replace(/_[0-9]+$/, '').replace(/_/g, ' ') ||
                   'User'}
               </Typography>
-              {/* Avatar/Image that opens dropdown */}
-              <Box
+              <IconButton
+                id="profile-button"
+                aria-label="Open account menu"
+                aria-controls={open ? 'profile-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
                 onClick={handleProfileClick}
                 sx={{
                   width: 40,
                   height: 40,
+                  p: 0,
                   borderRadius: '50%',
                   overflow: 'hidden',
                   boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
@@ -357,7 +355,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   justifyContent: 'center',
                   '&:hover': {
                     transform: 'scale(1.05)',
-                    cursor: 'pointer',
                   },
                   transition: 'transform 0.2s ease-in-out',
                 }}
@@ -374,10 +371,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     }}
                     loading="eager"
                     referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      console.warn('Profile image failed to load, using avatar fallback');
-                      setImageError(true);
-                    }}
+                    onError={() => setImageError(true)}
                   />
                 ) : (
                   <Avatar
@@ -393,7 +387,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                       'U'}
                   </Avatar>
                 )}
-              </Box>
+              </IconButton>
 
               {/* Profile dropdown menu */}
               <Menu
@@ -441,11 +435,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   </Typography>
                 </Box>
                 <ProfileMenuAppearance onClose={handleClose} />
-                <MenuItem onClick={handleProfileNavigate} component={RouterLink} to="/user">
+                <MenuItem
+                  onClick={handleProfileNavigate}
+                  component={RouterLink}
+                  to="/settings/account-security"
+                >
                   <ListItemIcon sx={{ minWidth: '25px' }}>
                     <SettingsIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText>Manage Your Account</ListItemText>
+                  <ListItemText>Settings</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={signOut}>
@@ -488,8 +486,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           variant={isMobile ? 'temporary' : 'permanent'}
           open={isMobile ? drawerOpen : true}
           onClose={isMobile ? toggleDrawer : undefined}
-          keepMounted={false}
-          disableScrollLock={true}
           ModalProps={{
             keepMounted: false,
             disableAutoFocus: true,

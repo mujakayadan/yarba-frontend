@@ -6,7 +6,6 @@ import {
   Button,
   TextField,
   InputAdornment,
-  IconButton,
   Menu,
   MenuItem,
   Dialog,
@@ -18,10 +17,7 @@ import {
   Pagination,
   Divider,
   Paper,
-  Stack,
-  Chip,
   Tooltip,
-  Alert,
   Select,
   FormControl,
   InputLabel,
@@ -44,8 +40,6 @@ import {
   PictureAsPdf as PdfIcon,
   Edit as EditIcon,
   Visibility as VisibilityIcon,
-  Link as LinkIcon,
-  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -62,6 +56,8 @@ import { useCoverLetters } from '../../hooks/useCoverLetters';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
 import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { EmptyState } from '../../components/common/EmptyState';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -315,32 +311,20 @@ const CoverLettersPage: React.FC = () => {
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: '100%' }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'right',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          mb: 4,
-          gap: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={handleCreateCoverLetter}
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 2,
-            textTransform: 'none',
-            fontWeight: 600,
-          }}
-        >
-          Create New Cover Letter
-        </Button>
-      </Box>
+      <ViewPageHeader
+        title="Cover letters"
+        description="Generate a focused cover letter from one of your tailored resumes."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={handleCreateCoverLetter}
+          >
+            Create cover letter
+          </Button>
+        }
+      />
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
@@ -365,42 +349,23 @@ const CoverLettersPage: React.FC = () => {
           <CircularProgress />
         </Box>
       ) : coverLetters.length === 0 ? (
-        <Paper
-          sx={{
-            p: 4,
-            textAlign: 'center',
-            borderRadius: 2,
-            backgroundColor: 'rgba(255,255,255,0.8)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
-            No cover letters found
-          </Typography>
-          {searchTerm ? (
-            <Typography variant="body1" sx={{ mb: 3 }}>
-              Try changing your search criteria or clear the search field.
-            </Typography>
-          ) : (
-            <Typography variant="body1" sx={{ mb: 3 }}>
-              Create your first cover letter to get started!
-            </Typography>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleCreateCoverLetter}
-            sx={{
-              borderRadius: 2,
-              textTransform: 'none',
-              fontWeight: 600,
-            }}
-          >
-            Create New Cover Letter
-          </Button>
-        </Paper>
+        <EmptyState
+          title={searchTerm ? 'No matching cover letters' : 'Create your first cover letter'}
+          description={
+            searchTerm
+              ? 'Try a different search term or clear the search field.'
+              : 'Choose an existing resume and Yarba will write a matching letter for that role.'
+          }
+          primaryAction={
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={searchTerm ? () => setSearchTerm('') : handleCreateCoverLetter}
+            >
+              {searchTerm ? 'Clear search' : 'Create cover letter'}
+            </Button>
+          }
+        />
       ) : (
         <>
           <TableContainer

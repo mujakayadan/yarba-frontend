@@ -36,6 +36,13 @@ export const createPortfolio = async (data: { profile_id?: string }): Promise<Po
   return response.data;
 };
 
+export const createPortfolioFromParsedData = async (
+  data: ParsedPortfolioData
+): Promise<Portfolio> => {
+  const response = await api.post('/portfolios/', data);
+  return response.data;
+};
+
 // Update portfolio
 export const updatePortfolio = async (
   portfolioId: string,
@@ -185,41 +192,10 @@ export const deletePortfolioItem = async (
   await api.delete(`/portfolios/${portfolioId}/items/${itemType}/${itemIndex}`);
 };
 
-// interface ParseDocumentError {
-//   message: string;
-//   details?: any; // Depending on how your API structures errors
-// }
-
 export const parsePortfolioDocument = async (file: File): Promise<ParsedPortfolioData> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  try {
-    // Use the existing 'api' instance for consistency
-    // The 'api' instance should handle base URL and potentially headers like Authorization
-    const response = await api.post('/portfolios/parse-document', formData, {
-      headers: {
-        // The browser will set Content-Type to multipart/form-data automatically with FormData
-        // but if your 'api' wrapper or Axios instance has defaults that override it,
-        // you might need to explicitly set it or ensure the wrapper handles FormData correctly.
-        // For a standard Axios instance, it usually handles FormData correctly without this.
-        // 'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    // Assuming 'api' instance throws an error for non-ok responses (common with Axios)
-    // and that response.data is the parsed JSON body
-    return response.data;
-  } catch (error: any) {
-    if (isDev) {
-      console.error('Error in parsePortfolioDocument service:', error);
-    }
-    // Enhance error reporting, you might want to check if error.response.data exists
-    if (error.response && error.response.data && error.response.data.message) {
-      throw new Error(error.response.data.message);
-    } else if (error.message) {
-      throw new Error(error.message);
-    }
-    throw new Error('An unexpected error occurred while parsing the document.');
-  }
+  const response = await api.post<ParsedPortfolioData>('/portfolios/parse-document', formData);
+  return response.data;
 };

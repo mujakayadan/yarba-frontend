@@ -6,7 +6,6 @@ import {
   Button,
   TextField,
   InputAdornment,
-  IconButton,
   Menu,
   MenuItem,
   Dialog,
@@ -18,8 +17,6 @@ import {
   Pagination,
   Divider,
   Paper,
-  Stack,
-  Chip,
   Tooltip,
   Alert,
   Select,
@@ -45,7 +42,6 @@ import {
   Edit as EditIcon,
   Visibility as VisibilityIcon,
   Link as LinkIcon,
-  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -63,6 +59,8 @@ import { useUserPortfolio } from '../../hooks/usePortfolio';
 import { resumeKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
 import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { EmptyState } from '../../components/common/EmptyState';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -442,14 +440,6 @@ const ResumesPage: React.FC = () => {
       .join(' ');
   };
 
-  // Get personal information summary
-  const getPersonalInfo = (resume: APIResume) => {
-    const info = resume.content?.personal_information;
-    if (!info) return null;
-
-    return info.full_name;
-  };
-
   // Extract job title from career summary
   const getJobTitle = (resume: APIResume) => {
     try {
@@ -468,29 +458,22 @@ const ResumesPage: React.FC = () => {
   // Calculate pagination metadata
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalResumes);
-  const hasMultiplePages = totalResumes > pageSize;
-
   return (
     <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'right',
-          alignItems: 'center',
-          mb: 3,
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={handleCreateResume}
-        >
-          Create New Resume
-        </Button>
-      </Box>
+      <ViewPageHeader
+        title="Resumes"
+        description="Create role-specific resumes from your portfolio, then edit, preview, and export them."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={handleCreateResume}
+          >
+            Create resume
+          </Button>
+        }
+      />
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
@@ -515,22 +498,23 @@ const ResumesPage: React.FC = () => {
           <CircularProgress />
         </Box>
       ) : resumes.length === 0 ? (
-        <Box sx={{ textAlign: 'center', my: 4 }}>
-          <Typography variant="h6" color="textSecondary">
-            {searchTerm
-              ? 'No resumes found matching your search.'
-              : "You haven't created any resumes yet."}
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleCreateResume}
-            sx={{ mt: 2 }}
-          >
-            Create Your First Resume
-          </Button>
-        </Box>
+        <EmptyState
+          title={searchTerm ? 'No matching resumes' : 'Create your first tailored resume'}
+          description={
+            searchTerm
+              ? 'Try a different search term or clear the search field.'
+              : 'Paste a job description and Yarba will tailor your portfolio to the role.'
+          }
+          primaryAction={
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={searchTerm ? () => setSearchTerm('') : handleCreateResume}
+            >
+              {searchTerm ? 'Clear search' : 'Create resume'}
+            </Button>
+          }
+        />
       ) : (
         <>
           <TableContainer component={Paper} sx={{ mb: 3 }}>

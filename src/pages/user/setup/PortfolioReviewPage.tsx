@@ -16,75 +16,18 @@ import {
   List,
   ListItem,
   ListItemText,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import SchoolIcon from '@mui/icons-material/School';
 import WorkIcon from '@mui/icons-material/Work';
 import CodeIcon from '@mui/icons-material/Code';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useAuth } from '../../../contexts/AuthContext';
-import api from '../../../services/api';
 import { sortByDateDesc } from '../../../utils/dateSort';
-
-interface ParsedPortfolioData {
-  career_summary?: {
-    job_titles?: string[];
-    default_job_title?: string;
-    years_of_experience?: string;
-    default_summary?: string;
-  };
-  skills?: Array<{
-    category: string;
-    skills: string[];
-  }>;
-  work_experience?: Array<{
-    job_title: string;
-    company: string;
-    location?: string;
-    time?: string;
-    responsibilities: string[];
-  }>;
-  education?: Array<{
-    degree_type?: string;
-    degree: string;
-    university_name: string;
-    time?: string;
-    location?: string;
-    GPA?: string;
-    transcript?: string[];
-  }>;
-  projects?: Array<{
-    name: string;
-    bullet_points: string[];
-    date?: string;
-    link?: string;
-  }>;
-  awards?: Array<{
-    name: string;
-    explanation?: string;
-  }>;
-  publications?: Array<{
-    name: string;
-    publisher?: string;
-    link?: string;
-    time?: string;
-  }>;
-  certifications?: string[];
-  custom_sections?: {
-    sections: Array<{
-      title: string;
-      content: any;
-    }>;
-  };
-  professional_title?: string;
-}
+import type { ParsedPortfolioData } from '../../../types/portfolio';
+import { createPortfolioFromParsedData } from '../../../services/portfolioService';
+import { extractApiErrorMessage } from '../../../utils/apiErrors';
+import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
 
 const PortfolioReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -99,10 +42,9 @@ const PortfolioReviewPage: React.FC = () => {
     const data = localStorage.getItem('parsedPortfolioData');
     if (data) {
       try {
-        const parsed = JSON.parse(data);
+        const parsed = JSON.parse(data) as ParsedPortfolioData;
         setParsedData(parsed);
-      } catch (err) {
-        console.error('Error parsing portfolio data from localStorage:', err);
+      } catch {
         setError('Unable to load parsed data. Please try uploading your document again.');
       }
     } else {
@@ -118,9 +60,7 @@ const PortfolioReviewPage: React.FC = () => {
       setSaving(true);
       setError(null);
 
-      // Create portfolio using the parsed data
-      const response = await api.post('/portfolios/', parsedData);
-      console.log('Portfolio created successfully:', response.data);
+      await createPortfolioFromParsedData(parsedData);
 
       // Clean up localStorage
       localStorage.removeItem('parsedPortfolioData');
@@ -128,9 +68,8 @@ const PortfolioReviewPage: React.FC = () => {
       // Complete the setup
       await updateUserSetupProgress({ setup_completed: true });
       navigate('/dashboard');
-    } catch (err: any) {
-      console.error('Failed to save portfolio:', err);
-      setError(err.response?.data?.detail || err.message || 'Failed to save portfolio.');
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Failed to save portfolio.'));
       setSaving(false);
     }
   };
@@ -139,8 +78,7 @@ const PortfolioReviewPage: React.FC = () => {
     try {
       await updateUserSetupProgress({ current_setup_step: 5 });
       navigate('/user/setup/portfolio-upload');
-    } catch (err) {
-      console.error('Failed to navigate back:', err);
+    } catch {
       navigate('/user/setup/portfolio-upload');
     }
   };
@@ -195,18 +133,11 @@ const PortfolioReviewPage: React.FC = () => {
           boxSizing: 'border-box',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <CheckCircleOutlineIcon color="success" sx={{ mr: 2, fontSize: 40 }} />
-          <Box>
-            <Typography component="h1" variant="h4" gutterBottom>
-              Portfolio Generated
-            </Typography>
-            <Typography color="text.secondary">
-              We've extracted the following information from your document. Review it before
-              finalizing.
-            </Typography>
-          </Box>
-        </Box>
+        <SetupStepHeader
+          activeStep={1}
+          title="Review your portfolio"
+          description="Check the information Yarba extracted before completing setup. You can edit every section later from Portfolio."
+        />
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>

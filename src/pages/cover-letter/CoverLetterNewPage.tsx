@@ -50,7 +50,7 @@ const CoverLetterNewPage: React.FC = () => {
   const resumes = resumesData?.resumes ?? [];
   const [selectedResumeId, setSelectedResumeId] = useState<string>('');
   const [selectedResume, setSelectedResume] = useState<ResumeForSelection | null>(null);
-  const [generatePdf, setGeneratePdf] = useState<boolean>(true);
+  const generatePdf = true;
   const [errors, setErrors] = useState<{
     resumeId?: string;
   }>({});
@@ -197,10 +197,25 @@ const CoverLetterNewPage: React.FC = () => {
           </Box>
         )}
 
+        {!resumesLoading && !error && resumes.length === 0 && (
+          <Alert
+            severity="info"
+            sx={{ mb: 3 }}
+            action={
+              <Button color="inherit" size="small" onClick={() => navigate('/resumes/new')}>
+                Create resume
+              </Button>
+            }
+          >
+            A cover letter starts from a tailored resume. Create a resume for this role first, then
+            return here.
+          </Alert>
+        )}
+
         <Box
           component="form"
           onSubmit={handleSubmit}
-          sx={{ display: resumesLoading || (error && resumes.length === 0) ? 'none' : 'block' }}
+          sx={{ display: resumesLoading || resumes.length === 0 ? 'none' : 'block' }}
         >
           <Typography variant="subtitle1" gutterBottom>
             Base your cover letter on an existing resume
@@ -263,7 +278,11 @@ const CoverLetterNewPage: React.FC = () => {
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
           Select Resume
-          <IconButton onClick={() => setIsModalOpen(false)} size="small">
+          <IconButton
+            onClick={() => setIsModalOpen(false)}
+            size="small"
+            aria-label="Close resume selection"
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>

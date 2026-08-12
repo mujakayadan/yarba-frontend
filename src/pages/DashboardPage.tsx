@@ -17,6 +17,8 @@ import {
   Mail as CoverLetterIcon,
   Add as AddIcon,
   Person as PersonIcon,
+  CheckCircle as CompleteIcon,
+  RadioButtonUnchecked as IncompleteIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +28,7 @@ import { useUserProfile } from '../hooks/useUserProfile';
 import { useUserPortfolio } from '../hooks/usePortfolio';
 import { useResumes } from '../hooks/useResumes';
 import { useCoverLetters } from '../hooks/useCoverLetters';
+import { EmptyState } from '../components/common/EmptyState';
 
 // Define a unified type for recent items
 interface RecentItem {
@@ -94,7 +97,7 @@ const DashboardPage: React.FC = () => {
   }, [coverLettersData?.items, resumesData?.items]);
 
   const resumeCount = resumesData?.total ?? 0;
-  const coverLetterCount = coverLettersData?.items.length ?? 0;
+  const coverLetterCount = coverLettersData?.total ?? 0;
 
   const portfolioComplete = useMemo(() => {
     if (portfolioError || !portfolio) {
@@ -158,6 +161,38 @@ const DashboardPage: React.FC = () => {
     navigate('/portfolio');
   };
 
+  const gettingStartedItems = [
+    {
+      label: 'Complete your portfolio',
+      description: 'Add skills and experience so AI can tailor documents accurately.',
+      complete: portfolioComplete,
+      action: 'Open portfolio',
+      path: portfolio ? '/portfolio' : '/portfolio/create',
+    },
+    {
+      label: 'Review AI & document defaults',
+      description: 'Choose the length, templates, and appearance Yarba should use.',
+      complete: Boolean(profile?.prompt_preferences && profile?.system_preferences),
+      action: 'Review defaults',
+      path: '/settings/ai-preferences',
+    },
+    {
+      label: 'Create your first resume',
+      description: 'Tailor your portfolio to a specific role.',
+      complete: resumeCount > 0,
+      action: 'Create resume',
+      path: '/resumes/new',
+    },
+    {
+      label: 'Create a cover letter',
+      description: 'Use an existing resume to generate a matching letter.',
+      complete: coverLetterCount > 0,
+      action: 'Create cover letter',
+      path: resumeCount > 0 ? '/cover-letters/new' : '/resumes/new',
+    },
+  ];
+  const showGettingStarted = gettingStartedItems.some((item) => !item.complete);
+
   return (
     <Box sx={{ p: 3, pl: 2, pt: 2 }}>
       <Box
@@ -199,6 +234,51 @@ const DashboardPage: React.FC = () => {
         <Alert severity="error" sx={{ mb: 4 }}>
           {error}
         </Alert>
+      )}
+
+      {showGettingStarted && (
+        <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 }, mb: 5 }}>
+          <Typography component="h2" variant="h5" gutterBottom>
+            Get started
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            Follow these steps to give Yarba enough context for useful, tailored applications.
+          </Typography>
+          <Stack divider={<Divider flexItem />}>
+            {gettingStartedItems.map((item) => (
+              <Box
+                key={item.label}
+                sx={{
+                  display: 'flex',
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: 2,
+                  py: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
+                <Box sx={{ display: 'flex', gap: 1.5, flex: 1 }}>
+                  {item.complete ? (
+                    <CompleteIcon color="success" aria-label="Complete" />
+                  ) : (
+                    <IncompleteIcon color="disabled" aria-label="Not complete" />
+                  )}
+                  <Box>
+                    <Typography fontWeight={600}>{item.label}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.description}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Button
+                  variant={item.complete ? 'text' : 'outlined'}
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.complete ? 'Review' : item.action}
+                </Button>
+              </Box>
+            ))}
+          </Stack>
+        </Paper>
       )}
 
       {/* Document Summary */}
@@ -355,9 +435,20 @@ const DashboardPage: React.FC = () => {
           </Box>
 
           {recentItems.length === 0 && (
-            <Typography variant="body1" sx={{ textAlign: 'center', py: 4 }}>
-              No recent activity. Create your first document!
-            </Typography>
+            <EmptyState
+              title="No documents yet"
+              description="Create a resume for a role first. Once you have one, Yarba can use it to create a matching cover letter."
+              primaryAction={
+                <Button variant="contained" onClick={() => navigate('/resumes/new')}>
+                  Create resume
+                </Button>
+              }
+              secondaryAction={
+                <Button variant="outlined" onClick={() => navigate('/portfolio')}>
+                  Review portfolio
+                </Button>
+              }
+            />
           )}
         </Box>
       )}

@@ -5,7 +5,6 @@ export { default as RegisterPage } from './RegisterPage';
 // Main Pages
 export { default as MainPage } from './MainPage';
 export { default as DashboardPage } from './DashboardPage';
-export { default as ProfilePage } from './profile/ProfilePage';
 export { default as ResumesPage } from './resume/ResumesPage';
 export { default as CoverLettersPage } from './cover-letter/CoverLettersPage';
 export { default as CoverLetterNewPage } from './cover-letter/CoverLetterNewPage';

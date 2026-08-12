@@ -24,19 +24,17 @@ export enum UserSetupStep {
   LIFE_STORY = 4,
   PORTFOLIO_UPLOAD = 5,
   PORTFOLIO_REVIEW = 6,
-  COMPLETE = 7,
 }
 
 // Map setup steps to routes for navigation
 export const setupStepToRoute: Record<UserSetupStep, string | null> = {
   [UserSetupStep.NONE]: null,
   [UserSetupStep.PERSONAL_INFO]: '/user/setup/personal-info',
-  [UserSetupStep.PROMPT_PREFERENCES]: '/user/setup/prompt-preferences',
-  [UserSetupStep.SYSTEM_PREFERENCES]: '/user/setup/system-preferences',
-  [UserSetupStep.LIFE_STORY]: '/user/setup/life-story',
+  [UserSetupStep.PROMPT_PREFERENCES]: '/user/setup/portfolio-upload',
+  [UserSetupStep.SYSTEM_PREFERENCES]: '/user/setup/portfolio-upload',
+  [UserSetupStep.LIFE_STORY]: '/user/setup/portfolio-upload',
   [UserSetupStep.PORTFOLIO_UPLOAD]: '/user/setup/portfolio-upload',
   [UserSetupStep.PORTFOLIO_REVIEW]: '/user/setup/portfolio-review',
-  [UserSetupStep.COMPLETE]: null,
 };
 
 // Define the shape of our auth context state with more accurate typing
@@ -119,7 +117,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     debug.log('Updating setup state based on current_setup_step:', currentSetupStep);
 
     if (typeof currentSetupStep !== 'number') {
-      setSetupStep(UserSetupStep.COMPLETE);
+      setSetupStep(UserSetupStep.NONE);
       setSetupRoute(null);
       return;
     }
@@ -132,7 +130,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (route) {
       debug.log(`Setting setup route to ${route} for step ${step}`);
       setSetupRoute(route);
-    } else if (step === UserSetupStep.COMPLETE || step === UserSetupStep.NONE) {
+    } else if (step === UserSetupStep.NONE) {
       debug.log('User setup is complete or not required');
       setSetupRoute(null);
     } else {
@@ -369,9 +367,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         updateSetupState(result.current_setup_step);
       }
 
+      const step = result.current_setup_step;
+      const routeFromStep =
+        typeof step === 'number' ? setupStepToRoute[step as UserSetupStep] : null;
+
       return {
         isNewUser: result.is_new_user,
-        setupRoute: setupRoute || '/dashboard',
+        setupRoute: routeFromStep || '/dashboard',
       };
     } catch (err: any) {
       debug.error('Google sign-in error:', err);

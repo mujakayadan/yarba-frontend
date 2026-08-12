@@ -24,8 +24,14 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { changePassword } from '../../services/authService';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
 
-const UserPage: React.FC = () => {
+interface UserPageProps {
+  embedded?: boolean;
+}
+
+const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
   const { user } = useAuth();
   const { showSuccess, showError } = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
@@ -86,15 +92,21 @@ const UserPage: React.FC = () => {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      showError(err.message || 'Failed to change password');
+    } catch (err: unknown) {
+      showError(extractApiErrorMessage(err, 'Failed to change password'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: embedded ? 0 : 3 }}>
+      {!embedded && (
+        <ViewPageHeader
+          title="Account & security"
+          description="Manage password security, account details, and access for application agents."
+        />
+      )}
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -137,7 +149,13 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleToggleCurrentPasswordVisibility} edge="end">
+                        <IconButton
+                          onClick={handleToggleCurrentPasswordVisibility}
+                          edge="end"
+                          aria-label={
+                            showCurrentPassword ? 'Hide current password' : 'Show current password'
+                          }
+                        >
                           {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
@@ -155,7 +173,11 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleToggleNewPasswordVisibility} edge="end">
+                        <IconButton
+                          onClick={handleToggleNewPasswordVisibility}
+                          edge="end"
+                          aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                        >
                           {showNewPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
@@ -174,7 +196,15 @@ const UserPage: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleToggleConfirmPasswordVisibility} edge="end">
+                        <IconButton
+                          onClick={handleToggleConfirmPasswordVisibility}
+                          edge="end"
+                          aria-label={
+                            showConfirmPassword
+                              ? 'Hide confirmed password'
+                              : 'Show confirmed password'
+                          }
+                        >
                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>

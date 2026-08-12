@@ -2,9 +2,24 @@ import React from 'react';
 import { Box, Paper, Typography, Alert, Button, CircularProgress } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
-export const PageLoadingState: React.FC = () => (
-  <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', my: 4 }}>
+interface PageLoadingStateProps {
+  label?: string;
+}
+
+export const PageLoadingState: React.FC<PageLoadingStateProps> = ({ label = 'Loading page…' }) => (
+  <Box
+    role="status"
+    sx={{
+      p: 3,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 2,
+      my: 4,
+    }}
+  >
     <CircularProgress />
+    <Typography color="text.secondary">{label}</Typography>
   </Box>
 );
 

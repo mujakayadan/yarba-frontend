@@ -8,13 +8,14 @@ import {
   CircularProgress,
   Alert,
   Paper,
-  IconButton,
   styled,
   Divider,
 } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, InsertDriveFile as FileIcon } from '@mui/icons-material';
 import { useAuth } from '../../../contexts/AuthContext';
-import api from '../../../services/api';
+import { parsePortfolioDocument } from '../../../services/portfolioService';
+import { extractApiErrorMessage } from '../../../utils/apiErrors';
+import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
 
 // Styled components for file upload area
 const UploadBox = styled(Box)(({ theme }) => ({
@@ -39,7 +40,6 @@ const PortfolioUploadPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [parsedData, setParsedData] = useState<any | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -89,29 +89,16 @@ const PortfolioUploadPage: React.FC = () => {
       setUploading(true);
       setError(null);
 
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-
-      const response = await api.post('/portfolios/parse-document', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      console.log('Document parsing successful:', response.data);
-
-      // Store the parsed data in state
-      setParsedData(response.data);
+      const parsedData = await parsePortfolioDocument(selectedFile);
 
       // Store parsed data in localStorage for the review page
-      localStorage.setItem('parsedPortfolioData', JSON.stringify(response.data));
+      localStorage.setItem('parsedPortfolioData', JSON.stringify(parsedData));
 
       // Proceed to portfolio review page
       await updateUserSetupProgress({ current_setup_step: 6 });
       navigate('/user/setup/portfolio-review');
-    } catch (err: any) {
-      console.error('Failed to parse document:', err);
-      setError(err.response?.data?.detail || err.message || 'Failed to parse portfolio document.');
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'We could not read that document. Please try again.'));
       setUploading(false);
     }
   };
@@ -121,9 +108,8 @@ const PortfolioUploadPage: React.FC = () => {
       setUploading(true);
       await updateUserSetupProgress({ setup_completed: true });
       navigate('/dashboard');
-    } catch (err: any) {
-      console.error('Failed to skip:', err);
-      setError(err.message || 'Failed to proceed to dashboard.');
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Failed to proceed to the dashboard.'));
     } finally {
       setUploading(false);
     }
@@ -131,11 +117,10 @@ const PortfolioUploadPage: React.FC = () => {
 
   const handleBack = async () => {
     try {
-      await updateUserSetupProgress({ current_setup_step: 4 });
-      navigate('/user/setup/life-story');
-    } catch (err) {
-      console.error('Failed to navigate back:', err);
-      navigate('/user/setup/life-story');
+      await updateUserSetupProgress({ current_setup_step: 1 });
+      navigate('/user/setup/personal-info');
+    } catch {
+      navigate('/user/setup/personal-info');
     }
   };
 
@@ -160,13 +145,11 @@ const PortfolioUploadPage: React.FC = () => {
           boxSizing: 'border-box',
         }}
       >
-        <Typography component="h1" variant="h4" align="center" gutterBottom>
-          Upload Your Resume or CV
-        </Typography>
-        <Typography align="center" color="text.secondary" sx={{ mb: 4 }}>
-          Upload your existing resume or CV to automatically create your portfolio. We'll extract
-          the relevant information and format it for you.
-        </Typography>
+        <SetupStepHeader
+          activeStep={1}
+          title="Build your portfolio"
+          description="Upload an existing resume or CV and Yarba will extract your experience, skills, and projects. This step is optional—you can build or import a portfolio later."
+        />
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>

@@ -40,6 +40,7 @@ export interface ProfilePreferencesForm {
 
 export interface ProfileEditTabProps {
   personalInfo: ProfilePersonalInfoForm;
+  personalInfoErrors?: Partial<Record<keyof ProfilePersonalInfoForm, string>>;
   onPersonalInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   lifeStory: string;
   onLifeStoryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

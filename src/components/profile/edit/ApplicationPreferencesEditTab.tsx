@@ -4,6 +4,10 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -36,6 +40,11 @@ import type {
 } from '../../../types/application';
 
 type TriState = '' | 'true' | 'false';
+type ConfirmationAction =
+  | 'grant-consent'
+  | 'withdraw-consent'
+  | 'delete-demographics'
+  | 'delete-credentials';
 
 const triStateToBool = (value: TriState): boolean | null => {
   if (value === 'true') {
@@ -88,7 +97,12 @@ const emptyDemographics = (): Demographics => ({
 
 export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () => {
   const { showSuccess, showError } = useToast();
-  const { data: preferences, isLoading } = useApplicationPreferences();
+  const {
+    data: preferences,
+    isLoading,
+    isError,
+    refetch: refetchPreferences,
+  } = useApplicationPreferences();
   const consented = preferences?.demographic_consent.consented ?? false;
   const { data: demographicsData } = useDemographics(consented);
   const { data: applyCredentialsStatus } = useApplyCredentialsStatus();
@@ -117,6 +131,7 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
   const [raceEthnicityText, setRaceEthnicityText] = useState('');
   const [applyPassword, setApplyPassword] = useState('');
   const [seeded, setSeeded] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction | null>(null);
 
   useEffect(() => {
     if (preferences && !seeded) {
@@ -207,13 +222,89 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
     }
   };
 
-  if (isLoading || !preferences) {
+  if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
         <CircularProgress />
       </Box>
     );
   }
+
+  if (isError || !preferences) {
+    return (
+      <Alert
+        severity="error"
+        action={
+          <Button color="inherit" size="small" onClick={() => refetchPreferences()}>
+            Retry
+          </Button>
+        }
+      >
+        Application settings could not be loaded. Your existing answers have not been changed.
+      </Alert>
+    );
+  }
+
+  const handleConfirmAction = async () => {
+    switch (confirmationAction) {
+      case 'grant-consent':
+        await handleConsentChange(true);
+        break;
+      case 'withdraw-consent':
+        await handleConsentChange(false);
+        break;
+      case 'delete-demographics':
+        await handleDeleteDemographics();
+        break;
+      case 'delete-credentials':
+        await handleDeleteApplyCredentials();
+        break;
+      case null:
+        return;
+      default: {
+        const exhaustiveCheck: never = confirmationAction;
+        return exhaustiveCheck;
+      }
+    }
+    setConfirmationAction(null);
+  };
+
+  const confirmationCopy = (() => {
+    switch (confirmationAction) {
+      case 'grant-consent':
+        return {
+          title: 'Enable demographic autofill?',
+          message:
+            'Yarba will store demographic answers encrypted and may share them only with agents that have the demographics scope.',
+          action: 'Enable consent',
+        };
+      case 'withdraw-consent':
+        return {
+          title: 'Withdraw demographic consent?',
+          message:
+            'Agents will stop receiving demographic answers. Existing stored answers are not deleted unless you remove them separately.',
+          action: 'Withdraw consent',
+        };
+      case 'delete-demographics':
+        return {
+          title: 'Delete demographic answers?',
+          message: 'This permanently removes your stored demographic answers.',
+          action: 'Delete answers',
+        };
+      case 'delete-credentials':
+        return {
+          title: 'Remove careers-site password?',
+          message: 'Application agents will no longer be able to use this saved password.',
+          action: 'Remove password',
+        };
+      case null:
+        return null;
+      default: {
+        const exhaustiveCheck: never = confirmationAction;
+        return exhaustiveCheck;
+      }
+    }
+  })();
 
   const savingPrefs = updatePreferencesMutation.isPending;
   const savingDemographics = updateDemographicsMutation.isPending;
@@ -375,7 +466,7 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
             variant="outlined"
             color="error"
             startIcon={<DeleteIcon />}
-            onClick={handleDeleteApplyCredentials}
+            onClick={() => setConfirmationAction('delete-credentials')}
             disabled={deleteApplyCredentialsMutation.isPending}
           >
             Remove password
@@ -397,7 +488,9 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
         control={
           <Switch
             checked={consented}
-            onChange={(e) => handleConsentChange(e.target.checked)}
+            onChange={(e) =>
+              setConfirmationAction(e.target.checked ? 'grant-consent' : 'withdraw-consent')
+            }
             disabled={updateConsentMutation.isPending}
           />
         }
@@ -490,7 +583,7 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
               variant="outlined"
               color="error"
               startIcon={<DeleteIcon />}
-              onClick={handleDeleteDemographics}
+              onClick={() => setConfirmationAction('delete-demographics')}
               disabled={deleteDemographicsMutation.isPending}
             >
               Delete demographics
@@ -498,6 +591,26 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
           </Stack>
         </Box>
       )}
+      <Dialog open={confirmationCopy !== null} onClose={() => setConfirmationAction(null)}>
+        <DialogTitle>{confirmationCopy?.title}</DialogTitle>
+        <DialogContent>
+          <Typography>{confirmationCopy?.message}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmationAction(null)}>Cancel</Button>
+          <Button
+            color={
+              confirmationAction === 'grant-consent' || confirmationAction === null
+                ? 'primary'
+                : 'error'
+            }
+            variant="contained"
+            onClick={handleConfirmAction}
+          >
+            {confirmationCopy?.action}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

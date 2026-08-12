@@ -5,6 +5,7 @@ import { EditSectionHeader } from './EditSectionHeader';
 
 export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
   personalInfo,
+  personalInfoErrors,
   onPersonalInfoChange,
 }) => (
   <>
@@ -28,7 +29,10 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
           onChange={onPersonalInfoChange}
           margin="normal"
           required
-          helperText="Displayed as your name on generated documents"
+          error={Boolean(personalInfoErrors?.full_name)}
+          helperText={
+            personalInfoErrors?.full_name || 'Displayed as your name on generated documents'
+          }
         />
       </Box>
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -41,7 +45,8 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
           onChange={onPersonalInfoChange}
           margin="normal"
           required
-          helperText="Primary contact email for applications"
+          error={Boolean(personalInfoErrors?.email)}
+          helperText={personalInfoErrors?.email || 'Primary contact email for applications'}
         />
       </Box>
     </Stack>

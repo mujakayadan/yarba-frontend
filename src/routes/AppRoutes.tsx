@@ -4,6 +4,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
+import SettingsPage from '../pages/settings/SettingsPage';
 
 const PortfolioEditLegacyRedirect = () => {
   const { search } = useLocation();
@@ -15,15 +16,12 @@ const MainPage = lazy(() => import('../pages/MainPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const ResumesPage = lazy(() => import('../pages/resume/ResumesPage'));
 const TemplatesPage = lazy(() => import('../pages/TemplatesPage'));
-const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const ViewResumePage = lazy(() => import('../pages/resume/ViewResumePage'));
 const EditResumePage = lazy(() => import('../pages/resume/EditResumePage'));
 const CreateResumePage = lazy(() => import('../pages/resume/CreateResumePage'));
-const ProfileEditPage = lazy(() => import('../pages/profile/ProfileEditPage'));
 const PortfolioCreatePage = lazy(() => import('../pages/portfolio/PortfolioCreatePage'));
 const PortfolioEditPage = lazy(() => import('../pages/portfolio/PortfolioEditPage'));
 const PortfolioViewPage = lazy(() => import('../pages/portfolio/PortfolioViewPage'));
-const UserPage = lazy(() => import('../pages/user/UserPage'));
 const CoverLettersPage = lazy(() => import('../pages/cover-letter/CoverLettersPage'));
 const CoverLetterNewPage = lazy(() => import('../pages/cover-letter/CoverLetterNewPage'));
 const CoverLetterViewPage = lazy(() => import('../pages/cover-letter/CoverLetterViewPage'));
@@ -39,13 +37,6 @@ const WebsitePage = lazy(() => import('../pages/WebsitePage'));
 const ApplicationsPage = lazy(() => import('../pages/applications/ApplicationsPage'));
 const AgentTokensPage = lazy(() => import('../pages/user/AgentTokensPage'));
 const PersonalInfoSetupPage = lazy(() => import('../pages/user/setup/PersonalInfoSetupPage'));
-const PromptPreferencesSetupPage = lazy(
-  () => import('../pages/user/setup/PromptPreferencesSetupPage')
-);
-const SystemPreferencesSetupPage = lazy(
-  () => import('../pages/user/setup/SystemPreferencesSetupPage')
-);
-const LifeStorySetupPage = lazy(() => import('../pages/user/setup/LifeStorySetupPage'));
 const PortfolioUploadPage = lazy(() => import('../pages/user/setup/PortfolioUploadPage'));
 const PortfolioReviewPage = lazy(() => import('../pages/user/setup/PortfolioReviewPage'));
 
@@ -92,9 +83,18 @@ const AppRoutes: React.FC = () => (
         }
       >
         <Route path="/user/setup/personal-info" element={<PersonalInfoSetupPage />} />
-        <Route path="/user/setup/prompt-preferences" element={<PromptPreferencesSetupPage />} />
-        <Route path="/user/setup/system-preferences" element={<SystemPreferencesSetupPage />} />
-        <Route path="/user/setup/life-story" element={<LifeStorySetupPage />} />
+        <Route
+          path="/user/setup/prompt-preferences"
+          element={<Navigate to="/user/setup/portfolio-upload" replace />}
+        />
+        <Route
+          path="/user/setup/system-preferences"
+          element={<Navigate to="/user/setup/portfolio-upload" replace />}
+        />
+        <Route
+          path="/user/setup/life-story"
+          element={<Navigate to="/user/setup/portfolio-upload" replace />}
+        />
         <Route path="/user/setup/portfolio-upload" element={<PortfolioUploadPage />} />
         <Route path="/user/setup/portfolio-review" element={<PortfolioReviewPage />} />
       </Route>
@@ -133,10 +133,12 @@ const AppRoutes: React.FC = () => (
         <Route path="/portfolio/:id/edit" element={<PortfolioEditLegacyRedirect />} />
         <Route path="/portfolio/:id" element={<PortfolioViewPage />} />
         <Route path="/templates" element={<TemplatesPage />} />
-        <Route path="/user" element={<UserPage />} />
         <Route path="/user/agent-tokens" element={<AgentTokensPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/edit" element={<ProfileEditPage />} />
+        <Route path="/settings/:section" element={<SettingsPage />} />
+        <Route path="/settings" element={<Navigate to="/settings/personal" replace />} />
+        <Route path="/user" element={<Navigate to="/settings/account-security" replace />} />
+        <Route path="/profile" element={<Navigate to="/settings/personal" replace />} />
+        <Route path="/profile/edit" element={<Navigate to="/settings/personal" replace />} />
         <Route path="/website" element={<WebsitePage />} />
       </Route>
 

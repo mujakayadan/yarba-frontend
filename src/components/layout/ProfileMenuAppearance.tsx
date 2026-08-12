@@ -18,11 +18,8 @@ import { useAppearance } from '../../contexts/AppearanceContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useUpdateAppearanceMode } from '../../hooks/useUpdateAppearanceMode';
 import { APPEARANCE_MODE_LABELS, type AppearanceMode } from '../../theme/appearance';
-import { tabSearchParam } from '../../utils/tabUrl';
 
 const APPEARANCE_MODES: AppearanceMode[] = ['default', 'light', 'dark'];
-
-const PREFERENCES_EDIT_TAB = 1;
 
 interface ProfileMenuAppearanceProps {
   onClose: () => void;
@@ -68,15 +65,11 @@ export const ProfileMenuAppearance: React.FC<ProfileMenuAppearanceProps> = ({ on
           <ListItemText primary={APPEARANCE_MODE_LABELS[mode]} />
         </MenuItem>
       ))}
-      <MenuItem
-        component={RouterLink}
-        to={`/profile/edit${tabSearchParam(PREFERENCES_EDIT_TAB)}`}
-        onClick={onClose}
-      >
+      <MenuItem component={RouterLink} to="/settings/ai-preferences" onClick={onClose}>
         <ListItemIcon sx={{ minWidth: 32 }}>
           <SettingsIcon fontSize="small" />
         </ListItemIcon>
-        <ListItemText primary="All preferences…" secondary="Profile settings" />
+        <ListItemText primary="AI & document defaults" secondary="Open Settings" />
       </MenuItem>
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -25,6 +25,8 @@ import { ResumeCreateRequest } from '../../types/models';
 import { useToast } from '../../contexts/ToastContext';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -50,7 +52,7 @@ function TabPanel(props: TabPanelProps) {
 
 const CreateResumePage: React.FC = () => {
   const navigate = useNavigate();
-  const { showSuccess, showError, showWarning } = useToast();
+  const { showSuccess } = useToast();
   const [loading, setLoading] = useState(false);
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +71,6 @@ const CreateResumePage: React.FC = () => {
   const handleExtractJobDetails = async () => {
     if (!jobDescriptionUrl) {
       setExtractionError('Please enter a Job Posting URL.');
-      showError('Please enter a Job Posting URL.');
       return;
     }
     setLoading(true);
@@ -89,15 +90,11 @@ const CreateResumePage: React.FC = () => {
         setIsJobExtracted(false);
         const errorMsg = `Successfully contacted URL, but could not extract a usable job description. ${details.title ? 'Title found: ' + details.title + '.' : ''} Please try pasting the description manually or check the URL.`;
         setExtractionError(errorMsg);
-        showWarning(errorMsg);
       }
-    } catch (err: any) {
-      console.error('Failed to extract job details:', err);
-      const errorMessage =
-        err.response?.data?.detail || err.message || 'Failed to extract job details.';
+    } catch (err: unknown) {
+      const errorMessage = extractApiErrorMessage(err, 'Failed to extract job details.');
       setExtractionError(errorMessage);
       setIsJobExtracted(false);
-      showError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -113,7 +110,6 @@ const CreateResumePage: React.FC = () => {
       jobDescToUse = jobDescription;
       if (!jobDescToUse || jobDescToUse.trim() === '') {
         setError('Please provide a job description.');
-        showError('Job description is missing or empty.');
         setLoading(false);
         return;
       }
@@ -122,7 +118,6 @@ const CreateResumePage: React.FC = () => {
         setError(
           'Extracted job description is not available. Please extract again or enter manually.'
         );
-        showError('Extracted job description is not available.');
         setLoading(false);
         return;
       }
@@ -131,7 +126,6 @@ const CreateResumePage: React.FC = () => {
 
     if (!jobDescToUse || jobDescToUse.trim() === '') {
       setError('Job description is missing or empty.');
-      showError('Job description is missing or empty.');
       setLoading(false);
       return;
     }
@@ -151,23 +145,27 @@ const CreateResumePage: React.FC = () => {
       if (response && response.id) {
         navigate(`/resumes/${response.id}`);
       }
-    } catch (err: any) {
-      console.error('Failed to create resume:', err);
-      const errorMsg =
-        err.response?.data?.detail || err.message || 'Failed to create resume. Please try again.';
+    } catch (err: unknown) {
+      const errorMsg = extractApiErrorMessage(err, 'Failed to create resume. Please try again.');
       setError(errorMsg);
-      showError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEditPreferences = () => {
-    navigate('/profile/edit');
+    navigate('/settings/ai-preferences');
   };
 
   return (
     <Container maxWidth="md">
+      <Box sx={{ mt: 3 }}>
+        <ViewPageHeader
+          title="Create a tailored resume"
+          description="Paste a job description or extract one from a public job URL. Yarba will use your portfolio and settings to tailor the result."
+          secondaryAction={<Button onClick={() => navigate('/resumes')}>Back to resumes</Button>}
+        />
+      </Box>
       <Paper elevation={3} sx={{ p: 4, mt: 3, mb: 3 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="resume creation tabs">

@@ -23,11 +23,9 @@ import { useProfileMutations } from '../../hooks/useProfileMutations';
 import { TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from '../../components/common/DeferredTabPanel';
 import { EditPageActionBar } from '../../components/common/EditPageActionBar';
 import { IconTabBar } from '../../components/common/IconTabBar';
-import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { PageLoadingState, PageErrorState } from '../../components/common/PageState';
 import { useToast } from '../../contexts/ToastContext';
 import { PROFILE_EDIT_TABS } from '../../components/profile/edit/profileEditTabs';
-import { PROFILE_VIEW_TABS } from '../../components/profile/view/profileViewTabs';
 import type { ProfileEditTabProps, ProfilePreferencesForm } from '../../types/profileEdit';
 import {
   emptyPersonalInfo,
@@ -38,13 +36,24 @@ import { buildAppearanceFeaturesPatch } from '../../theme/appearance';
 import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
 import { createDebugger } from '../../utils/debug';
+import type { ProfilePersonalInfoForm } from '../../types/profileEdit';
 
 const debug = createDebugger('ProfileEditPage');
 
-const MEDIA_TAB_INDEX = PROFILE_VIEW_TABS.length - 2;
-const APPLICATION_TAB_INDEX = PROFILE_VIEW_TABS.length - 1;
+const MEDIA_TAB_INDEX = PROFILE_EDIT_TABS.length - 2;
+const APPLICATION_TAB_INDEX = PROFILE_EDIT_TABS.length - 1;
 
-const ProfileEditPage: React.FC = () => {
+interface ProfileEditPageProps {
+  embedded?: boolean;
+  sectionIndex?: number;
+  onDirtyChange?: (dirty: boolean) => void;
+}
+
+const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
+  embedded = false,
+  sectionIndex,
+  onDirtyChange,
+}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
@@ -70,6 +79,13 @@ const ProfileEditPage: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageVersion, setImageVersion] = useState<number>(Date.now());
+  const [isDirty, setIsDirty] = useState(false);
+  const [pendingMediaDelete, setPendingMediaDelete] = useState<'profile' | 'signature' | null>(
+    null
+  );
+  const [personalInfoErrors, setPersonalInfoErrors] = useState<
+    Partial<Record<keyof ProfilePersonalInfoForm, string>>
+  >({});
 
   const [personalInfo, setPersonalInfo] = useState(emptyPersonalInfo());
   const [lifeStory, setLifeStory] = useState('');
@@ -91,28 +107,49 @@ const ProfileEditPage: React.FC = () => {
     }
   }, [profile, formSeeded]);
 
+  useEffect(() => {
+    if (!isDirty) {
+      return;
+    }
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPersonalInfo((prev) => ({ ...prev, [name]: value }));
+    setPersonalInfoErrors((prev) => ({ ...prev, [name]: undefined }));
+    setIsDirty(true);
   };
 
   const handleLifeStoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLifeStory(e.target.value);
+    setIsDirty(true);
   };
 
   const handlePreferenceChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
     setPreferences((prev) => ({ ...prev, [name]: value }));
+    setIsDirty(true);
   };
 
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPreferences((prev) => ({ ...prev, [name]: value }));
+    setIsDirty(true);
   };
 
   const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setPreferences((prev) => ({ ...prev, [name]: checked }));
+    setIsDirty(true);
   };
 
   const handleOpenUploadDialog = (type: 'profile' | 'signature') => {
@@ -184,6 +221,7 @@ const ProfileEditPage: React.FC = () => {
 
   const tabProps: ProfileEditTabProps = {
     personalInfo,
+    personalInfoErrors,
     onPersonalInfoChange: handlePersonalInfoChange,
     lifeStory,
     onLifeStoryChange: handleLifeStoryChange,
@@ -195,14 +233,16 @@ const ProfileEditPage: React.FC = () => {
     userEmail: user?.email,
     imageVersion,
     onOpenUploadDialog: handleOpenUploadDialog,
-    onDeleteProfilePicture: handleDeleteProfilePicture,
-    onDeleteSignature: handleDeleteSignature,
+    onDeleteProfilePicture: () => setPendingMediaDelete('profile'),
+    onDeleteSignature: () => setPendingMediaDelete('signature'),
   };
 
-  const ActiveTab = PROFILE_EDIT_TABS[renderedTab]?.Tab;
+  const activeTabValue = sectionIndex ?? tabValue;
+  const activeRenderedTab = sectionIndex ?? renderedTab;
+  const ActiveTab = PROFILE_EDIT_TABS[activeRenderedTab]?.Tab;
   const uploading = uploadPicture.isPending || uploadSignatureMutation.isPending;
-  const isMediaTab = tabValue === MEDIA_TAB_INDEX;
-  const isSelfSavingTab = isMediaTab || tabValue === APPLICATION_TAB_INDEX;
+  const isMediaTab = activeTabValue === MEDIA_TAB_INDEX;
+  const isSelfSavingTab = isMediaTab || activeTabValue === APPLICATION_TAB_INDEX;
 
   const handleSavePreferences = async () => {
     const promptPreferencesData: Partial<NonNullable<Profile['prompt_preferences']>> = {
@@ -280,7 +320,21 @@ const ProfileEditPage: React.FC = () => {
     setLoading(true);
 
     try {
-      if (tabValue === 0) {
+      if (activeTabValue === 0) {
+        const nextErrors: Partial<Record<keyof ProfilePersonalInfoForm, string>> = {};
+        if (!personalInfo.full_name.trim()) {
+          nextErrors.full_name = 'Enter the name you want shown on applications.';
+        }
+        if (!personalInfo.email.trim()) {
+          nextErrors.email = 'Enter your primary contact email.';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(personalInfo.email)) {
+          nextErrors.email = 'Enter a valid email address.';
+        }
+        if (Object.keys(nextErrors).length > 0) {
+          setPersonalInfoErrors(nextErrors);
+          setLoading(false);
+          return;
+        }
         await updatePersonalInfo.mutateAsync({
           full_name: personalInfo.full_name,
           email: personalInfo.email,
@@ -292,14 +346,23 @@ const ProfileEditPage: React.FC = () => {
           calendly_url: personalInfo.calendly_url || undefined,
         });
         showSuccess('Personal information updated successfully!');
-        navigate(`/profile${tabSearchParam(tabValue)}`);
-      } else if (tabValue === 1) {
+        setIsDirty(false);
+        if (!embedded) {
+          navigate(`/profile${tabSearchParam(activeTabValue)}`);
+        }
+      } else if (activeTabValue === 1) {
         await handleSavePreferences();
-        navigate(`/profile${tabSearchParam(tabValue)}`);
-      } else if (tabValue === 2) {
+        setIsDirty(false);
+        if (!embedded) {
+          navigate(`/profile${tabSearchParam(activeTabValue)}`);
+        }
+      } else if (activeTabValue === 2) {
         await updateLifeStoryMutation.mutateAsync(lifeStory);
         showSuccess('Life story updated successfully!');
-        navigate(`/profile${tabSearchParam(tabValue)}`);
+        setIsDirty(false);
+        if (!embedded) {
+          navigate(`/profile${tabSearchParam(activeTabValue)}`);
+        }
       }
     } catch (err: unknown) {
       debug.error('Failed to update profile:', err);
@@ -310,7 +373,7 @@ const ProfileEditPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/profile${tabSearchParam(tabValue)}`);
+    navigate(embedded ? '/settings/personal' : `/profile${tabSearchParam(activeTabValue)}`);
   };
 
   if (profileLoading) {
@@ -329,14 +392,44 @@ const ProfileEditPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
-      <EditPageActionBar
-        backLabel="Back to Profile"
-        onBack={handleCancel}
-        onSave={handleSave}
-        saving={loading}
-        showSave={!isSelfSavingTab}
-      />
+    <Box sx={{ width: '100%', p: embedded ? 0 : 3 }}>
+      {!embedded && (
+        <EditPageActionBar
+          backLabel="Back to Profile"
+          onBack={handleCancel}
+          onSave={handleSave}
+          saving={loading}
+          showSave={!isSelfSavingTab}
+        />
+      )}
+
+      {embedded && !isSelfSavingTab && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 2,
+            flexDirection: { xs: 'column', sm: 'row' },
+            p: 1.5,
+            mb: 2,
+            borderRadius: 2,
+            bgcolor: 'action.hover',
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Changes in this section are saved together.
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={loading || !isDirty}
+            sx={{ minWidth: 152 }}
+          >
+            {loading ? 'Saving…' : isDirty ? 'Save changes' : 'Saved'}
+          </Button>
+        </Box>
+      )}
 
       {isMediaTab && (
         <Alert severity="info" sx={{ mb: 3 }}>
@@ -345,7 +438,7 @@ const ProfileEditPage: React.FC = () => {
         </Alert>
       )}
 
-      {tabValue === APPLICATION_TAB_INDEX && (
+      {activeTabValue === APPLICATION_TAB_INDEX && (
         <Alert severity="info" sx={{ mb: 3 }}>
           Application settings save using the buttons within this tab.
         </Alert>
@@ -357,27 +450,37 @@ const ProfileEditPage: React.FC = () => {
         </Alert>
       )}
 
-      <Paper elevation={1} sx={{ mb: 4 }}>
-        <IconTabBar
-          tabValue={tabValue}
-          onChange={handleTabChange}
-          tabs={PROFILE_EDIT_TABS}
-          idPrefix="profile-edit"
-          ariaLabel="profile edit tabs"
-        />
+      <Paper
+        elevation={embedded ? 0 : 1}
+        variant={embedded ? 'outlined' : undefined}
+        sx={{ mb: embedded ? 2 : 4, borderRadius: 2, overflow: 'hidden' }}
+      >
+        {!embedded && (
+          <IconTabBar
+            tabValue={tabValue}
+            onChange={handleTabChange}
+            tabs={PROFILE_EDIT_TABS}
+            idPrefix="profile-edit"
+            ariaLabel="profile edit tabs"
+          />
+        )}
 
         <div
           role="tabpanel"
-          id={`profile-edit-tabpanel-${renderedTab}`}
-          aria-labelledby={`profile-edit-tab-${renderedTab}`}
-          aria-busy={isTabPending}
+          id={`profile-edit-tabpanel-${activeRenderedTab}`}
+          aria-labelledby={embedded ? undefined : `profile-edit-tab-${activeRenderedTab}`}
+          aria-busy={embedded ? false : isTabPending}
         >
           <Box
             sx={{
-              p: 3,
-              minHeight: TAB_PANEL_MIN_HEIGHT,
-              opacity: isTabPending ? 0.6 : 1,
+              p: { xs: 2, sm: 3 },
+              minHeight: embedded ? 0 : TAB_PANEL_MIN_HEIGHT,
+              opacity: !embedded && isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
+              '& .MuiFormHelperText-root': {
+                fontSize: '0.75rem',
+                lineHeight: 1.4,
+              },
             }}
           >
             {ActiveTab && (
@@ -430,6 +533,35 @@ const ProfileEditPage: React.FC = () => {
             startIcon={uploading ? <CircularProgress size={20} color="inherit" /> : null}
           >
             {uploading ? 'Uploading...' : 'Upload'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={pendingMediaDelete !== null} onClose={() => setPendingMediaDelete(null)}>
+        <DialogTitle>
+          Remove {pendingMediaDelete === 'profile' ? 'profile picture' : 'signature'}?
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            This removes the image from Yarba and from future generated documents. You can upload a
+            replacement later.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPendingMediaDelete(null)}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={async () => {
+              if (pendingMediaDelete === 'profile') {
+                await handleDeleteProfilePicture();
+              } else if (pendingMediaDelete === 'signature') {
+                await handleDeleteSignature();
+              }
+              setPendingMediaDelete(null);
+            }}
+          >
+            Remove
           </Button>
         </DialogActions>
       </Dialog>
