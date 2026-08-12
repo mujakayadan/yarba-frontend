@@ -41,10 +41,7 @@ import type {
 
 type TriState = '' | 'true' | 'false';
 type ConfirmationAction =
-  | 'grant-consent'
-  | 'withdraw-consent'
-  | 'delete-demographics'
-  | 'delete-credentials';
+  'grant-consent' | 'withdraw-consent' | 'delete-demographics' | 'delete-credentials';
 
 const triStateToBool = (value: TriState): boolean | null => {
   if (value === 'true') {

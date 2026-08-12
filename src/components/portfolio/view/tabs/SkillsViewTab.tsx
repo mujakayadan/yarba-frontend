@@ -11,11 +11,7 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
           const colorIndex = index % 5;
           const colors = ['primary', 'secondary', 'success', 'info', 'warning'];
           const color = colors[colorIndex] as
-            | 'primary'
-            | 'secondary'
-            | 'success'
-            | 'info'
-            | 'warning';
+            'primary' | 'secondary' | 'success' | 'info' | 'warning';
 
           // Get skills directly from the skills property since that's what the API returns
           const skillsArray: string[] = skillCategory.skills || [];
