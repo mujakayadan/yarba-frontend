@@ -336,9 +336,7 @@ PATCH /api/v1/profiles/me
 ```json
 {
   "life_story": "string (optional)",
-  "api_keys": {
-    /* optional API keys object */
-  }
+  "api_keys": {/* optional API keys object */}
 }
 ```
 
@@ -354,42 +352,18 @@ PUT /api/v1/profiles/me/preferences
 
 ```json
 {
-  "project_details": {
-    /* optional object */
-  },
-  "work_experience_details": {
-    /* optional object */
-  },
-  "skills_details": {
-    /* optional object */
-  },
-  "career_summary_details": {
-    /* optional object */
-  },
-  "education_details": {
-    /* optional object */
-  },
-  "cover_letter_details": {
-    /* optional object */
-  },
-  "awards_details": {
-    /* optional object */
-  },
-  "publications_details": {
-    /* optional object */
-  },
-  "feature_preferences": {
-    /* optional object */
-  },
-  "notifications": {
-    /* optional object */
-  },
-  "privacy": {
-    /* optional object */
-  },
-  "llm_preferences": {
-    /* optional object */
-  }
+  "project_details": {/* optional object */},
+  "work_experience_details": {/* optional object */},
+  "skills_details": {/* optional object */},
+  "career_summary_details": {/* optional object */},
+  "education_details": {/* optional object */},
+  "cover_letter_details": {/* optional object */},
+  "awards_details": {/* optional object */},
+  "publications_details": {/* optional object */},
+  "feature_preferences": {/* optional object */},
+  "notifications": {/* optional object */},
+  "privacy": {/* optional object */},
+  "llm_preferences": {/* optional object */}
 }
 ```
 
@@ -1677,30 +1651,14 @@ Updates the user's preferences related to LLM prompt generation (e.g., constrain
 
 ```json
 {
-  "project": {
-    /* optional: e.g., {"max_projects": 5, "bullet_points_per_project": 4} */
-  },
-  "work_experience": {
-    /* optional: e.g., {"max_jobs": 5, "bullet_points_per_job": 4} */
-  },
-  "skills": {
-    /* optional: e.g., {"max_categories": 6} */
-  },
-  "career_summary": {
-    /* optional: e.g., {"max_words": 30} */
-  },
-  "education": {
-    /* optional: e.g., {"max_entries": 4} */
-  },
-  "cover_letter": {
-    /* optional: e.g., {"paragraphs": 4} */
-  },
-  "awards": {
-    /* optional: e.g., {"max_awards": 5} */
-  },
-  "publications": {
-    /* optional: e.g., {"max_publications": 4} */
-  }
+  "project": {/* optional: e.g., {"max_projects": 5, "bullet_points_per_project": 4} */},
+  "work_experience": {/* optional: e.g., {"max_jobs": 5, "bullet_points_per_job": 4} */},
+  "skills": {/* optional: e.g., {"max_categories": 6} */},
+  "career_summary": {/* optional: e.g., {"max_words": 30} */},
+  "education": {/* optional: e.g., {"max_entries": 4} */},
+  "cover_letter": {/* optional: e.g., {"paragraphs": 4} */},
+  "awards": {/* optional: e.g., {"max_awards": 5} */},
+  "publications": {/* optional: e.g., {"max_publications": 4} */}
 }
 ```
 
@@ -1718,21 +1676,11 @@ Updates the user's system-level preferences (e.g., features, LLM settings, templ
 
 ```json
 {
-  "features": {
-    /* optional: e.g., {"dark_mode": true} */
-  },
-  "notifications": {
-    /* optional: e.g., {"email_summary": false} */
-  },
-  "privacy": {
-    /* optional: e.g., {"profile_visibility": "private"} */
-  },
-  "llm": {
-    /* optional: e.g., {"model_name": "gpt-4", "temperature": 0.5} */
-  },
-  "templates": {
-    /* optional: e.g., {"default_resume_template_id": "modern"} */
-  }
+  "features": {/* optional: e.g., {"dark_mode": true} */},
+  "notifications": {/* optional: e.g., {"email_summary": false} */},
+  "privacy": {/* optional: e.g., {"profile_visibility": "private"} */},
+  "llm": {/* optional: e.g., {"model_name": "gpt-4", "temperature": 0.5} */},
+  "templates": {/* optional: e.g., {"default_resume_template_id": "modern"} */}
 }
 ```
 
