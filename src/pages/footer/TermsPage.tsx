@@ -226,8 +226,7 @@ const TermsPage: React.FC = () => {
             principles.
           </Typography>
           <Typography variant="body1" paragraph>
-            If you have any questions about these Terms, please contact us at
-            mujakayadan@outlook.com.
+            If you have any questions about these Terms, please contact us at admin@yarba.app.
           </Typography>
         </Box>
       </Paper>

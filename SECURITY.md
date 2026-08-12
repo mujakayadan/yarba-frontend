@@ -2,7 +2,29 @@
 
 ## Reporting a vulnerability
 
-If you discover a security issue, please report it privately to **mujakayadan@outlook.com** rather than opening a public GitHub issue.
+If you discover a security issue, report it privately to
+**admin@yarba.app** rather than opening a public GitHub issue. Include
+the affected page, reproduction steps, impact, and any relevant browser details.
+We aim to acknowledge reports within three business days.
+
+## Supported versions
+
+Security fixes are applied to the active development branch and latest
+production deployment. Older releases are not maintained separately.
+
+## Scope
+
+In scope:
+
+- This repository and the deployed YARBA web application
+- Authentication flows, token handling, and unauthorized data exposure
+- Cross-site scripting, unsafe redirects, and sensitive build configuration
+
+Out of scope:
+
+- Third-party services such as Firebase, Vercel, and the backend API
+- Social engineering and physical attacks
+- Denial-of-service testing against production without prior agreement
 
 ## Environment variables
 
@@ -31,3 +53,9 @@ For local development and contributions, use a dedicated Firebase project separa
 ## Production deployment
 
 Set all `VITE_*` variables in your hosting provider (e.g. Vercel project settings). Do not hardcode production URLs or credentials in source files.
+
+## Safe disclosure
+
+Use a local or staging environment when possible. Do not access another user's
+data, degrade service availability, or publicly disclose a finding before a fix
+can be coordinated.

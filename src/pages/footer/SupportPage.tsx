@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-const SUPPORT_EMAIL = 'mujakayadan@outlook.com';
+const SUPPORT_EMAIL = 'admin@yarba.app';
 
 const SupportPage: React.FC = () => {
   return (
