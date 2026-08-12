@@ -26,7 +26,7 @@ const FAQPage: React.FC = () => {
     {
       question: 'Is my data secure with YARBA?',
       answer:
-        'Yes, we take data security very seriously. All your information is encrypted and stored securely. We do not share your personal data with third parties without your consent. Please see our Privacy Policy for more details.',
+        'YARBA uses authenticated accounts and takes measures designed to protect your information. Some features use third-party service providers to process data. Please review the Privacy Policy for details.',
     },
     {
       question: 'Can I generate multiple versions of my resume?',
@@ -44,14 +44,8 @@ const FAQPage: React.FC = () => {
         'Yes, YARBA provides AI-powered cover letter creation that complements your resume. Our system generates personalized cover letters that highlight your relevant experience and match the job requirements.',
     },
     {
-      question: 'Can I download my resume in different formats?',
-      answer:
-        'Yes, you can download your resume in various formats including PDF, DOCX, and more to suit the requirements of different application systems.',
-    },
-    {
-      question: 'Is there a limit to how many resumes I can create?',
-      answer:
-        'This depends on your subscription plan. Our basic plan allows you to create a limited number of resumes, while premium plans offer unlimited resume creation.',
+      question: 'Can I download my resume?',
+      answer: 'Yes. You can generate and download a PDF version of your resume.',
     },
     {
       question: 'How do I get started with YARBA?',
@@ -61,7 +55,7 @@ const FAQPage: React.FC = () => {
     {
       question: 'What if I need help using YARBA?',
       answer:
-        'We offer comprehensive support through our help center, email support, and live chat during business hours. Visit our Support page for more information.',
+        'Visit the Support page to review common questions or email the developer for assistance.',
     },
   ];
 

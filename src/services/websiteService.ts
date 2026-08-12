@@ -1,5 +1,7 @@
 import api from './api';
 import {
+  PortfolioChatConversationDetailResponse,
+  PortfolioChatConversationListResponse,
   PortfolioWebsiteConfig,
   PortfolioWebsiteResponse,
   SubdomainAvailabilityResponse,
@@ -100,3 +102,23 @@ export const getDeploymentStatus = async (): Promise<DeploymentStatus> => {
 //   const response = await api.get<WebsiteAnalytics>(`${API_BASE_URL}/analytics`);
 //   return response.data;
 // };
+
+export const listChatConversations = async (
+  limit = 50,
+  offset = 0
+): Promise<PortfolioChatConversationListResponse> => {
+  const response = await api.get<PortfolioChatConversationListResponse>(
+    `${API_BASE_URL}/chat/conversations`,
+    { params: { limit, offset } }
+  );
+  return response.data;
+};
+
+export const getChatConversation = async (
+  conversationId: string
+): Promise<PortfolioChatConversationDetailResponse> => {
+  const response = await api.get<PortfolioChatConversationDetailResponse>(
+    `${API_BASE_URL}/chat/conversations/${conversationId}`
+  );
+  return response.data;
+};

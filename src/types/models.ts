@@ -340,6 +340,7 @@ export interface PortfolioWebsiteConfig {
   contact_form_enabled: boolean; // default: true
   chatbot_enabled?: boolean; // default: false
   chatbot_welcome_message?: string | null;
+  chatbot_store_conversations?: boolean; // default: false
 }
 
 export interface PortfolioWebsiteResponse {
@@ -366,4 +367,45 @@ export interface WebsiteAnalytics {
   traffic_sources: { [key: string]: number }; // Example: { "source_example": 50 }
   period_start: string; // datetime
   period_end: string; // datetime
+}
+
+export interface PortfolioChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  created_at: string;
+}
+
+export interface PortfolioChatConversationSummary {
+  conversation_id: string;
+  preview: string;
+  message_count: number;
+  calendly_mentioned: boolean;
+  started_at: string;
+  last_message_at: string;
+  subdomain: string;
+}
+
+export interface PortfolioChatStats {
+  total_conversations: number;
+  conversations_this_week: number;
+  total_messages: number;
+}
+
+export interface PortfolioChatConversationListResponse {
+  conversations: PortfolioChatConversationSummary[];
+  total: number;
+  stats: PortfolioChatStats;
+}
+
+export interface PortfolioChatConversationDetailResponse {
+  conversation_id: string;
+  preview: string;
+  message_count: number;
+  calendly_mentioned: boolean;
+  started_at: string;
+  last_message_at: string;
+  subdomain: string;
+  user_agent?: string | null;
+  referrer?: string | null;
+  messages: PortfolioChatMessage[];
 }

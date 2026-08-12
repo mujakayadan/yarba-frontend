@@ -10,7 +10,7 @@ const TermsPage: React.FC = () => {
           Terms of Service
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
-          Last updated: February 1, 2024
+          Last updated: August 11, 2026
         </Typography>
         <Divider sx={{ mb: 4 }} />
       </Box>
@@ -140,27 +140,10 @@ const TermsPage: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Subscription and Billing */}
-        <Box sx={{ mb: 5 }}>
-          <Typography variant="h5" component="h2" gutterBottom>
-            6. Subscription and Billing
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Some of our Services are offered on a subscription basis. By subscribing to our
-            Services, you agree to pay the applicable fees. We may change our fees at any time, but
-            will provide you with advance notice of such changes.
-          </Typography>
-          <Typography variant="body1" paragraph>
-            You can cancel your subscription at any time through your account settings. If you
-            cancel, you may use your subscription until the end of your current billing period, but
-            you will not receive a refund for any fees already paid.
-          </Typography>
-        </Box>
-
         {/* Disclaimer of Warranties */}
         <Box sx={{ mb: 5 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-            7. Disclaimer of Warranties
+            6. Disclaimer of Warranties
           </Typography>
           <Typography variant="body1" paragraph>
             THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND,
@@ -178,7 +161,7 @@ const TermsPage: React.FC = () => {
         {/* Limitation of Liability */}
         <Box sx={{ mb: 5 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-            8. Limitation of Liability
+            7. Limitation of Liability
           </Typography>
           <Typography variant="body1" paragraph>
             IN NO EVENT SHALL YARBA, ITS OFFICERS, DIRECTORS, EMPLOYEES, OR AGENTS, BE LIABLE FOR
@@ -211,7 +194,7 @@ const TermsPage: React.FC = () => {
         {/* Modifications to Terms */}
         <Box sx={{ mb: 5 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-            9. Modifications to Terms
+            8. Modifications to Terms
           </Typography>
           <Typography variant="body1" paragraph>
             We reserve the right to modify these Terms at any time. If we make changes, we will
@@ -224,7 +207,7 @@ const TermsPage: React.FC = () => {
         {/* Termination */}
         <Box sx={{ mb: 5 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-            10. Termination
+            9. Termination
           </Typography>
           <Typography variant="body1" paragraph>
             We may terminate or suspend your account and access to the Services immediately, without
@@ -236,17 +219,15 @@ const TermsPage: React.FC = () => {
         {/* Governing Law */}
         <Box>
           <Typography variant="h5" component="h2" gutterBottom>
-            11. Governing Law
+            10. Governing Law
           </Typography>
           <Typography variant="body1" paragraph>
-            These Terms shall be governed by and construed in accordance with the laws of the United
-            States, without regard to its conflict of law provisions. Any legal action or proceeding
-            relating to your access to or use of the Services shall be brought exclusively in the
-            federal or state courts located in [Jurisdiction], and you hereby consent to the
-            personal jurisdiction of such courts.
+            These Terms are governed by applicable law, without regard to conflict-of-law
+            principles.
           </Typography>
           <Typography variant="body1" paragraph>
-            If you have any questions about these Terms, please contact us at legal@yarba.ai.
+            If you have any questions about these Terms, please contact us at
+            mujakayadan@outlook.com.
           </Typography>
         </Box>
       </Paper>

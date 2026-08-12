@@ -1,6 +1,23 @@
 # Yarba Frontend
 
-Frontend for **Yarba** — an AI-powered resume, cover letter, and portfolio platform.
+Frontend for **Yarba** — an AI-powered resume, cover letter, portfolio, and job-application platform.
+
+## Features
+
+The web app is the primary UI for [yarba-backend](https://github.com/mucahitkayadan/yarba-backend). Highlights:
+
+| Area | What you can do |
+|------|-----------------|
+| **Portfolio** | Build and edit your career dataset (experience, skills, projects, life story) — the source of truth for all AI output |
+| **Resumes & cover letters** | Generate tailored LaTeX PDFs from portfolio + job posting; edit and download |
+| **Job scraping** | Paste a job URL to extract title and description for resume/cover-letter tailoring |
+| **Applications** | Track job applications and statuses |
+| **One-click portfolio website** | Choose theme → subdomain → **Create & Deploy** → live site at `{subdomain}.yarba.app` |
+| **Portfolio chatbot** | Enable an AI assistant on your deployed site (Settings on Website page); uses portfolio + life story; optional Calendly link in profile |
+| **Profile & preferences** | Personal info, life story, LLM/prompt preferences, application settings (for autofill), agent tokens (PATs) |
+| **Onboarding** | Guided setup: personal info, portfolio upload/review, life story, preferences |
+
+Browser **auto-apply** (Playwright agent) runs via the backend CLI (`scripts/apply.py`) — see the [backend AGENTS.md](https://github.com/mucahitkayadan/yarba-backend/blob/main/AGENTS.md). The dashboard exposes agent tokens and application settings that feed that workflow.
 
 ## Related repositories
 

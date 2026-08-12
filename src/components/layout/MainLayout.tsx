@@ -285,7 +285,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           )}
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             <RouterLink
-              to="/dashboard"
+              to={user ? '/dashboard' : '/'}
               style={{
                 textDecoration: 'none',
                 color: 'inherit',

@@ -36,6 +36,9 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
 }) => {
   const { showSuccess, showError } = useToast();
   const [chatbotEnabled, setChatbotEnabled] = useState(website.config.chatbot_enabled ?? false);
+  const [storeConversations, setStoreConversations] = useState(
+    website.config.chatbot_store_conversations ?? false
+  );
   const [welcomeMessage, setWelcomeMessage] = useState(
     website.config.chatbot_welcome_message ?? ''
   );
@@ -43,11 +46,17 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
 
   useEffect(() => {
     setChatbotEnabled(website.config.chatbot_enabled ?? false);
+    setStoreConversations(website.config.chatbot_store_conversations ?? false);
     setWelcomeMessage(website.config.chatbot_welcome_message ?? '');
-  }, [website.config.chatbot_enabled, website.config.chatbot_welcome_message]);
+  }, [
+    website.config.chatbot_enabled,
+    website.config.chatbot_store_conversations,
+    website.config.chatbot_welcome_message,
+  ]);
 
   const hasChanges =
     chatbotEnabled !== (website.config.chatbot_enabled ?? false) ||
+    storeConversations !== (website.config.chatbot_store_conversations ?? false) ||
     (welcomeMessage.trim() || null) !== (website.config.chatbot_welcome_message ?? null);
 
   const handleSave = async () => {
@@ -56,6 +65,7 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
       const nextConfig: PortfolioWebsiteConfig = {
         ...website.config,
         chatbot_enabled: chatbotEnabled,
+        chatbot_store_conversations: storeConversations,
         chatbot_welcome_message: welcomeMessage.trim() || null,
       };
       const updated = await updateWebsiteConfig(nextConfig);
@@ -126,6 +136,20 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
             </Link>{' '}
             in your profile. Your profile picture is used as the chat avatar.
           </Alert>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={storeConversations}
+                onChange={(e) => setStoreConversations(e.target.checked)}
+                disabled={disabled || saving}
+              />
+            }
+            label="Store visitor conversations (90 days)"
+          />
+          <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 7, mb: 2 }}>
+            Lets you review chat history on this page. Visitors see a short privacy notice in the
+            widget.
+          </Typography>
         </Box>
       )}
 

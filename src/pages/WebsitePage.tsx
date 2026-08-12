@@ -50,21 +50,33 @@ import { websiteKeys } from '../lib/queryKeys';
 import { queryClient } from '../providers/QueryProvider';
 import { defaultWebsiteColors } from '../theme/tokens';
 import WebsiteChatbotSettings from '../components/website/WebsiteChatbotSettings';
+import WebsiteChatInsights from '../components/website/WebsiteChatInsights';
 
 const THEMES = [
   {
     name: 'Modern',
     value: 'modern',
-    previewImage: '/assets/modern_preview.png',
-    description: 'A clean and professional look for your portfolio.',
+    previewImage: '/assets/modern_preview.svg',
+    description: 'Clean, professional layout with timelines and project cards.',
   },
   {
-    name: 'Three.js',
+    name: 'Developer',
     value: 'threejs',
-    previewImage: '/assets/threejs_preview.png',
-    description: 'An interactive 3D experience for your portfolio.',
+    previewImage: '/assets/threejs_preview.svg',
+    description: 'Dark developer aesthetic with animated accents and code-inspired styling.',
   },
-  // Add more themes here as they become available
+  {
+    name: 'Bento',
+    value: 'bento',
+    previewImage: '/assets/bento_preview.svg',
+    description: 'Playful bento-grid layout with bold cards and soft gradients.',
+  },
+  {
+    name: 'Neon',
+    value: 'neon',
+    previewImage: '/assets/neon_preview.svg',
+    description: 'Cyberpunk-inspired theme with glowing panels and grid backgrounds.',
+  },
 ];
 
 const DEFAULT_CONFIG: PortfolioWebsiteConfig = {
@@ -559,6 +571,10 @@ const WebsitePage: React.FC = () => {
                   }
                 }}
                 onDeploymentStarted={pollDeploymentStatus}
+              />
+              <WebsiteChatInsights
+                enabled={website.config.chatbot_enabled ?? false}
+                storageEnabled={website.config.chatbot_store_conversations ?? false}
               />
             </Paper>
           ) : (

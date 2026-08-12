@@ -1,12 +1,11 @@
 import Grid from '../mui/Grid';
 import React, { Suspense, lazy } from 'react';
-import { Container, Typography, Box, Button, Paper, Avatar } from '@mui/material';
+import { Container, Typography, Box, Button, Paper } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/system';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import BuildIcon from '@mui/icons-material/Build';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import StarIcon from '@mui/icons-material/Star';
 import MainLayout from '../components/layout/MainLayout';
 
 const AnimatedBackground = lazy(() =>
@@ -25,13 +24,6 @@ const FeaturePaper = styled(Paper)(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  backdropFilter: 'blur(5px)',
-}));
-
-const TestimonialPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  margin: theme.spacing(2, 0),
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
   backdropFilter: 'blur(5px)',
 }));
 
@@ -57,26 +49,6 @@ const MainPage: React.FC = () => {
     },
   ];
 
-  const testimonials = [
-    {
-      avatar: 'JD',
-      name: 'Jane Doe, Software Engineer',
-      quote: 'YARBA revolutionized my job hunt! The AI resume builder is a game-changer.',
-    },
-    {
-      avatar: 'SM',
-      name: 'Samuel Miller, Product Manager',
-      quote:
-        "Creating tailored cover letters used to take hours. With YARBA, it's a breeze. Highly recommended!",
-    },
-    {
-      avatar: 'CH',
-      name: 'Carlos Hernandez, UX Designer',
-      quote:
-        'My portfolio looks amazing, and I landed three interviews within a week of using YARBA.',
-    },
-  ];
-
   return (
     <MainLayout hideDrawer={true}>
       <Suspense fallback={null}>
@@ -97,36 +69,10 @@ const MainPage: React.FC = () => {
         >
           <Grid container spacing={0}>
             <Grid
-              item
-              xs={12}
-              md={5}
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                order: { xs: 1, md: 1 },
-                p: 0,
-                height: { xs: 'auto', md: '100%' },
-              }}
-            >
-              <Box
-                component="img"
-                sx={(theme) => ({
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  boxShadow: 'none',
-                  borderRadius: { xs: 0, md: '0 12px 12px 0' },
-                })}
-                alt="YARBA Hero Image"
-                src="/assets/hero.webp"
-              />
-            </Grid>
-            <Grid
               container
               item
               xs={12}
-              md={7}
+              md={12}
               sx={{
                 py: { xs: 4, md: 4 },
                 pl: { md: 4 },
@@ -203,7 +149,7 @@ const MainPage: React.FC = () => {
                     size="large"
                     sx={{ boxShadow: 3, '&:hover': { boxShadow: 5 } }}
                   >
-                    Get Started for Free
+                    Create Your Account
                   </Button>
                   <Button
                     component={RouterLink}
@@ -237,33 +183,7 @@ const MainPage: React.FC = () => {
             <Grid
               item
               xs={12}
-              md={5}
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                order: { xs: 1, md: 1 },
-                p: 0,
-                height: '100%',
-              }}
-            >
-              <Box
-                component="img"
-                sx={(theme) => ({
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  boxShadow: 'none',
-                  borderRadius: { xs: 0, md: '0 12px 12px 0' },
-                })}
-                alt="Steps to use YARBA"
-                src="/assets/steps.webp"
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={7}
+              md={12}
               sx={{
                 py: { xs: 4, md: 4 },
                 pl: { md: 4 },
@@ -336,48 +256,12 @@ const MainPage: React.FC = () => {
           </Grid>
         </Container>
 
-        <Box sx={{ backgroundColor: 'alternate.main', py: 8 }}>
-          <Container maxWidth="md">
-            <Typography
-              variant="h3"
-              component="h2"
-              gutterBottom
-              textAlign="center"
-              sx={{ mb: 6, fontWeight: 600, color: 'white' }}
-            >
-              Loved by Professionals
-            </Typography>
-            <Grid container spacing={3}>
-              {testimonials.map((testimonial, index) => (
-                <Grid item xs={12} md={4} key={index}>
-                  <TestimonialPaper elevation={3}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>{testimonial.avatar}</Avatar>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                        {testimonial.name}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" fontStyle="italic">
-                      "{testimonial.quote}"
-                    </Typography>
-                    <Box sx={{ mt: 1, textAlign: 'right' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <StarIcon key={i} sx={{ color: 'warning.main' }} />
-                      ))}
-                    </Box>
-                  </TestimonialPaper>
-                </Grid>
-              ))}
-            </Grid>
-          </Container>
-        </Box>
-
         <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
           <Typography variant="h3" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
             Ready to Elevate Your Career?
           </Typography>
           <Typography variant="h6" color="primary" paragraph sx={{ mb: 4 }}>
-            Join thousands of successful job seekers who trust YARBA.
+            Create tailored application materials from your experience and the job you want.
           </Typography>
           <Button
             component={RouterLink}
@@ -387,7 +271,7 @@ const MainPage: React.FC = () => {
             size="large"
             sx={{ py: 1.5, px: 5, fontSize: '1.2rem' }}
           >
-            Sign Up Now & Get Hired!
+            Create Your Account
           </Button>
         </Container>
       </Box>

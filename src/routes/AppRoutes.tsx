@@ -31,7 +31,6 @@ const CoverLetterEditPage = lazy(() => import('../pages/cover-letter/CoverLetter
 const AboutPage = lazy(() => import('../pages/footer/AboutPage'));
 const SupportPage = lazy(() => import('../pages/footer/SupportPage'));
 const FAQPage = lazy(() => import('../pages/footer/FAQPage'));
-const BlogPage = lazy(() => import('../pages/footer/BlogPage'));
 const PrivacyPage = lazy(() => import('../pages/footer/PrivacyPage'));
 const TermsPage = lazy(() => import('../pages/footer/TermsPage'));
 const ContactPage = lazy(() => import('../pages/footer/ContactPage'));
@@ -104,7 +103,7 @@ const AppRoutes: React.FC = () => (
         <Route path="/about" element={<AboutPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog" element={<Navigate to="/" replace />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/contact" element={<ContactPage />} />

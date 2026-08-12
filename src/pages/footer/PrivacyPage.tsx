@@ -10,7 +10,7 @@ const PrivacyPage: React.FC = () => {
           Privacy Policy
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
-          Last updated: February 1, 2024
+          Last updated: August 11, 2026
         </Typography>
         <Divider sx={{ mb: 4 }} />
       </Box>
@@ -43,7 +43,7 @@ const PrivacyPage: React.FC = () => {
           <List sx={{ pl: 2, listStyleType: 'disc' }}>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                Personal identifiers such as name, email address, and login credentials
+                Personal identifiers such as your name, email address, and account identifiers
               </Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
@@ -80,9 +80,6 @@ const PrivacyPage: React.FC = () => {
               <Typography variant="body1">Provide, maintain, and improve our services</Typography>
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
-              <Typography variant="body1">Process and complete transactions</Typography>
-            </ListItem>
-            <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
                 Send you technical notices, updates, security alerts, and support messages
               </Typography>
@@ -97,7 +94,8 @@ const PrivacyPage: React.FC = () => {
             </ListItem>
             <ListItem sx={{ display: 'list-item', pl: 0 }}>
               <Typography variant="body1">
-                Train our AI models to improve resume and cover letter generation
+                Process your requests using AI and other service providers needed to deliver YARBA's
+                features
               </Typography>
             </ListItem>
           </List>
@@ -222,10 +220,7 @@ const PrivacyPage: React.FC = () => {
             If you have questions or comments about this policy, you may contact us at:
           </Typography>
           <Typography variant="body1" paragraph>
-            Email: privacy@yarba.ai
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Address: 123 AI Boulevard, Tech City, TS 12345
+            Email: mujakayadan@outlook.com
           </Typography>
         </Box>
       </Paper>

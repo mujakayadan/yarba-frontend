@@ -1,159 +1,69 @@
-import Grid from '../../mui/Grid';
 import React from 'react';
+import EmailIcon from '@mui/icons-material/Email';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import {
-  Container,
-  Typography,
   Box,
+  Button,
   Card,
   CardContent,
+  Container,
   Divider,
-  Paper,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Button,
-  TextField,
+  Stack,
+  Typography,
 } from '@mui/material';
-import {
-  Email as EmailIcon,
-  Help as HelpIcon,
-  QuestionAnswer as FaqIcon,
-  Chat as ChatIcon,
-  PhoneCallback as CallbackIcon,
-} from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
+
+const SUPPORT_EMAIL = 'mujakayadan@outlook.com';
 
 const SupportPage: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      {/* Hero Section */}
-      <Box sx={{ mb: 8, textAlign: 'center' }}>
+    <Container maxWidth="md" sx={{ py: 6 }}>
+      <Box sx={{ mb: 6, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom>
           Support
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
-          We're here to help you with any questions or issues
+          Find an answer or contact the developer for help.
         </Typography>
-        <Divider sx={{ mb: 4 }} />
+        <Divider />
       </Box>
 
-      {/* Support Options */}
-      <Grid container spacing={4} sx={{ mb: 6 }}>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 4, height: '100%' }}>
+      <Stack spacing={3}>
+        <Card>
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <QuestionAnswerIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
             <Typography variant="h5" component="h2" gutterBottom>
-              Ways to Get Help
+              Frequently asked questions
             </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <EmailIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Email Support"
-                  secondary="Send us an email at support@yarba.ai for assistance"
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <ChatIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Live Chat"
-                  secondary="Chat with our support team during business hours"
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <FaqIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="FAQ Section"
-                  secondary="Check our frequently asked questions for quick answers"
-                />
-                <Button variant="outlined" color="primary" href="/faq" size="small" sx={{ ml: 2 }}>
-                  View FAQs
-                </Button>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <CallbackIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Request a Callback"
-                  secondary="Leave your number and we'll call you back"
-                />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Review answers about creating, editing, and downloading your application materials.
+            </Typography>
+            <Button component={RouterLink} to="/faq" variant="outlined">
+              View FAQs
+            </Button>
+          </CardContent>
+        </Card>
 
-        <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 4, height: '100%' }}>
+        <Card>
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <EmailIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
             <Typography variant="h5" component="h2" gutterBottom>
-              Contact Us Directly
+              Email support
             </Typography>
-            <Box component="form" noValidate sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label="Your Name"
-                name="name"
-                autoComplete="name"
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="message"
-                label="Your Message"
-                id="message"
-                multiline
-                rows={4}
-              />
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                Send Message
-              </Button>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Support Hours */}
-      <Paper elevation={1} sx={{ p: 4, mb: 6 }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Support Hours
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="body1" component="p" gutterBottom>
-              <strong>Email Support:</strong> 24/7 response within 24 hours
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Describe the issue and include the email address associated with your account.
             </Typography>
-            <Typography variant="body1" component="p" gutterBottom>
-              <strong>Live Chat:</strong> Monday - Friday, 9 AM - 5 PM EST
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography variant="body1" component="p" gutterBottom>
-              <strong>Callback Service:</strong> Monday - Friday, 9 AM - 5 PM EST
-            </Typography>
-            <Typography variant="body1" component="p" gutterBottom>
-              <strong>Response Time:</strong> We aim to resolve all issues within 48 hours
-            </Typography>
-          </Grid>
-        </Grid>
-      </Paper>
+            <Button
+              component="a"
+              href={`mailto:${SUPPORT_EMAIL}`}
+              variant="contained"
+              startIcon={<EmailIcon />}
+            >
+              Email Support
+            </Button>
+          </CardContent>
+        </Card>
+      </Stack>
     </Container>
   );
 };

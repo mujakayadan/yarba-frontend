@@ -6,7 +6,6 @@ import {
   Box,
   Card,
   CardContent,
-  CardMedia,
   Divider,
   Paper,
   Link,
@@ -18,8 +17,6 @@ import {
   LinkedIn as LinkedInIcon,
   GitHub as GitHubIcon,
   Email as EmailIcon,
-  Phone as PhoneIcon,
-  LocationOn as LocationIcon,
 } from '@mui/icons-material';
 
 const AboutPage: React.FC = () => {
@@ -47,8 +44,8 @@ const AboutPage: React.FC = () => {
           was time-consuming and often ineffective, with many qualified candidates being overlooked.
         </Typography>
         <Typography variant="body1" paragraph>
-          Our platform combines cutting-edge AI with human expertise to help you create
-          professional, tailored resumes and cover letters that get results.
+          Our platform uses AI to help you turn your experience into professional resumes, cover
+          letters, and portfolio websites tailored to your goals.
         </Typography>
       </Paper>
 
@@ -91,7 +88,8 @@ const AboutPage: React.FC = () => {
                   Impact
                 </Typography>
                 <Typography variant="body2">
-                  We measure our success by the careers we help launch and advance.
+                  We focus on making it easier to present relevant experience clearly for each
+                  opportunity.
                 </Typography>
               </CardContent>
             </Card>
@@ -105,8 +103,7 @@ const AboutPage: React.FC = () => {
           Meet the Developer
         </Typography>
         <Typography variant="body1" paragraph>
-          Behind YARBA is a dedicated Software Engineer with extensive experience in machine
-          learning and AI solutions.
+          YARBA is built by a software engineer focused on machine learning and AI applications.
         </Typography>
 
         <Grid container spacing={4} justifyContent="center">
@@ -122,17 +119,6 @@ const AboutPage: React.FC = () => {
                 },
               }}
             >
-              <CardMedia
-                component="img"
-                height="400"
-                image="/muja-image.png"
-                alt="Muja Kayadan"
-                sx={{ objectFit: 'cover' }}
-                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  (e.target as HTMLImageElement).src =
-                    'https://via.placeholder.com/400x400?text=Muja+Kayadan';
-                }}
-              />
               <CardContent>
                 <Typography variant="h4" component="h3" gutterBottom>
                   Muja Kayadan
@@ -208,16 +194,6 @@ const AboutPage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                     <EmailIcon sx={{ mr: 1 }} fontSize="small" />
                     mujakayadan@outlook.com
-                  </Box>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
-                    <PhoneIcon sx={{ mr: 1 }} fontSize="small" />
-                    641-233-9607
-                  </Box>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
-                    <LocationIcon sx={{ mr: 1 }} fontSize="small" />
-                    San Francisco, CA
                   </Box>
                 </Stack>
               </CardContent>

@@ -1,10 +1,8 @@
 import React from 'react';
-import { Box, Typography, Link, useTheme } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 const Footer: React.FC = () => {
-  const theme = useTheme();
-
   return (
     <Box
       component="footer"
@@ -81,17 +79,6 @@ const Footer: React.FC = () => {
               fontSize="0.875rem"
             >
               FAQ
-            </Link>
-          </Box>
-          <Box component="li" sx={{ display: 'inline' }}>
-            <Link
-              component={RouterLink}
-              to="/blog"
-              color="text.secondary"
-              underline="hover"
-              fontSize="0.875rem"
-            >
-              Blog
             </Link>
           </Box>
           <Box component="li" sx={{ display: 'inline' }}>

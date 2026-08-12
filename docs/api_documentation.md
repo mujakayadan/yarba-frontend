@@ -421,7 +421,8 @@ PATCH /api/v1/profiles/me/personal-information
   "address": "string (optional)",
   "linkedin": "string (optional)",
   "github": "string (optional)",
-  "website": "string (optional)"
+  "website": "string (optional)",
+  "calendly_url": "string (optional)"
 }
 ```
 
@@ -443,7 +444,8 @@ GET /api/v1/profiles/me/personal-information
   "address": "string (optional)",
   "linkedin": "string (optional)",
   "github": "string (optional)",
-  "website": "string (optional)"
+  "website": "string (optional)",
+  "calendly_url": "string (optional)"
 }
 ```
 
@@ -1527,6 +1529,32 @@ Returns the extracted job details.
   }
   ```
 
+## Job Applications & Auto-Apply
+
+Prefix: `/api/v1/applications`. Used by the dashboard **Applications** page and the `scripts/apply.py` CLI (via PAT with `applications:*` scopes).
+
+| Endpoint | Method | Summary |
+|----------|--------|---------|
+| `/prepare` | POST | Scrape job (if URL given), tailor resume, return autofill payload + application record |
+| `/profile` | GET | Build autofill profile for an existing resume (optional cover letter, job URL) |
+| `/` | GET | List user's job applications (paginated) |
+| `/` | POST | Create application record |
+| `/{application_id}` | GET | Get application by ID |
+| `/{application_id}` | PATCH | Update application status/metadata |
+
+**Prepare request (typical auto-apply flow):**
+
+```json
+{
+  "job_url": "https://example.com/careers/123",
+  "job_description": "string (optional if job_url provided)",
+  "compile_pdf": true,
+  "generate_cover_letter": false
+}
+```
+
+Agent tokens are managed at `/api/v1/auth/agent-tokens`. See [backend AGENTS.md](https://github.com/mucahitkayadan/yarba-backend/blob/main/AGENTS.md) for the local Playwright apply CLI.
+
 ## LinkedIn Integration
 
 > **Note:** LinkedIn integration endpoints are currently commented out in the API implementation and are not available for use. The documentation below is for reference only and will be updated when these endpoints are enabled.
@@ -1736,7 +1764,9 @@ These endpoints manage user portfolio websites, including creation, configuratio
       "custom_domain": "string (optional)",
       "enabled_sections": ["about", "experience", "education", "skills", "projects", "contact"],
       "section_order": ["about", "experience", "education", "skills", "projects", "contact"],
-      "contact_form_enabled": true
+      "contact_form_enabled": true,
+      "chatbot_enabled": false,
+      "chatbot_welcome_message": "string (optional)"
     },
     "force_rebuild": false
   }
@@ -1921,7 +1951,9 @@ These endpoints manage user portfolio websites, including creation, configuratio
   "custom_domain": "string (optional, FQDN)",
   "enabled_sections": ["string (e.g., about, experience, education, skills, projects, contact)"],
   "section_order": ["string (same as enabled_sections, defining display order)"],
-  "contact_form_enabled": "boolean (default: true)"
+  "contact_form_enabled": "boolean (default: true)",
+  "chatbot_enabled": "boolean (default: false)",
+  "chatbot_welcome_message": "string (optional, custom first message in chat widget)"
 }
 ```
 
@@ -1949,3 +1981,57 @@ These endpoints manage user portfolio websites, including creation, configuratio
 #### `WebsiteAnalytics`
 
 (As shown in "Get Website Analytics" response, structure is illustrative)
+
+## Public Portfolio API
+
+Unauthenticated endpoints for external portfolio sites and the embedded chatbot on deployed static sites. Prefix: `/api/v1/public/portfolio`.
+
+### Get Public Portfolio Content
+
+- **Endpoint:** `GET /content`
+- **Summary:** Get sanitized portfolio JSON for an external site
+- **Authentication:** Header `X-Portfolio-Site-Token: pst_...` (site token with `portfolio:read` scope)
+- **Response:** Portfolio sections, personal info, and `life_story` (no API keys or LLM usage)
+
+### Portfolio Chatbot
+
+- **Endpoint:** `POST /chat`
+- **Summary:** Chat with a portfolio site's AI assistant
+- **Authentication:** None (public); rate-limited per IP
+- **Requirements:** Site must be published and have `chatbot_enabled: true` in website config
+
+**Request body:**
+
+```json
+{
+  "subdomain": "johnsmith",
+  "message": "What are your main skills?",
+  "conversation_id": "uuid (optional)",
+  "history": [
+    { "role": "user", "content": "..." },
+    { "role": "assistant", "content": "..." }
+  ]
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "response": "Assistant reply (markdown-friendly text)",
+  "conversation_id": "uuid"
+}
+```
+
+**Notes:**
+
+- Knowledge is built live from the owner's portfolio and profile (`life_story`, optional `calendly_url` on personal info).
+- Static sites embed a chat widget that calls this endpoint from `https://{subdomain}.yarba.app` (CORS allowed via `*.yarba.app`).
+- Enable the widget via **Website → Portfolio Chatbot** in the dashboard, then redeploy.
+
+**Error responses:**
+
+- `400` — invalid subdomain format
+- `403` — chatbot disabled for this site
+- `404` — unknown or unpublished subdomain
+- `429` — rate limit exceeded
