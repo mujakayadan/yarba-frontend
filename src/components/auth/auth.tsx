@@ -99,6 +99,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     e.preventDefault();
     setLocalError(null);
     setError(null);
+    const normalizedEmail = email.trim();
 
     // Check for offline mode first
     if (isOffline) {
@@ -106,7 +107,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
       return;
     }
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       setLocalError('Please fill in all required fields');
       return;
     }
@@ -118,13 +119,14 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
       }
     }
 
-    debug.log(`Submitting ${mode} form for email: ${email}`);
+    setEmail(normalizedEmail);
+    debug.log(`Submitting ${mode} form for email: ${normalizedEmail}`);
     setIsSubmitting(true);
 
     try {
       if (mode === 'login') {
         debug.log('Attempting to log in');
-        await login(email, password);
+        await login(normalizedEmail, password);
         debug.log('Login successful');
 
         // Navigate to the appropriate route based on user state
@@ -133,7 +135,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         navigate(redirectPath, { replace: true });
       } else {
         debug.log('Attempting to register');
-        const { setupRoute } = await register(email, password);
+        const { setupRoute } = await register(normalizedEmail, password);
         debug.log('Registration successful');
 
         // Navigate directly to the setup route or dashboard
