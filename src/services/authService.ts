@@ -1,11 +1,39 @@
 import api from './api';
-import { storeToken } from '../utils/auth';
-import { RegisterRequest, LoginRequest, LoginResponse, User } from '../types/models';
-import { ApiRequestError, extractApiErrorBody, resolveAuthErrorMessage } from '../utils/apiErrors';
+import { removeToken, storeToken } from '../utils/auth';
+import type {
+  AuthActionResponse,
+  ChangePasswordRequest,
+  ConfirmVerificationRequest,
+  ForgotPasswordRequest,
+  LoginRequest,
+  LoginResponse,
+  PasswordAuthResponse,
+  PasswordCredentialsRequest,
+  RegisterRequest,
+  RequestVerificationRequest,
+  ResetPasswordRequest,
+  User,
+} from '../types/models';
+import {
+  ApiRequestError,
+  extractApiErrorBody,
+  normalizeAuthRequestError,
+  resolveAuthErrorMessage,
+} from '../utils/apiErrors';
 import axios from 'axios';
 import type { User as FirebaseUser } from 'firebase/auth';
-import { getFirebaseAuth } from '../firebaseConfig';
+import { env } from '../config/env';
 import { createDebugger } from '../utils/debug';
+import {
+  changeFirebasePassword,
+  getFirebaseToken,
+  getFirebaseUser,
+  sendFirebasePasswordReset,
+  signInWithFirebaseEmail,
+  signInWithFirebaseGoogle,
+  signOutFirebase,
+} from './firebaseAuthAdapter';
+import { requestNativeSessionRefresh } from './nativeAuthSession';
 
 const debug = createDebugger('Auth');
 
@@ -15,29 +43,19 @@ let lastTokenExchangeTime = 0;
 const TOKEN_RETRY_DELAY = 30000;
 
 export const getCurrentFirebaseUser = async (): Promise<FirebaseUser | null> => {
-  const { onAuthStateChanged } = await import('firebase/auth');
-  const auth = await getFirebaseAuth();
-
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      debug.log('Current Firebase user:', user ? `${user.email} (${user.uid})` : 'None');
-      resolve(user);
-    });
-  });
+  const user = await getFirebaseUser();
+  debug.log('Current Firebase user:', user ? `${user.email} (${user.uid})` : 'None');
+  return user;
 };
 
 export const getFirebaseIdToken = async (): Promise<string | null> => {
-  const auth = await getFirebaseAuth();
-  const user = auth.currentUser;
-  if (!user) {
-    debug.warn('No current Firebase user found when getting ID token');
-    return null;
-  }
-
   try {
     debug.log('Getting Firebase ID token');
-    const token = await user.getIdToken(true);
+    const token = await getFirebaseToken();
+    if (!token) {
+      debug.warn('No current Firebase user found when getting ID token');
+      return null;
+    }
     debug.log('Successfully retrieved Firebase ID token');
     return token;
   } catch (error) {
@@ -100,10 +118,73 @@ export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | nul
   }
 };
 
+export const passwordRegister = async (
+  data: PasswordCredentialsRequest
+): Promise<PasswordAuthResponse> => {
+  const response = await api.post<PasswordAuthResponse>('/auth/password/register', data);
+  storeToken(response.data.access_token);
+  return response.data;
+};
+
+export const passwordLogin = async (
+  data: PasswordCredentialsRequest
+): Promise<PasswordAuthResponse> => {
+  try {
+    const response = await api.post<PasswordAuthResponse>('/auth/password/login', data);
+    storeToken(response.data.access_token);
+    return response.data;
+  } catch (error: unknown) {
+    throw normalizeAuthRequestError(
+      error,
+      'Login failed. Please check your credentials and try again.'
+    );
+  }
+};
+
+export const refreshPasswordSession = async (): Promise<PasswordAuthResponse> =>
+  requestNativeSessionRefresh();
+
+export const forgotPassword = async (email: string): Promise<void> => {
+  if (!env.nativeAuth) {
+    await sendFirebasePasswordReset(email);
+    return;
+  }
+
+  const request: ForgotPasswordRequest = { email };
+  await api.post<AuthActionResponse>('/auth/password/forgot-password', request);
+};
+
+export const resetPassword = async (token: string, newPassword: string): Promise<void> => {
+  const request: ResetPasswordRequest = { token, new_password: newPassword };
+  await api.post<AuthActionResponse>('/auth/password/reset-password', request);
+};
+
+export const requestEmailVerification = async (email: string): Promise<void> => {
+  const request: RequestVerificationRequest = { email };
+  await api.post<AuthActionResponse>('/auth/password/request-verification', request);
+};
+
+export const confirmEmailVerification = async (token: string): Promise<void> => {
+  const request: ConfirmVerificationRequest = { token };
+  await api.post<AuthActionResponse>('/auth/password/confirm-verification', request);
+};
+
+export const logoutAllPasswordSessions = async (): Promise<void> => {
+  await api.post<AuthActionResponse>('/auth/password/logout-all');
+};
+
+export const deactivatePasswordAccount = async (): Promise<void> => {
+  await api.post<AuthActionResponse>('/auth/password/deactivate');
+};
+
 export const registerWithEmail = async (data: RegisterRequest): Promise<LoginResponse> => {
   try {
     debug.log('Sending registration details to backend for:', data.email);
     const { email, password } = data;
+    if (env.nativeAuth) {
+      return await passwordRegister({ email, password });
+    }
+
     const response = await api.post<LoginResponse>('/auth/register', { email, password });
     debug.log('Backend registration successful for:', data.email);
 
@@ -163,10 +244,13 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
 
 export const loginWithEmail = async (email: string, password: string): Promise<LoginResponse> => {
   try {
+    if (env.nativeAuth) {
+      debug.log('Attempting native password login with email:', email);
+      return await passwordLogin({ email, password });
+    }
+
     debug.log('Attempting Firebase login with email:', email);
-    const { signInWithEmailAndPassword } = await import('firebase/auth');
-    const auth = await getFirebaseAuth();
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithFirebaseEmail(email, password);
     debug.log('Firebase login successful');
 
     const tokenResponse = await exchangeFirebaseTokenForJWT();
@@ -183,18 +267,17 @@ export const loginWithEmail = async (email: string, password: string): Promise<L
   }
 };
 
+export const completeFirebaseEmailRegistration = async (
+  email: string,
+  password: string
+): Promise<void> => {
+  await signInWithFirebaseEmail(email, password);
+};
+
 export const loginWithGoogle = async (): Promise<LoginResponse> => {
   try {
     debug.log('Starting Google sign-in process');
-    const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
-    const auth = await getFirebaseAuth();
-
-    const provider = new GoogleAuthProvider();
-    provider.addScope('profile');
-    provider.addScope('email');
-
-    const result = await signInWithPopup(auth, provider);
-    const firebaseUser = result.user;
+    const firebaseUser = await signInWithFirebaseGoogle();
     debug.log('Google sign-in successful with Firebase user:', firebaseUser.email);
 
     let isNewUser = false;
@@ -222,17 +305,34 @@ export const loginWithGoogle = async (): Promise<LoginResponse> => {
 };
 
 export const logout = async (): Promise<void> => {
-  try {
-    debug.log('Signing out user');
-    const { signOut } = await import('firebase/auth');
-    const auth = await getFirebaseAuth();
-    await signOut(auth);
-    storeToken('');
-    debug.log('Sign out successful');
-  } catch (error) {
-    debug.error('Logout error:', error);
-    throw error;
+  debug.log('Signing out user');
+  if (env.nativeAuth) {
+    try {
+      const backendLogout = Promise.resolve().then(() =>
+        api.post<AuthActionResponse>('/auth/password/logout')
+      );
+      const firebaseLogout = Promise.resolve().then(() => signOutFirebase());
+      const cleanupResults = await Promise.allSettled([backendLogout, firebaseLogout]);
+      for (const result of cleanupResults) {
+        if (result.status === 'rejected') {
+          const message =
+            result.reason instanceof Error ? result.reason.message : 'Unknown cleanup error';
+          debug.warn('Native transition logout cleanup failed:', message);
+        }
+      }
+    } finally {
+      removeToken();
+    }
+  } else {
+    try {
+      await signOutFirebase();
+      removeToken();
+    } catch (error) {
+      debug.error('Logout error:', error);
+      throw error;
+    }
   }
+  debug.log('Sign out successful');
 };
 
 export const getCurrentUser = async (): Promise<User> => {
@@ -244,22 +344,18 @@ export const changePassword = async (
   currentPassword: string,
   newPassword: string
 ): Promise<void> => {
-  const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } =
-    await import('firebase/auth');
-  const auth = await getFirebaseAuth();
-  const user = auth.currentUser;
-
-  if (!user || !user.email) {
-    debug.error('No current Firebase user found when changing password');
-    throw new Error('You must be logged in to change your password');
+  if (env.nativeAuth) {
+    const request: ChangePasswordRequest = {
+      current_password: currentPassword,
+      new_password: newPassword,
+    };
+    await api.post<AuthActionResponse>('/auth/password/change-password', request);
+    return;
   }
 
   try {
     debug.log('Reauthenticating user before password change');
-    const credential = EmailAuthProvider.credential(user.email, currentPassword);
-    await reauthenticateWithCredential(user, credential);
-    debug.log('Updating password');
-    await updatePassword(user, newPassword);
+    await changeFirebasePassword(currentPassword, newPassword);
     debug.log('Password update successful');
   } catch (error: unknown) {
     debug.error('Error changing password:', error);

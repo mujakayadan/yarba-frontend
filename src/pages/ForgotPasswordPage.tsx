@@ -11,12 +11,12 @@ import {
   Toolbar,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFirebaseAuth } from '../firebaseConfig';
+import { forgotPassword } from '../services/authService';
+import { extractApiErrorMessage } from '../utils/apiErrors';
 
 const RESET_CONFIRMATION =
-  'If an account exists for that email, Firebase will send password reset instructions.';
+  'If an account exists for that email, password reset instructions will be sent.';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -38,11 +38,15 @@ const ForgotPasswordPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const auth = await getFirebaseAuth();
-      await sendPasswordResetEmail(auth, normalizedEmail);
+      await forgotPassword(normalizedEmail);
       setConfirmation(RESET_CONFIRMATION);
-    } catch {
-      setError('Unable to send reset instructions. Check your connection and try again.');
+    } catch (error: unknown) {
+      setError(
+        extractApiErrorMessage(
+          error,
+          'Unable to send reset instructions. Check your connection and try again.'
+        )
+      );
     } finally {
       setIsSubmitting(false);
     }

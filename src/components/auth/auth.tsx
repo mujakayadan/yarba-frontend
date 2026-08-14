@@ -17,10 +17,13 @@ import GoogleIcon from '@mui/icons-material/Google';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useAuth } from '../../contexts/AuthContext';
+import { type ProviderSignInResult, useAuth } from '../../contexts/AuthContext';
 import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorHandler';
 import { createDebugger } from '../../utils/debug';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { env } from '../../config/env';
+import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
+import NativeOAuthButtons from './NativeOAuthButtons';
 
 const debug = createDebugger('FirebaseAuth');
 
@@ -45,6 +48,8 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     login,
     register,
     signInWithGoogleFlow,
+    completeGoogleProviderSignIn,
+    completeAppleProviderSignIn,
     error: contextError,
     setError,
     isOfflineMode,
@@ -59,6 +64,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
   const isOffline = isOfflineMode || (location.state && location.state.offline);
+  const nativeOAuthEnabled = env.nativeAuth && env.nativeOAuth;
 
   // Effect to redirect when authentication state changes
   useEffect(() => {
@@ -113,6 +119,13 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     }
 
     if (mode === 'register') {
+      if (env.nativeAuth) {
+        const passwordError = validateNativePassword(password);
+        if (passwordError) {
+          setLocalError(passwordError);
+          return;
+        }
+      }
       if (password !== confirmPassword) {
         setLocalError('Passwords do not match');
         return;
@@ -142,9 +155,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         debug.log(`Navigating to ${setupRoute} after registration`);
         navigate(setupRoute, { replace: true });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg =
-        mode === 'register' ? getAuthErrorMessage(error) : getFirebaseErrorMessage(error);
+        mode === 'register' || env.nativeAuth
+          ? getAuthErrorMessage(error)
+          : getFirebaseErrorMessage(error);
       debug.error(`${mode} error:`, error);
       setLocalError(errorMsg);
     } finally {
@@ -174,13 +189,17 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
       const navigateTo = setupRoute || getRedirectPathForUser();
       debug.log(`Navigating to ${navigateTo} after Google sign-in`);
       navigate(navigateTo, { replace: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg = getFirebaseErrorMessage(error);
       debug.error('Google sign-in error:', error);
       setLocalError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleNativeProviderAuthenticated = (result: ProviderSignInResult) => {
+    navigate(result.setupRoute, { replace: true });
   };
 
   // Toggle between login and register modes
@@ -347,6 +366,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isSubmitting}
+                    helperText={
+                      mode === 'register' && env.nativeAuth
+                        ? NATIVE_PASSWORD_POLICY_MESSAGE
+                        : undefined
+                    }
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -425,16 +449,25 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                 </Typography>
               </Divider>
 
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<GoogleIcon />}
-                onClick={handleGoogleSignIn}
-                disabled={isSubmitting}
-                sx={{ mb: 2 }}
-              >
-                Continue with Google
-              </Button>
+              {nativeOAuthEnabled ? (
+                <NativeOAuthButtons
+                  disabled={isSubmitting}
+                  onGoogleToken={completeGoogleProviderSignIn}
+                  onAppleToken={completeAppleProviderSignIn}
+                  onAuthenticated={handleNativeProviderAuthenticated}
+                />
+              ) : (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<GoogleIcon />}
+                  onClick={handleGoogleSignIn}
+                  disabled={isSubmitting}
+                  sx={{ mb: 2 }}
+                >
+                  Continue with Google
+                </Button>
+              )}
 
               <Box sx={{ textAlign: 'right', mt: 1 }}>
                 <Link component="button" variant="body2" onClick={toggleMode} type="button">

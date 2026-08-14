@@ -1,3 +1,4 @@
+import axios from 'axios';
 import type { ApiErrorResponse } from '../types/models';
 
 type ValidationErrorDetail = {
@@ -53,6 +54,25 @@ export const resolveAuthErrorMessage = (
   }
 
   return { message: fallback, errorCode };
+};
+
+export const normalizeAuthRequestError = (error: unknown, fallback: string): Error => {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      const body = extractApiErrorBody(error.response.data);
+      const { message, errorCode } = resolveAuthErrorMessage(body, fallback);
+      return new ApiRequestError(message, {
+        errorCode,
+        status: error.response.status,
+      });
+    }
+    return new ApiRequestError(
+      'Unable to reach the server. Please check your connection and try again.',
+      { errorCode: 'network_error' }
+    );
+  }
+
+  return error instanceof Error ? error : new Error(fallback);
 };
 
 const formatValidationDetail = (detail: unknown): string | null => {

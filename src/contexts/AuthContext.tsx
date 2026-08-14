@@ -7,13 +7,26 @@ import {
   loginWithGoogle as loginWithGoogleService,
   logout,
   getCurrentFirebaseUser,
+  completeFirebaseEmailRegistration,
+  refreshPasswordSession,
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
-import { UpdateSetupProgressRequest, User, UserSetupProgressResponse } from '../types/models';
+import {
+  PasswordAuthResponse,
+  UpdateSetupProgressRequest,
+  User,
+  UserSetupProgressResponse,
+} from '../types/models';
 import { AUTH_UNAUTHORIZED_EVENT } from '../utils/authEvents';
 import { clearAuthenticatedUserCache } from '../lib/clearUserQueryCache';
+import { env } from '../config/env';
+import { getToken, removeToken } from '../utils/auth';
+import { exchangeAppleIdToken, exchangeGoogleIdToken } from '../services/oauthService';
 
 const debug = createDebugger('AuthContext');
+
+const getErrorMessage = (error: unknown, fallback: string): string =>
+  error instanceof Error ? error.message : fallback;
 
 // Define user setup steps explicitly
 export enum UserSetupStep {
@@ -50,11 +63,21 @@ export interface AuthContextState {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<{ setupRoute: string }>;
   signInWithGoogleFlow: () => Promise<{ isNewUser?: boolean; setupRoute?: string }>;
+  completeGoogleProviderSignIn: (idToken: string) => Promise<ProviderSignInResult>;
+  completeAppleProviderSignIn: (
+    idToken: string,
+    displayName?: string
+  ) => Promise<ProviderSignInResult>;
   signOut: () => Promise<void>;
   setError: (error: string | null) => void;
   updateProfile: (profileData: Record<string, unknown>) => Promise<void>;
   updateUserSetupProgress: (data: UpdateSetupProgressRequest) => Promise<void>;
   getRedirectPathForUser: () => string;
+}
+
+export interface ProviderSignInResult {
+  isNewUser: boolean;
+  setupRoute: string;
 }
 
 // Create the context with a default value
@@ -70,6 +93,8 @@ const AuthContext = createContext<AuthContextState>({
   login: async () => {},
   register: async () => ({ setupRoute: '' }),
   signInWithGoogleFlow: async () => ({ isNewUser: false }),
+  completeGoogleProviderSignIn: async () => ({ isNewUser: false, setupRoute: '/dashboard' }),
+  completeAppleProviderSignIn: async () => ({ isNewUser: false, setupRoute: '/dashboard' }),
   signOut: async () => {},
   setError: () => {},
   updateProfile: async () => {},
@@ -142,7 +167,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to fetch current user data from backend
   const fetchCurrentUser = async () => {
     debug.log('Fetching current user data from backend');
-    const token = localStorage.getItem('auth_token');
+    const token = getToken();
 
     if (!token) {
       debug.warn('No auth token found in localStorage');
@@ -160,23 +185,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
-      const response = await api.get('/auth/me');
+      const response = await api.get<User>('/auth/me');
       debug.log('User data successfully fetched from /auth/me', response.data);
 
       setUser(response.data);
       setIsAuthenticated(true);
       updateSetupState(response.data.current_setup_step);
       setLoading(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Error fetching user data:', err);
-      // Clear token if it's invalid
-      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      const status =
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof err.response === 'object' &&
+        err.response !== null &&
+        'status' in err.response
+          ? err.response.status
+          : undefined;
+      if (status === 401 || status === 403) {
         debug.warn('Token is invalid, clearing authentication');
-        localStorage.removeItem('auth_token');
+        removeToken();
         setIsAuthenticated(false);
         setUser(null);
       }
-      setError(err.message);
+      setError(getErrorMessage(err, 'Unable to restore your session'));
       setLoading(false);
     }
   };
@@ -201,7 +234,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const handleUnauthorized = () => {
       debug.warn('Unauthorized API response received');
       clearAuthenticatedUserCache();
-      localStorage.removeItem('auth_token');
+      removeToken();
       setIsAuthenticated(false);
       setUser(null);
       setLoading(false);
@@ -217,11 +250,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return;
         }
 
-        const token = localStorage.getItem('auth_token');
+        const token = getToken();
         if (token) {
           debug.log('Restoring session from stored auth token');
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           await fetchCurrentUser();
+          return;
+        }
+
+        if (env.nativeAuth) {
+          debug.log('Restoring native session from refresh cookie');
+          try {
+            await refreshPasswordSession();
+            await fetchCurrentUser();
+          } catch {
+            removeToken();
+            setIsAuthenticated(false);
+            setUser(null);
+            setLoading(false);
+          }
           return;
         }
 
@@ -263,9 +310,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const result = await loginWithEmail(email, password);
-      const fbUser = await getCurrentFirebaseUser();
-      setFirebaseUser(fbUser);
-      debug.log('Firebase login successful');
+      if (env.nativeAuth) {
+        setFirebaseUser(null);
+        debug.log('Native password login successful');
+      } else {
+        const fbUser = await getCurrentFirebaseUser();
+        setFirebaseUser(fbUser);
+        debug.log('Firebase login successful');
+      }
       setIsAuthenticated(true);
 
       if (result.user) {
@@ -274,9 +326,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Login error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Login failed'));
       setLoading(false);
       throw err;
     } finally {
@@ -303,16 +355,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const result = await registerWithEmail({ email, password });
 
-      const { signInWithEmailAndPassword } = await import('firebase/auth');
-      const { getFirebaseAuth } = await import('../firebaseConfig');
-      const auth = await getFirebaseAuth();
-      await signInWithEmailAndPassword(auth, email, password);
-
-      const fbUser = await getCurrentFirebaseUser();
-      setFirebaseUser(fbUser);
+      if (env.nativeAuth) {
+        setFirebaseUser(null);
+      } else {
+        await completeFirebaseEmailRegistration(email, password);
+        const fbUser = await getCurrentFirebaseUser();
+        setFirebaseUser(fbUser);
+      }
       debug.log(
         result.registration_resumed
-          ? 'Registration resumed for existing Firebase account'
+          ? 'Registration resumed for existing account'
           : 'Registration successful'
       );
       setIsAuthenticated(true);
@@ -328,9 +380,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         typeof step === 'number' ? setupStepToRoute[step as UserSetupStep] : null;
 
       return { setupRoute: routeFromStep || '/dashboard' };
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Registration error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Registration failed'));
       setLoading(false);
       throw err;
     } finally {
@@ -375,15 +427,54 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isNewUser: result.is_new_user,
         setupRoute: routeFromStep || '/dashboard',
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Google sign-in error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Google sign-in failed'));
       setLoading(false);
       throw err;
     } finally {
       setLoading(false);
     }
   };
+
+  const applyNativeProviderSession = (result: PasswordAuthResponse): ProviderSignInResult => {
+    setFirebaseUser(null);
+    setIsAuthenticated(true);
+    setUser({ ...result.user, current_setup_step: result.current_setup_step });
+    updateSetupState(result.current_setup_step);
+
+    const routeFromStep = setupStepToRoute[result.current_setup_step as UserSetupStep];
+    return {
+      isNewUser: result.is_new_user,
+      setupRoute: routeFromStep || '/dashboard',
+    };
+  };
+
+  const completeNativeProviderSignIn = async (
+    exchangeToken: () => Promise<PasswordAuthResponse>
+  ): Promise<ProviderSignInResult> => {
+    try {
+      setLoading(true);
+      setError(null);
+      clearAuthenticatedUserCache();
+      const result = await exchangeToken();
+      return applyNativeProviderSession(result);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Provider sign-in failed'));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const completeGoogleProviderSignIn = (idToken: string): Promise<ProviderSignInResult> =>
+    completeNativeProviderSignIn(() => exchangeGoogleIdToken(idToken));
+
+  const completeAppleProviderSignIn = (
+    idToken: string,
+    displayName?: string
+  ): Promise<ProviderSignInResult> =>
+    completeNativeProviderSignIn(() => exchangeAppleIdToken(idToken, displayName));
 
   // Sign out function
   const signOut = async () => {
@@ -395,7 +486,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       clearAuthenticatedUserCache();
       // Clean up local state
-      localStorage.removeItem('auth_token');
+      removeToken();
       delete api.defaults.headers.common['Authorization'];
 
       setUser(null);
@@ -405,9 +496,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSetupRoute(null);
 
       debug.log('Sign out successful');
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Sign out error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Sign out failed'));
+      if (env.nativeAuth) {
+        clearAuthenticatedUserCache();
+        removeToken();
+        delete api.defaults.headers.common['Authorization'];
+        setUser(null);
+        setFirebaseUser(null);
+        setIsAuthenticated(false);
+        setSetupStep(UserSetupStep.NONE);
+        setSetupRoute(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -428,9 +529,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Update local user state
       await fetchCurrentUser();
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Profile update error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Profile update failed'));
       throw err;
     } finally {
       setLoading(false);
@@ -459,9 +560,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Refresh user data
       await fetchCurrentUser();
-    } catch (err: any) {
+    } catch (err: unknown) {
       debug.error('Setup progress update error:', err);
-      setError(err.message);
+      setError(getErrorMessage(err, 'Setup progress update failed'));
       throw err;
     } finally {
       setLoading(false);
@@ -481,6 +582,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login,
     register,
     signInWithGoogleFlow,
+    completeGoogleProviderSignIn,
+    completeAppleProviderSignIn,
     signOut,
     setError,
     updateProfile,

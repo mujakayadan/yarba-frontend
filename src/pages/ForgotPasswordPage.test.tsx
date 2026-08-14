@@ -3,17 +3,11 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import { forgotPassword } from '../services/authService';
 import ForgotPasswordPage from './ForgotPasswordPage';
 
-const mockAuth = {};
-
-vi.mock('../firebaseConfig', () => ({
-  getFirebaseAuth: vi.fn(async () => mockAuth),
-}));
-
-vi.mock('firebase/auth', () => ({
-  sendPasswordResetEmail: vi.fn(),
+vi.mock('../services/authService', () => ({
+  forgotPassword: vi.fn(),
 }));
 
 describe('ForgotPasswordPage', () => {
@@ -23,7 +17,7 @@ describe('ForgotPasswordPage', () => {
 
   it('sends reset instructions for the normalized email address', async () => {
     const user = userEvent.setup();
-    vi.mocked(sendPasswordResetEmail).mockResolvedValue();
+    vi.mocked(forgotPassword).mockResolvedValue();
 
     render(
       <MemoryRouter>
@@ -37,10 +31,10 @@ describe('ForgotPasswordPage', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Send reset instructions' }));
 
-    expect(sendPasswordResetEmail).toHaveBeenCalledWith(mockAuth, 'user@example.com');
+    expect(forgotPassword).toHaveBeenCalledWith('user@example.com');
     expect(
       await screen.findByText(
-        'If an account exists for that email, Firebase will send password reset instructions.'
+        'If an account exists for that email, password reset instructions will be sent.'
       )
     ).toBeInTheDocument();
   });

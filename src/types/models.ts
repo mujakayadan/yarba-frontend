@@ -5,8 +5,10 @@ export interface User {
   email: string;
   is_active: boolean;
   is_superuser: boolean;
-  last_login: string;
-  last_active: string;
+  email_verified?: boolean;
+  auth_provider?: string;
+  last_login?: string;
+  last_active?: string;
   // Extended profile fields
   full_name?: string;
   bio?: string;
@@ -253,6 +255,33 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface PasswordCredentialsRequest {
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  new_password: string;
+}
+
+export interface RequestVerificationRequest {
+  email: string;
+}
+
+export interface ConfirmVerificationRequest {
+  token: string;
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
@@ -266,6 +295,36 @@ export interface LoginResponse {
   is_new_user?: boolean;
   registration_resumed?: boolean;
   current_setup_step?: number;
+}
+
+export interface PasswordAuthResponse {
+  user: User;
+  access_token: string;
+  token_type: string;
+  access_token_expires_in: number;
+  is_new_user: boolean;
+  current_setup_step: number;
+  registration_resumed: boolean;
+}
+
+export type OAuthProvider = 'google' | 'apple';
+
+export interface OAuthNonceResponse {
+  nonce: string;
+  expires_in: number;
+}
+
+export interface GoogleOAuthExchangeRequest {
+  id_token: string;
+}
+
+export interface AppleOAuthExchangeRequest {
+  id_token: string;
+  display_name?: string;
+}
+
+export interface AuthActionResponse {
+  message: string;
 }
 
 export interface ApiErrorResponse {

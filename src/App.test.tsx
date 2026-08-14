@@ -15,6 +15,8 @@ vi.mock('./services/authService', () => ({
   logout: vi.fn(),
   exchangeFirebaseTokenForJWT: vi.fn(),
   getCurrentFirebaseUser: vi.fn(async () => null),
+  completeFirebaseEmailRegistration: vi.fn(),
+  refreshPasswordSession: vi.fn(),
 }));
 
 vi.mock('@vercel/analytics/react', () => ({

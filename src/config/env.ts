@@ -7,6 +7,13 @@ export const env = {
   apiUrl: readEnv('VITE_API_URL'),
   cloudfrontUrl: readEnv('VITE_CLOUDFRONT_URL'),
   debug: import.meta.env.VITE_DEBUG === 'true',
+  nativeAuth: import.meta.env.VITE_NATIVE_AUTH === 'true',
+  nativeOAuth: import.meta.env.VITE_NATIVE_OAUTH === 'true',
+  oauth: {
+    googleClientId: readEnv('VITE_GOOGLE_CLIENT_ID'),
+    appleServiceId: readEnv('VITE_APPLE_SERVICE_ID'),
+    appleRedirectUri: readEnv('VITE_APPLE_REDIRECT_URI'),
+  },
   firebase: {
     apiKey: readEnv('VITE_FIREBASE_API_KEY'),
     authDomain: readEnv('VITE_FIREBASE_AUTH_DOMAIN'),

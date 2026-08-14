@@ -19,16 +19,22 @@ export const getAuthErrorMessage = (error: unknown): string => {
 /**
  * Extract a user-friendly error message from Firebase errors
  */
-export const getFirebaseErrorMessage = (error: any): string => {
+export const getFirebaseErrorMessage = (error: unknown): string => {
   if (!error) {
     return 'An unknown error occurred';
   }
 
+  const firebaseError =
+    typeof error === 'object' && error !== null
+      ? (error as { message?: unknown; code?: unknown })
+      : {};
+
   // Extract standard error message
-  let errorMessage = error.message || 'An error occurred';
+  let errorMessage =
+    typeof firebaseError.message === 'string' ? firebaseError.message : 'An error occurred';
 
   // Extract Firebase error code
-  const errorCode = error.code || '';
+  const errorCode = typeof firebaseError.code === 'string' ? firebaseError.code : '';
 
   // If the error is from Firebase, it typically includes 'Firebase:'
   // Extract the more readable part

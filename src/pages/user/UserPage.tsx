@@ -26,13 +26,15 @@ import { useToast } from '../../contexts/ToastContext';
 import { changePassword } from '../../services/authService';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
+import { env } from '../../config/env';
+import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
 
 interface UserPageProps {
   embedded?: boolean;
 }
 
 const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { showSuccess, showError } = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -64,7 +66,13 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
       setError('New password is required');
       return false;
     }
-    if (newPassword.length < 6) {
+    if (env.nativeAuth) {
+      const passwordError = validateNativePassword(newPassword);
+      if (passwordError) {
+        setError(passwordError);
+        return false;
+      }
+    } else if (newPassword.length < 6) {
       setError('New password must be at least 6 characters');
       return false;
     }
@@ -87,13 +95,19 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
 
     try {
       await changePassword(currentPassword, newPassword);
-      showSuccess('Password changed successfully');
-      // Clear form
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      if (env.nativeAuth) {
+        showSuccess('Password changed. For your security, sign in again.');
+        await signOut();
+      } else {
+        showSuccess('Password changed successfully');
+      }
     } catch (err: unknown) {
-      showError(extractApiErrorMessage(err, 'Failed to change password'));
+      const message = extractApiErrorMessage(err, 'Failed to change password');
+      setError(message);
+      showError(message);
     } finally {
       setLoading(false);
     }
@@ -183,7 +197,11 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
                       </InputAdornment>
                     ),
                   }}
-                  helperText="Password must be at least 6 characters long"
+                  helperText={
+                    env.nativeAuth
+                      ? NATIVE_PASSWORD_POLICY_MESSAGE
+                      : 'Password must be at least 6 characters long'
+                  }
                 />
 
                 <TextField
