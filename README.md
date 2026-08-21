@@ -126,7 +126,7 @@ sequenceDiagram
 
 | Layer          | Technology                   | Notes                                                           |
 | -------------- | ---------------------------- | --------------------------------------------------------------- |
-| UI             | React 19, TypeScript 5       | Functional components; strict typing                            |
+| UI             | React 19, TypeScript 7       | Functional components; strict typing                            |
 | Build          | Vite 8                       | Dev server on port 3000; `tsc --noEmit` on build                |
 | Components     | Material UI 7, Emotion       | MUI only for UI; use `Grid` from `src/mui/Grid.tsx`             |
 | Routing        | React Router 7               | Pages under `src/pages/`                                        |
@@ -195,11 +195,11 @@ flowchart LR
   Hook --> Prettier
 ```
 
-| Tool                    | Config                                                               | Role                                                       |
-| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **ESLint**              | `.eslintrc.cjs`, `eslint-config-react-app`, `eslint-config-prettier` | `npm run lint`                                             |
-| **Prettier**            | `.prettierrc`, `.prettierignore`                                     | `npm run format` / `npm run format:check`                  |
-| **Husky + lint-staged** | `.husky/pre-commit`                                                  | On `git commit`: format and `eslint --fix` on staged files |
+| Tool                    | Config                                            | Role                                                       |
+| ----------------------- | ------------------------------------------------- | ---------------------------------------------------------- |
+| **ESLint**              | `eslint.config.js` (ESLint 9 + typescript-eslint) | `npm run lint`                                             |
+| **Prettier**            | `.prettierrc`, `.prettierignore`                  | `npm run format` / `npm run format:check`                  |
+| **Husky + lint-staged** | `.husky/pre-commit`                               | On `git commit`: format and `eslint --fix` on staged files |
 
 After `npm install`, the `prepare` script registers Git hooks automatically.
 
@@ -210,10 +210,10 @@ for every pull request and push to `main`.
 
 ### Other quality tooling
 
-| Tool       | Command / usage                       |
-| ---------- | ------------------------------------- |
-| TypeScript | `npm run build` runs `tsc --noEmit`   |
-| Tests      | `npm test` — Vitest + Testing Library |
+| Tool         | Command / usage                                                                        |
+| ------------ | -------------------------------------------------------------------------------------- |
+| TypeScript 7 | `npm run build` runs `tsc --noEmit` (ESLint still uses the TypeScript 6 API until 7.1) |
+| Tests        | `npm test` — Vitest + Testing Library                                                  |
 
 ## Deployment
 
