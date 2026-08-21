@@ -271,7 +271,13 @@ const EditResumePage: React.FC = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+                mb: 0.5,
+              }}
+            >
               Job Description
             </Typography>
             <Box

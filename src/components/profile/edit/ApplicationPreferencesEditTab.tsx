@@ -310,7 +310,13 @@ export const ApplicationPreferencesEditTab: React.FC<ProfileEditTabProps> = () =
 
   return (
     <>
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         These answers are used when automation agents fill job applications. Only provide truthful
         information — agents will never invent legal, eligibility, or EEO answers.
       </Typography>

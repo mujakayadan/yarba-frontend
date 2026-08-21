@@ -23,7 +23,12 @@ export const ProjectsEditTab: React.FC<ProjectsEditTabProps> = ({ form }) => {
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
           >
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {project.name || 'Untitled Project'}
             </Typography>
 
@@ -122,7 +127,12 @@ export const ProjectsEditTab: React.FC<ProjectsEditTabProps> = ({ form }) => {
             ))}
 
             {project.bullet_points.length === 0 && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 No project details added yet
               </Typography>
             )}

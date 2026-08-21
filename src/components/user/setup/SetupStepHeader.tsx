@@ -15,13 +15,24 @@ export const SetupStepHeader: React.FC<SetupStepHeaderProps> = ({
   description,
 }) => (
   <Box sx={{ mb: 4 }}>
-    <Typography variant="overline" color="text.secondary">
+    <Typography
+      variant="overline"
+      sx={{
+        color: 'text.secondary',
+      }}
+    >
       Step {activeStep + 1} of {SETUP_STEPS.length}
     </Typography>
     <Typography component="h1" variant="h4" gutterBottom>
       {title}
     </Typography>
-    <Typography color="text.secondary" sx={{ mb: 3, maxWidth: 680 }}>
+    <Typography
+      sx={{
+        color: 'text.secondary',
+        mb: 3,
+        maxWidth: 680,
+      }}
+    >
       {description}
     </Typography>
     <Stepper activeStep={activeStep} alternativeLabel>

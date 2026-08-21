@@ -54,9 +54,12 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
       </Typography>
       <Typography
         variant="body2"
-        color="text.secondary"
         align="center"
-        sx={{ mb: 2, maxWidth: 420 }}
+        sx={{
+          color: 'text.secondary',
+          mb: 2,
+          maxWidth: 420,
+        }}
       >
         Shown in the app navigation and on your profile. You can skip this and add one later.
       </Typography>

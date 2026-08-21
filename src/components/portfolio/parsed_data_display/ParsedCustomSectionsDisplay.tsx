@@ -30,7 +30,6 @@ const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = 
                     {section.title || 'N/A'}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <Box sx={{ whiteSpace: 'pre-wrap', mt: 0.5 }}>
                     {typeof section.content === 'string' && (
@@ -58,6 +57,9 @@ const ParsedCustomSectionsDisplay: React.FC<ParsedCustomSectionsDisplayProps> = 
                     )}
                   </Box>
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < customSections.sections.length - 1 && (

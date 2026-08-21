@@ -88,7 +88,12 @@ export const WebsiteThemeSelector: React.FC<WebsiteThemeSelectorProps> = ({
                 <Typography variant="h6" component="h3" gutterBottom>
                   {theme.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {theme.description}
                 </Typography>
               </CardContent>

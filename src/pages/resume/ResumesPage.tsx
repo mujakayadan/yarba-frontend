@@ -482,14 +482,16 @@ const ResumesPage: React.FC = () => {
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
           sx={{ mb: 0 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
         />
       </Paper>
 
@@ -576,18 +578,35 @@ const ResumesPage: React.FC = () => {
                     <TableCell>{formatUnderscoredText(resume.company_name)}</TableCell>
                     <TableCell>{formatUnderscoredText(getJobTitle(resume))}</TableCell>
                     <TableCell>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {formatDate(resume.updated_at)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                       <ButtonGroup size="small" variant="outlined">
-                        <Tooltip title="View" placement="top" TransitionProps={{ timeout: 0 }}>
+                        <Tooltip
+                          title="View"
+                          placement="top"
+                          slotProps={{
+                            transition: { timeout: 0 },
+                          }}
+                        >
                           <Button onClick={() => handleViewResume(resume.id)}>
                             <VisibilityIcon fontSize="small" />
                           </Button>
                         </Tooltip>
-                        <Tooltip title="See PDF" placement="top" TransitionProps={{ timeout: 0 }}>
+                        <Tooltip
+                          title="See PDF"
+                          placement="top"
+                          slotProps={{
+                            transition: { timeout: 0 },
+                          }}
+                        >
                           <Button
                             variant="outlined"
                             startIcon={
@@ -603,7 +622,13 @@ const ResumesPage: React.FC = () => {
                             {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
                           </Button>
                         </Tooltip>
-                        <Tooltip title="Delete" placement="top" TransitionProps={{ timeout: 0 }}>
+                        <Tooltip
+                          title="Delete"
+                          placement="top"
+                          slotProps={{
+                            transition: { timeout: 0 },
+                          }}
+                        >
                           <Button
                             onClick={() => {
                               setSelectedResumeId(resume.id);
@@ -617,7 +642,9 @@ const ResumesPage: React.FC = () => {
                         <Tooltip
                           title="More options"
                           placement="top"
-                          TransitionProps={{ timeout: 0 }}
+                          slotProps={{
+                            transition: { timeout: 0 },
+                          }}
                         >
                           <Button onClick={(e) => handleMenuOpen(e, resume.id)}>
                             <MoreVertIcon fontSize="small" />
@@ -650,7 +677,12 @@ const ResumesPage: React.FC = () => {
                 flexWrap: 'wrap',
               }}
             >
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {totalResumes === 0
                   ? 'No results'
                   : `Showing ${startItem}-${endItem} of ${totalResumes} resume${totalResumes !== 1 ? 's' : ''}`}
@@ -726,7 +758,12 @@ const ResumesPage: React.FC = () => {
         </MenuItem>
         <MenuItem onClick={() => selectedResumeId && handleOpenPortfolioDialog(selectedResumeId)}>
           <ListItemIcon>
-            <LinkIcon fontSize="small" sx={{ mr: 1 }} />
+            <LinkIcon
+              sx={{
+                fontSize: 'small',
+                mr: 1,
+              }}
+            />
           </ListItemIcon>
           Attach Portfolio
         </MenuItem>

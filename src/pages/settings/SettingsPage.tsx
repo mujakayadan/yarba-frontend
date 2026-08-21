@@ -217,8 +217,14 @@ const SettingsPage: React.FC = () => {
           >
             <Typography
               variant="overline"
-              color="text.secondary"
-              sx={{ display: 'block', px: 2.5, pb: 1, fontWeight: 700, letterSpacing: 1 }}
+              sx={{
+                color: 'text.secondary',
+                display: 'block',
+                px: 2.5,
+                pb: 1,
+                fontWeight: 700,
+                letterSpacing: 1,
+              }}
             >
               Categories
             </Typography>
@@ -254,9 +260,13 @@ const SettingsPage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: item.slug === section.slug ? 700 : 500,
+                    slotProps={{
+                      primary: {
+                        sx: {
+                          fontSize: '0.9rem',
+                          fontWeight: item.slug === section.slug ? 700 : 500,
+                        },
+                      },
                     }}
                   />
                 </ListItemButton>
@@ -295,7 +305,13 @@ const SettingsPage: React.FC = () => {
               >
                 {section.label}
               </Typography>
-              <Typography color="text.secondary">{section.description}</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                {section.description}
+              </Typography>
             </Box>
           </Box>
           <Divider sx={{ mb: 3 }} />

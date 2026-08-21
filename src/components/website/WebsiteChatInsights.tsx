@@ -43,19 +43,34 @@ const formatDate = (value: string) =>
 const StatsRow: React.FC<{ stats: PortfolioChatStats }> = ({ stats }) => (
   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
     <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         Total conversations
       </Typography>
       <Typography variant="h5">{stats.total_conversations}</Typography>
     </Paper>
     <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         This week
       </Typography>
       <Typography variant="h5">{stats.conversations_this_week}</Typography>
     </Paper>
     <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         Messages stored
       </Typography>
       <Typography variant="h5">{stats.total_messages}</Typography>
@@ -79,7 +94,14 @@ const ConversationDialog: React.FC<{
       )}
       {!loading && detail && (
         <Stack spacing={2}>
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{
+              flexWrap: 'wrap',
+            }}
+          >
             <Chip size="small" label={`Started ${formatDate(detail.started_at)}`} />
             <Chip size="small" label={`${detail.message_count} messages`} />
             {detail.calendly_mentioned && (
@@ -92,7 +114,13 @@ const ConversationDialog: React.FC<{
             )}
           </Stack>
           {(detail.referrer || detail.user_agent) && (
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                display: 'block',
+              }}
+            >
               {detail.referrer ? `Referrer: ${detail.referrer}` : null}
               {detail.referrer && detail.user_agent ? ' · ' : null}
               {detail.user_agent ? `Browser: ${detail.user_agent}` : null}
@@ -122,8 +150,11 @@ const ConversationDialog: React.FC<{
               </Paper>
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ mt: 0.5, display: 'block' }}
+                sx={{
+                  color: 'text.secondary',
+                  mt: 0.5,
+                  display: 'block',
+                }}
               >
                 {message.role === 'user' ? 'Visitor' : 'Assistant'} ·{' '}
                 {formatDate(message.created_at)}
@@ -191,13 +222,26 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
 
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+          mb: 1,
+        }}
+      >
         <Forum color="primary" />
         <Typography variant="h6" component="h2">
           Visitor conversations
         </Typography>
       </Stack>
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         Review what visitors asked your portfolio chatbot. Conversations are kept for 90 days.
       </Typography>
 
@@ -247,7 +291,12 @@ export const WebsiteChatInsights: React.FC<WebsiteChatInsightsProps> = ({
                     {conversation.calendly_mentioned ? (
                       <Chip size="small" color="success" label="Yes" />
                     ) : (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         —
                       </Typography>
                     )}

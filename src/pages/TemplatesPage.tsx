@@ -211,7 +211,14 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="h6" component="div">
                           {template.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mt: 1,
+                            mb: 2,
+                          }}
+                        >
                           {template.description}
                         </Typography>
                         <Button
@@ -262,7 +269,14 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="h6" component="div">
                           {template.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mt: 1,
+                            mb: 2,
+                          }}
+                        >
                           {template.description}
                         </Typography>
                         <Button
@@ -307,7 +321,14 @@ const TemplatesPage: React.FC = () => {
                         <Typography variant="h6" component="div">
                           {preamble.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mt: 1,
+                            mb: 2,
+                          }}
+                        >
                           {preamble.description}
                         </Typography>
                         <Button

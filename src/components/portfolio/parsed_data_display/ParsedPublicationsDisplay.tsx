@@ -35,21 +35,35 @@ const ParsedPublicationsDisplay: React.FC<ParsedPublicationsDisplayProps> = ({ p
                     {pub.name || 'N/A'}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
                     {pub.publisher && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Publisher: {pub.publisher}
                       </Typography>
                     )}
                     {pub.time && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Time: {pub.time}
                       </Typography>
                     )}
                     {pub.link && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Link:{' '}
                         <MuiLink href={pub.link} target="_blank" rel="noopener noreferrer">
                           {pub.link}
@@ -58,6 +72,9 @@ const ParsedPublicationsDisplay: React.FC<ParsedPublicationsDisplayProps> = ({ p
                     )}
                   </>
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < publications.length - 1 && <Divider component="li" sx={{ my: 1 }} />}

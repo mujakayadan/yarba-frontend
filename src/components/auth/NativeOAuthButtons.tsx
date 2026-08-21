@@ -181,7 +181,12 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
           {error}
         </Alert>
       ) : null}
-      <Stack spacing={1.5} alignItems="center">
+      <Stack
+        spacing={1.5}
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         {googleConfigured && env.oauth.googleClientId ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: 44, width: '100%' }}>
             {disabled ? (

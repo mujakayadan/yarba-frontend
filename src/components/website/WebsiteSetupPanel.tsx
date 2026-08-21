@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { CheckCircleOutline, ErrorOutline, Language } from '@mui/icons-material';
+import { CheckCircleOutlined, ErrorOutlined, Language } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import Grid from '../../mui/Grid';
 import { PagePrimaryButton } from '../common/PagePrimaryButton';
@@ -72,19 +72,31 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
           spacing={1}
-          sx={{ mb: 3 }}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            mb: 3,
+          }}
         >
           <Box>
-            <Typography variant="overline" color="primary.main">
+            <Typography
+              variant="overline"
+              sx={{
+                color: 'primary.main',
+              }}
+            >
               Step {activeStep + 1} of {SETUP_STEP_COUNT}
             </Typography>
             <Typography variant="h5" component="h2">
               {activeStep === 0 ? 'Choose your website style' : 'Choose your web address'}
             </Typography>
-            <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+                mt: 0.5,
+              }}
+            >
               {activeStep === 0
                 ? 'Select the design that best represents your work. You can preview every option below.'
                 : 'Pick a memorable address for your portfolio. We will check it before publishing.'}
@@ -100,7 +112,13 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
         {activeStep === 0 ? (
           <>
             <WebsiteThemeSelector selectedTheme={selectedTheme} onChange={onThemeChange} />
-            <Stack direction="row" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'flex-end',
+                mt: 3,
+              }}
+            >
               <PagePrimaryButton onClick={() => onStepChange(1)}>Continue</PagePrimaryButton>
             </Stack>
           </>
@@ -118,30 +136,57 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
                   'Use at least 3 letters, numbers, or hyphens. Enter only the first part of the address.'
                 }
                 error={subdomainAvailable === false || Boolean(subdomainError)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography color="text.secondary">.yarba.app</Typography>
-                        {isCheckingSubdomain ? (
-                          <CircularProgress size={18} />
-                        ) : subdomainAvailable === true ? (
-                          <CheckCircleOutline color="success" fontSize="small" />
-                        ) : subdomainAvailable === false ? (
-                          <ErrorOutline color="error" fontSize="small" />
-                        ) : null}
-                      </Stack>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
+                            .yarba.app
+                          </Typography>
+                          {isCheckingSubdomain ? (
+                            <CircularProgress size={18} />
+                          ) : subdomainAvailable === true ? (
+                            <CheckCircleOutlined color="success" fontSize="small" />
+                          ) : subdomainAvailable === false ? (
+                            <ErrorOutlined color="error" fontSize="small" />
+                          ) : null}
+                        </Stack>
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
 
               {suggestedSubdomains.length > 0 && (
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                      mb: 1,
+                    }}
+                  >
                     Available alternatives
                   </Typography>
-                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    useFlexGap
+                    sx={{
+                      flexWrap: 'wrap',
+                    }}
+                  >
                     {suggestedSubdomains.map((suggestion) => (
                       <Chip
                         key={suggestion}
@@ -200,13 +245,24 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
             </Grid>
             <Grid item xs={12} md={5}>
               <Paper variant="outlined" sx={{ p: 2.5, bgcolor: 'action.hover' }}>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Publishing summary
                 </Typography>
                 <Typography variant="h6" sx={{ mt: 1 }}>
                   {selectedThemeOption.name} theme
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mt: 0.5,
+                  }}
+                >
                   {selectedThemeOption.description}
                 </Typography>
                 <Typography variant="subtitle2" sx={{ mt: 2 }}>

@@ -324,7 +324,12 @@ const ViewResumePage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {info.full_name && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Full Name
                 </Typography>
                 <Typography variant="body2">{info.full_name}</Typography>
@@ -332,7 +337,12 @@ const ViewResumePage: React.FC = () => {
             )}
             {info.email && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Email
                 </Typography>
                 <Typography variant="body2">{info.email}</Typography>
@@ -340,7 +350,12 @@ const ViewResumePage: React.FC = () => {
             )}
             {info.phone && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Phone
                 </Typography>
                 <Typography variant="body2">{info.phone}</Typography>
@@ -352,7 +367,12 @@ const ViewResumePage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {info.address && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Address
                 </Typography>
                 <Typography variant="body2">{info.address}</Typography>
@@ -360,7 +380,12 @@ const ViewResumePage: React.FC = () => {
             )}
             {info.website && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Website
                 </Typography>
                 <Typography variant="body2">
@@ -372,7 +397,12 @@ const ViewResumePage: React.FC = () => {
             )}
             {(info.linkedin || info.github) && (
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Profiles
                 </Typography>
                 <Stack direction="row" spacing={1}>
@@ -403,7 +433,12 @@ const ViewResumePage: React.FC = () => {
         </Grid>
         {info.summary && (
           <Grid item xs={12}>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Summary
             </Typography>
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -452,11 +487,25 @@ const ViewResumePage: React.FC = () => {
       return (
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
           A{' '}
-          <Typography component="span" variant="body1" fontWeight="bold" display="inline">
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{
+              fontWeight: 'bold',
+              display: 'inline',
+            }}
+          >
             {jobTitle}
           </Typography>{' '}
           with{' '}
-          <Typography component="span" variant="body1" fontWeight="bold" display="inline">
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{
+              fontWeight: 'bold',
+              display: 'inline',
+            }}
+          >
             {summary.years_of_experience} years
           </Typography>{' '}
           of experience {summary.default_summary}
@@ -469,7 +518,12 @@ const ViewResumePage: React.FC = () => {
       <Box>
         {summary.job_title && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Job Title
             </Typography>
             <Typography variant="body2">{summary.job_title}</Typography>
@@ -480,7 +534,12 @@ const ViewResumePage: React.FC = () => {
           Array.isArray(summary.job_titles) &&
           summary.job_titles.length > 0 && (
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Professional Titles
               </Typography>
               <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
@@ -493,7 +552,12 @@ const ViewResumePage: React.FC = () => {
 
         {summary.years_of_experience && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Experience
             </Typography>
             <Typography variant="body2">{summary.years_of_experience} years</Typography>
@@ -502,7 +566,12 @@ const ViewResumePage: React.FC = () => {
 
         {summary.default_summary && (
           <Box>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Professional Summary
             </Typography>
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -632,7 +701,12 @@ const ViewResumePage: React.FC = () => {
           <Box key={index} sx={{ display: 'flex', mb: 3 }}>
             {/* Date column */}
             <Box sx={{ width: '120px', pr: 2, pt: 1 }}>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {job.time || formatDateRange(job.start_date, job.end_date, job.current)}
               </Typography>
             </Box>
@@ -666,7 +740,13 @@ const ViewResumePage: React.FC = () => {
               </Typography>
 
               {job.description && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mt: 1,
+                  }}
+                >
                   {job.description}
                 </Typography>
               )}
@@ -674,7 +754,13 @@ const ViewResumePage: React.FC = () => {
               {(job.achievements || job.responsibilities) &&
                 (job.achievements?.length > 0 || job.responsibilities?.length > 0) && (
                   <Box sx={{ mt: 1 }}>
-                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="caption"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Key Achievements:
                     </Typography>
                     <List dense sx={{ pl: 2, mt: 0.5 }}>
@@ -686,7 +772,9 @@ const ViewResumePage: React.FC = () => {
                           >
                             <ListItemText
                               primary={achievement}
-                              primaryTypographyProps={{ variant: 'body2' }}
+                              slotProps={{
+                                primary: { variant: 'body2' },
+                              }}
                             />
                           </ListItem>
                         )
@@ -747,7 +835,12 @@ const ViewResumePage: React.FC = () => {
           <Box key={index} sx={{ display: 'flex', mb: 3 }}>
             {/* Date column */}
             <Box sx={{ width: '120px', pr: 2, pt: 1 }}>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {edu.time || formatDateRange(edu.start_date, edu.end_date, edu.current)}
               </Typography>
             </Box>
@@ -784,7 +877,12 @@ const ViewResumePage: React.FC = () => {
                 )}
                 {edu.GPA && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       GPA: {edu.GPA}
                     </Typography>
                   </Box>
@@ -792,7 +890,13 @@ const ViewResumePage: React.FC = () => {
               </Typography>
 
               {edu.description && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mt: 1,
+                  }}
+                >
                   {edu.description}
                 </Typography>
               )}
@@ -800,7 +904,13 @@ const ViewResumePage: React.FC = () => {
               {(edu.courses || edu.transcript) &&
                 (edu.courses?.length > 0 || edu.transcript?.length > 0) && (
                   <Box sx={{ mt: 1 }}>
-                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="caption"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Relevant Courses:
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
@@ -871,13 +981,22 @@ const ViewResumePage: React.FC = () => {
                             rel="noopener noreferrer"
                             sx={{ ml: 1 }}
                           >
-                            <LinkIcon fontSize="small" />
+                            <LinkIcon
+                              sx={{
+                                fontSize: 'small',
+                              }}
+                            />
                           </IconButton>
                         </Tooltip>
                       )}
                     </Box>
                     {(project.date || project.start_date) && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {project.date ||
                           formatDateRange(project.start_date, project.end_date, project.current)}
                       </Typography>
@@ -892,7 +1011,13 @@ const ViewResumePage: React.FC = () => {
 
                   {project.bullet_points && project.bullet_points.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                      <Typography variant="caption" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="caption"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Key Points:
                       </Typography>
                       <List dense sx={{ pl: 2 }}>
@@ -918,10 +1043,23 @@ const ViewResumePage: React.FC = () => {
 
                   {project.technologies && project.technologies.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                      <Typography variant="caption" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="caption"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Technologies Used:
                       </Typography>
-                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        sx={{
+                          flexWrap: 'wrap',
+                        }}
+                      >
                         {project.technologies.map((tech: string, techIdx: number) => (
                           <Chip key={techIdx} label={tech} size="small" variant="outlined" />
                         ))}
@@ -981,12 +1119,22 @@ const ViewResumePage: React.FC = () => {
                       rel="noopener noreferrer"
                       sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}
                     >
-                      <LinkIcon fontSize="small" />
+                      <LinkIcon
+                        sx={{
+                          fontSize: 'small',
+                        }}
+                      />
                       <Typography variant="body2">Verify</Typography>
                     </Link>
                   )}
                   {cert.description && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        mt: 1,
+                      }}
+                    >
                       {cert.description}
                     </Typography>
                   )}
@@ -1058,7 +1206,13 @@ const ViewResumePage: React.FC = () => {
               primary={award.title || award.name}
               secondary={
                 <>
-                  <Typography component="span" variant="body2" color="text.primary">
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: 'text.primary',
+                    }}
+                  >
                     {award.issuer}
                   </Typography>
                   {award.date && (
@@ -1075,7 +1229,13 @@ const ViewResumePage: React.FC = () => {
                     </>
                   )}
                   {(award.description || award.explanation) && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        mt: 1,
+                      }}
+                    >
                       {award.description || award.explanation}
                     </Typography>
                   )}
@@ -1157,14 +1317,24 @@ const ViewResumePage: React.FC = () => {
                       target="_blank"
                       sx={{ ml: 1 }}
                     >
-                      <LinkIcon fontSize="small" />
+                      <LinkIcon
+                        sx={{
+                          fontSize: 'small',
+                        }}
+                      />
                     </IconButton>
                   )}
                 </Typography>
               }
               secondary={
                 <>
-                  <Typography component="span" variant="body2" color="text.primary">
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: 'text.primary',
+                    }}
+                  >
                     {pub.publisher}
                   </Typography>
                   {(pub.date || pub.time) && (
@@ -1182,12 +1352,24 @@ const ViewResumePage: React.FC = () => {
                     </>
                   )}
                   {pub.authors && pub.authors.length > 0 && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        mt: 0.5,
+                      }}
+                    >
                       Authors: {pub.authors.join(', ')}
                     </Typography>
                   )}
                   {pub.description && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        mt: 1,
+                      }}
+                    >
                       {pub.description}
                     </Typography>
                   )}
@@ -1238,7 +1420,12 @@ const ViewResumePage: React.FC = () => {
           renderPublications(content)
         ) : // Fallback to the original JSON display if no specialized renderer exists
         typeof content === 'string' ? (
-          <Typography variant="body2" whiteSpace="pre-wrap">
+          <Typography
+            variant="body2"
+            sx={{
+              whiteSpace: 'pre-wrap',
+            }}
+          >
             {content}
           </Typography>
         ) : (
@@ -1306,7 +1493,13 @@ const ViewResumePage: React.FC = () => {
         <Link underline="hover" color="inherit" onClick={handleBack} sx={{ cursor: 'pointer' }}>
           Resumes
         </Link>
-        <Typography color="text.primary">{resume.title}</Typography>
+        <Typography
+          sx={{
+            color: 'text.primary',
+          }}
+        >
+          {resume.title}
+        </Typography>
       </Breadcrumbs>
 
       {/* Header with Title and Actions */}
@@ -1330,7 +1523,12 @@ const ViewResumePage: React.FC = () => {
             )}
             {resume.company_name && <Chip label={resume.company_name} size="small" />}
           </Stack>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Last updated: {formatDate(resume.updated_at)}
           </Typography>
         </Box>
@@ -1418,21 +1616,36 @@ const ViewResumePage: React.FC = () => {
             }}
           >
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Template
               </Typography>
               <Typography variant="body2">{resume.template_id}</Typography>
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Created
               </Typography>
               <Typography variant="body2">{formatDate(resume.created_at)}</Typography>
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Updated
               </Typography>
               <Typography variant="body2">{formatDate(resume.updated_at)}</Typography>
@@ -1441,7 +1654,12 @@ const ViewResumePage: React.FC = () => {
 
           {resume.job_description_url && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Job Description URL
               </Typography>
               <Link href={resume.job_description_url} target="_blank" rel="noopener noreferrer">
@@ -1452,7 +1670,12 @@ const ViewResumePage: React.FC = () => {
 
           {resume.job_description && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Job Description
               </Typography>
               <Box

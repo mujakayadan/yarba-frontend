@@ -31,8 +31,10 @@ export const ProjectsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => 
               <Typography
                 variant="h6"
                 component="div"
-                color="primary.main"
-                sx={{ fontWeight: 'bold' }}
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 'bold',
+                }}
               >
                 {project.name}
               </Typography>
@@ -47,12 +49,22 @@ export const ProjectsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => 
                   aria-label={`Link to ${project.name}`}
                   sx={{ ml: 1 }}
                 >
-                  <LinkIcon fontSize="small" />
+                  <LinkIcon
+                    sx={{
+                      fontSize: 'small',
+                    }}
+                  />
                 </IconButton>
               )}
             </Box>
             {(project.date || project.start_date) && (
-              <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontStyle: 'italic',
+                }}
+              >
                 {project.date || project.start_date}
               </Typography>
             )}
@@ -66,7 +78,13 @@ export const ProjectsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => 
 
           {project.bullet_points && project.bullet_points.length > 0 && (
             <Box sx={{ mt: 1 }}>
-              <Typography variant="caption" color="text.secondary" gutterBottom>
+              <Typography
+                variant="caption"
+                gutterBottom
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Key Points:
               </Typography>
               <List dense sx={{ pl: 2 }}>
@@ -92,7 +110,13 @@ export const ProjectsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => 
 
           {project.technologies && project.technologies.length > 0 && (
             <Box sx={{ mt: 2, mb: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 1,
+                }}
+              >
                 Technologies:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -111,7 +135,12 @@ export const ProjectsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) => 
         </Box>
       ))}
       {sortedProjects.length === 0 && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No projects added yet
         </Typography>
       )}
