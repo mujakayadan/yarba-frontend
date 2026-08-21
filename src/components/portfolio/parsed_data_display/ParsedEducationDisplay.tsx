@@ -27,29 +27,52 @@ const ParsedEducationDisplay: React.FC<ParsedEducationDisplayProps> = ({ educati
                     {edu.degree_type ? ` (${edu.degree_type})` : ''}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {edu.university_name || 'N/A'}
                     </Typography>
                     {edu.location && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Location: {edu.location}
                       </Typography>
                     )}
                     {edu.time && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Time: {edu.time}
                       </Typography>
                     )}
                     {edu.GPA && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         GPA: {edu.GPA}
                       </Typography>
                     )}
                     {edu.transcript && edu.transcript.length > 0 && (
-                      <Box mt={1}>
+                      <Box
+                        sx={{
+                          mt: 1,
+                        }}
+                      >
                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                           Transcript/Notes:
                         </Typography>
@@ -70,6 +93,9 @@ const ParsedEducationDisplay: React.FC<ParsedEducationDisplayProps> = ({ educati
                     )}
                   </>
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < education.length - 1 && <Divider component="li" sx={{ my: 1 }} />}

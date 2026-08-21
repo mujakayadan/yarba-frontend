@@ -111,7 +111,13 @@ const DataPrivacySettings: React.FC = () => {
     <Stack spacing={3}>
       <Paper variant="outlined" sx={{ p: 3 }}>
         <Typography variant="h6">Optional analytics</Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           Help Yarba understand page and feature usage through Vercel Analytics. Authentication,
           security, and necessary session storage remain active regardless of this choice.
         </Typography>
@@ -135,7 +141,13 @@ const DataPrivacySettings: React.FC = () => {
 
       <Paper variant="outlined" sx={{ p: 3 }}>
         <Typography variant="h6">Download your data</Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           Request a portable archive of account, profile, portfolio, document, application, website,
           and stored chat information. Raw passwords, credentials, and token secrets are never
           included.
@@ -149,7 +161,12 @@ const DataPrivacySettings: React.FC = () => {
           </Alert>
         ) : null}
         {exportStatus.data?.status === 'ready' && exportStatus.data.download_url ? (
-          <Stack spacing={1} alignItems="flex-start">
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: 'flex-start',
+            }}
+          >
             <Button
               component="a"
               href={exportStatus.data.download_url}
@@ -158,7 +175,12 @@ const DataPrivacySettings: React.FC = () => {
             >
               Download archive
             </Button>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Available until {formatDate(exportStatus.data.expires_at)}
             </Typography>
           </Stack>
@@ -189,10 +211,21 @@ const DataPrivacySettings: React.FC = () => {
       </Paper>
 
       <Paper variant="outlined" sx={{ p: 3, borderColor: 'error.main' }}>
-        <Typography variant="h6" color="error.main">
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'error.main',
+          }}
+        >
           Delete account
         </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           Account deletion removes your public website, documents, profile, application data, stored
           conversations, tokens, and associated files after the displayed grace period. Records
           under a valid legal hold may be retained or pseudonymized.

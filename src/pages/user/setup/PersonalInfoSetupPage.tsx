@@ -205,8 +205,10 @@ const PersonalInfoSetupPage: React.FC = () => {
                 label="Email Address"
                 value={user?.email || ''}
                 disabled // Email is generally not editable here
-                InputProps={{
-                  readOnly: true,
+                slotProps={{
+                  input: {
+                    readOnly: true,
+                  },
                 }}
               />
             </Grid>

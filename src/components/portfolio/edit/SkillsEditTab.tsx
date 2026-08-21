@@ -95,7 +95,13 @@ export const SkillsEditTab: React.FC<SkillsEditTabProps> = ({ form }) => {
                   sx={{ borderStyle: 'dashed', m: 0.5 }}
                 />
                 {category.skills.length === 0 && (
-                  <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                      ml: 1,
+                    }}
+                  >
                     No skills added yet
                   </Typography>
                 )}

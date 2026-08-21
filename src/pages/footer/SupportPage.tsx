@@ -22,7 +22,13 @@ const SupportPage: React.FC = () => {
         <Typography variant="h3" component="h1" gutterBottom>
           Support
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+            mb: 4,
+          }}
+        >
           Find an answer or contact the developer for help.
         </Typography>
         <Divider />
@@ -35,7 +41,13 @@ const SupportPage: React.FC = () => {
             <Typography variant="h5" component="h2" gutterBottom>
               Frequently asked questions
             </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                marginBottom: '16px',
+              }}
+            >
               Review answers about creating, editing, and downloading your application materials.
             </Typography>
             <Button component={RouterLink} to="/faq" variant="outlined">
@@ -50,7 +62,13 @@ const SupportPage: React.FC = () => {
             <Typography variant="h5" component="h2" gutterBottom>
               Email support
             </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                marginBottom: '16px',
+              }}
+            >
               Describe the issue and include the email address associated with your account.
             </Typography>
             <Button

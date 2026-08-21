@@ -150,7 +150,14 @@ const CoverLetterEditPage: React.FC = () => {
   return (
     <Box sx={{ width: '100%', p: 3 }}>
       <Paper elevation={1} sx={{ p: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 2,
+          }}
+        >
           <Typography variant="h5">{pageTitle}</Typography>
           <Stack direction="row" spacing={1}>
             <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
@@ -193,7 +200,14 @@ const CoverLetterEditPage: React.FC = () => {
           variant="outlined"
         />
 
-        <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: 'flex-end',
+            mt: 3,
+          }}
+        >
           <Button
             variant="contained"
             startIcon={<SaveIcon />}

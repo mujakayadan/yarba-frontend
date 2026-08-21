@@ -29,7 +29,13 @@ export const ViewPageHeader: React.FC<ViewPageHeaderProps> = ({
         {title}
       </Typography>
       {description && (
-        <Typography color="text.secondary" sx={{ mt: 0.5, maxWidth: 720 }}>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+            mt: 0.5,
+            maxWidth: 720,
+          }}
+        >
           {description}
         </Typography>
       )}

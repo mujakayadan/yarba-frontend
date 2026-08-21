@@ -213,7 +213,13 @@ const CoverLetterViewPage: React.FC = () => {
         <MuiLink underline="hover" color="inherit" onClick={handleBack} sx={{ cursor: 'pointer' }}>
           Cover Letters
         </MuiLink>
-        <Typography color="text.primary">{coverLetterTitle}</Typography>
+        <Typography
+          sx={{
+            color: 'text.primary',
+          }}
+        >
+          {coverLetterTitle}
+        </Typography>
       </Breadcrumbs>
 
       <Box
@@ -296,35 +302,60 @@ const CoverLetterViewPage: React.FC = () => {
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Template
               </Typography>
               <Typography variant="body2">{coverLetter.template_id}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Created
               </Typography>
               <Typography variant="body2">{formatDate(coverLetter.created_at)}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Updated
               </Typography>
               <Typography variant="body2">{formatDate(coverLetter.updated_at)}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Resume ID
               </Typography>
               <Typography variant="body2">{coverLetter.resume_id}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Has PDF
               </Typography>
               {/* Reverted to check has_pdf */}
@@ -383,7 +414,12 @@ const CoverLetterViewPage: React.FC = () => {
                   >
                     {profileData.personal_information.full_name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {profileData.personal_information.email &&
                       `${profileData.personal_information.email}`}
                     {profileData.personal_information.phone &&
@@ -434,7 +470,12 @@ const CoverLetterViewPage: React.FC = () => {
                 </Box>
               ) : (
                 <Box sx={{ mb: 4, textAlign: 'center', borderBottom: '1px solid #eee', pb: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Personal information not available.
                   </Typography>
                 </Box>
@@ -499,7 +540,12 @@ const CoverLetterViewPage: React.FC = () => {
               </Box>
             </Paper>
           ) : (
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               No content is available or content is not in the expected format. Generate or edit the
               cover letter to add content.
             </Typography>

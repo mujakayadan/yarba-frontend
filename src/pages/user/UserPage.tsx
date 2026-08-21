@@ -129,7 +129,13 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
               <Typography variant="h6">Agent Access Tokens</Typography>
             </Box>
             <Divider sx={{ mb: 2 }} />
-            <Typography variant="body2" color="text.secondary" paragraph>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                marginBottom: '16px',
+              }}
+            >
               Create personal access tokens for apply automation agents. Tokens are scoped and can
               be revoked at any time.
             </Typography>
@@ -160,20 +166,24 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   fullWidth
                   required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleCurrentPasswordVisibility}
-                          edge="end"
-                          aria-label={
-                            showCurrentPassword ? 'Hide current password' : 'Show current password'
-                          }
-                        >
-                          {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleToggleCurrentPasswordVisibility}
+                            edge="end"
+                            aria-label={
+                              showCurrentPassword
+                                ? 'Hide current password'
+                                : 'Show current password'
+                            }
+                          >
+                            {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
 
@@ -184,24 +194,26 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
                   onChange={(e) => setNewPassword(e.target.value)}
                   fullWidth
                   required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleNewPasswordVisibility}
-                          edge="end"
-                          aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
-                        >
-                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
                   helperText={
                     env.nativeAuth
                       ? NATIVE_PASSWORD_POLICY_MESSAGE
                       : 'Password must be at least 6 characters long'
                   }
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleToggleNewPasswordVisibility}
+                            edge="end"
+                            aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                          >
+                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
 
                 <TextField
@@ -211,29 +223,31 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   fullWidth
                   required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleConfirmPasswordVisibility}
-                          edge="end"
-                          aria-label={
-                            showConfirmPassword
-                              ? 'Hide confirmed password'
-                              : 'Show confirmed password'
-                          }
-                        >
-                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
                   error={newPassword !== confirmPassword && confirmPassword !== ''}
                   helperText={
                     newPassword !== confirmPassword && confirmPassword !== ''
                       ? "Passwords don't match"
                       : ''
                   }
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleToggleConfirmPasswordVisibility}
+                            edge="end"
+                            aria-label={
+                              showConfirmPassword
+                                ? 'Hide confirmed password'
+                                : 'Show confirmed password'
+                            }
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
 
                 <Button
@@ -258,21 +272,36 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
             <Divider sx={{ mb: 2 }} />
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Email
               </Typography>
               <Typography variant="body1">{user?.email || 'Not available'}</Typography>
             </Box>
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Username
               </Typography>
               <Typography variant="body1">{user?.username || 'Not available'}</Typography>
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Last Login
               </Typography>
               <Typography variant="body1">

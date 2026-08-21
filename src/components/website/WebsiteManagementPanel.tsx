@@ -79,11 +79,19 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
           spacing={2}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+          }}
         >
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <Box
               sx={{
                 display: 'grid',
@@ -152,7 +160,12 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
                   <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Web address
                     </Typography>
                     <Typography sx={{ mt: 0.5, wordBreak: 'break-word' }}>
@@ -162,7 +175,12 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Theme
                     </Typography>
                     <Typography sx={{ mt: 0.5, textTransform: 'capitalize' }}>
@@ -172,7 +190,12 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Last updated
                     </Typography>
                     <Typography sx={{ mt: 0.5 }}>
@@ -184,7 +207,14 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
 
               <Box>
                 <Typography variant="h6">Rebuild your website</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mt: 0.5,
+                    mb: 2,
+                  }}
+                >
                   Publish the latest portfolio information and regenerate all website files.
                 </Typography>
                 <Button
@@ -201,10 +231,22 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
                 variant="outlined"
                 sx={{ p: 2, borderColor: 'error.main', bgcolor: 'action.hover' }}
               >
-                <Typography variant="h6" color="error.main">
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: 'error.main',
+                  }}
+                >
                   Delete website
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mt: 0.5,
+                    mb: 2,
+                  }}
+                >
                   Permanently remove the live website and its deployment.
                 </Typography>
                 <Button

@@ -23,7 +23,12 @@ export const EducationEditTab: React.FC<EducationEditTabProps> = ({ form }) => {
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
           >
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {edu.degree_type} in {edu.degree} at {edu.university_name}
             </Typography>
 
@@ -155,7 +160,12 @@ export const EducationEditTab: React.FC<EducationEditTabProps> = ({ form }) => {
               />
             ))}
             {edu.transcript.length === 0 && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 No courses added yet
               </Typography>
             )}

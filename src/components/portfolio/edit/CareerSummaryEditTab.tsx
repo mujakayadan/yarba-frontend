@@ -50,7 +50,13 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
             elevation={0}
             sx={{ p: 2, mb: 3, bgcolor: 'rgba(0, 0, 0, 0.02)', borderRadius: 1 }}
           >
-            <Typography variant="subtitle2" gutterBottom color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Preview:
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, pl: 1 }}>
@@ -135,8 +141,10 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
             variant="outlined"
             placeholder="e.g., 5"
             margin="normal"
-            InputProps={{
-              endAdornment: <InputAdornment position="end">years</InputAdornment>,
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position="end">years</InputAdornment>,
+              },
             }}
           />
         </Grid>
@@ -194,7 +202,12 @@ export const CareerSummaryEditTab: React.FC<CareerSummaryEditTabProps> = ({ form
               sx={{ borderStyle: 'dashed' }}
             />
             {careerSummary.job_titles.length === 0 && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 No job titles added yet
               </Typography>
             )}

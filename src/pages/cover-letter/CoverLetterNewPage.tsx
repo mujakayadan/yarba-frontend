@@ -220,7 +220,13 @@ const CoverLetterNewPage: React.FC = () => {
           <Typography variant="subtitle1" gutterBottom>
             Base your cover letter on an existing resume
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              marginBottom: '16px',
+            }}
+          >
             Select a resume to use as the basis for your cover letter. The job details, your
             profile, and portfolio information will be automatically extracted.
           </Typography>
@@ -256,7 +262,14 @@ const CoverLetterNewPage: React.FC = () => {
             {errors.resumeId && <FormHelperText>{errors.resumeId}</FormHelperText>}
           </FormControl>
 
-          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 4 }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              justifyContent: 'flex-end',
+              mt: 4,
+            }}
+          >
             <Button variant="outlined" color="secondary" onClick={handleCancel} disabled={loading}>
               Cancel
             </Button>
@@ -295,12 +308,14 @@ const CoverLetterNewPage: React.FC = () => {
               size="small"
               value={modalSearchTerm}
               onChange={(e) => setModalSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
             <FormControl size="small" fullWidth>

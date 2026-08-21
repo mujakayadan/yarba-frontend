@@ -15,7 +15,12 @@ export const CertificationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
               {cert.name}
             </Typography>
             <Typography variant="body2">Issuer: {cert.issuer}</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Date: {cert.date}
             </Typography>
             {cert.description && (
@@ -40,7 +45,12 @@ export const CertificationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
       ))}
       {sortedCertifications.length === 0 && (
         <Grid item xs={12}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             No certifications added yet
           </Typography>
         </Grid>

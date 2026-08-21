@@ -16,7 +16,7 @@ import {
 import GoogleIcon from '@mui/icons-material/Google';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import { type ProviderSignInResult, useAuth } from '../../contexts/AuthContext';
 import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorHandler';
 import { createDebugger } from '../../utils/debug';
@@ -258,7 +258,13 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
           You appear to be offline. Authentication requires an internet connection.
         </Alert>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 2,
+          }}
+        >
           Please check your internet connection and try again. If you believe this is an error, try
           refreshing the page once your connection is restored.
         </Typography>
@@ -346,7 +352,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
               <Box sx={{ mb: 2, width: '100%' }}>
                 <Alert
                   severity="error"
-                  icon={<ErrorOutlineIcon fontSize="inherit" />}
+                  icon={<ErrorOutlinedIcon fontSize="inherit" />}
                   sx={{
                     width: '100%',
                     '.MuiAlert-message': {
@@ -396,18 +402,20 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                         ? NATIVE_PASSWORD_POLICY_MESSAGE
                         : undefined
                     }
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleTogglePasswordVisibility}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleTogglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                   />
                 </Grid>
@@ -425,25 +433,27 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         disabled={isSubmitting}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleTogglePasswordVisibility}
-                                edge="end"
-                              >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
                         error={confirmPassword !== '' && password !== confirmPassword}
                         helperText={
                           confirmPassword !== '' && password !== confirmPassword
                             ? 'Passwords do not match'
                             : ''
                         }
+                        slotProps={{
+                          input: {
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={handleTogglePasswordVisibility}
+                                  edge="end"
+                                >
+                                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
                       />
                     </Grid>
                   </>
@@ -485,7 +495,12 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
               </Grid>
 
               <Divider sx={{ my: 2 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   OR
                 </Typography>
               </Divider>
@@ -518,7 +533,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                     : 'Already have an account? Sign In'}
                 </Link>
                 {mode === 'login' && (
-                  <Box mt={1}>
+                  <Box
+                    sx={{
+                      mt: 1,
+                    }}
+                  >
                     <Link
                       component="button"
                       variant="body2"

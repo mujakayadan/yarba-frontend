@@ -66,7 +66,13 @@ const FAQPage: React.FC = () => {
         <Typography variant="h3" component="h1" gutterBottom>
           Frequently Asked Questions
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+            mb: 4,
+          }}
+        >
           Find answers to common questions about YARBA
         </Typography>
         <Divider sx={{ mb: 4 }} />
@@ -114,7 +120,12 @@ const FAQPage: React.FC = () => {
         <Typography variant="h5" component="h2" gutterBottom>
           Still Have Questions?
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography
+          variant="body1"
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           If you couldn't find what you're looking for, please visit our support page or contact us
           directly.
         </Typography>

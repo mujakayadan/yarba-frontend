@@ -27,7 +27,13 @@ const AboutPage: React.FC = () => {
         <Typography variant="h3" component="h1" gutterBottom>
           About YARBA
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+            mb: 4,
+          }}
+        >
           Your AI-powered resume and career advancement platform
         </Typography>
         <Divider sx={{ mb: 4 }} />
@@ -38,12 +44,22 @@ const AboutPage: React.FC = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Our Story
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography
+          variant="body1"
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           YARBA was founded with a simple mission: to revolutionize how job seekers create resumes
           and cover letters using AI technology. We saw that the traditional resume creation process
           was time-consuming and often ineffective, with many qualified candidates being overlooked.
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography
+          variant="body1"
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           Our platform uses AI to help you turn your experience into professional resumes, cover
           letters, and portfolio websites tailored to your goals.
         </Typography>
@@ -102,11 +118,16 @@ const AboutPage: React.FC = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Meet the Developer
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography
+          variant="body1"
+          sx={{
+            marginBottom: '16px',
+          }}
+        >
           YARBA is built by a software engineer focused on machine learning and AI applications.
         </Typography>
 
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={4} sx={{ justifyContent: 'center' }}>
           <Grid item xs={12} md={6} lg={5}>
             <Card
               sx={{
@@ -123,7 +144,13 @@ const AboutPage: React.FC = () => {
                 <Typography variant="h4" component="h3" gutterBottom>
                   Muja Kayadan
                 </Typography>
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Founder & ML Engineer
                 </Typography>
 

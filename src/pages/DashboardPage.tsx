@@ -241,7 +241,12 @@ const DashboardPage: React.FC = () => {
           <Typography component="h2" variant="h5" gutterBottom>
             Get started
           </Typography>
-          <Typography color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+              mb: 2,
+            }}
+          >
             Follow these steps to give Yarba enough context for useful, tailored applications.
           </Typography>
           <Stack divider={<Divider flexItem />}>
@@ -263,8 +268,19 @@ const DashboardPage: React.FC = () => {
                     <IncompleteIcon color="disabled" aria-label="Not complete" />
                   )}
                   <Box>
-                    <Typography fontWeight={600}>{item.label}</Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      sx={{
+                        fontWeight: 600,
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {item.description}
                     </Typography>
                   </Box>
@@ -285,8 +301,10 @@ const DashboardPage: React.FC = () => {
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={3}
-        sx={{ mb: 6 }}
-        alignItems="stretch"
+        sx={{
+          alignItems: 'stretch',
+          mb: 6,
+        }}
       >
         {/* Resume Card */}
         <Paper
@@ -416,7 +434,12 @@ const DashboardPage: React.FC = () => {
                   <Typography variant="h6" component="div" noWrap>
                     {item.title}
                   </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  <Typography
+                    sx={{
+                      color: 'text.secondary',
+                      mb: 1.5,
+                    }}
+                  >
                     {item.type === 'resume' ? 'Resume' : 'Cover Letter'}
                   </Typography>
                   <Typography variant="body2">Last modified: {formatDate(item.date)}</Typography>

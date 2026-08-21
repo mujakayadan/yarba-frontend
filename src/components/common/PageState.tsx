@@ -19,7 +19,13 @@ export const PageLoadingState: React.FC<PageLoadingStateProps> = ({ label = 'Loa
     }}
   >
     <CircularProgress />
-    <Typography color="text.secondary">{label}</Typography>
+    <Typography
+      sx={{
+        color: 'text.secondary',
+      }}
+    >
+      {label}
+    </Typography>
   </Box>
 );
 

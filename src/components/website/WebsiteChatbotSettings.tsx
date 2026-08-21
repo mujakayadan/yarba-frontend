@@ -89,13 +89,26 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
 
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+          mb: 1,
+        }}
+      >
         <SmartToy color="primary" />
         <Typography variant="h6" component="h2">
           Portfolio chatbot
         </Typography>
       </Stack>
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         Add an AI assistant to your live portfolio site. Visitors can ask about your experience,
         skills, and projects. The assistant uses your portfolio data and{' '}
         <Link component={RouterLink} to="/settings/story">
@@ -148,9 +161,12 @@ export const WebsiteChatbotSettings: React.FC<WebsiteChatbotSettingsProps> = ({
           />
           <Typography
             variant="caption"
-            color="text.secondary"
-            display="block"
-            sx={{ ml: 7, mb: 2 }}
+            sx={{
+              color: 'text.secondary',
+              display: 'block',
+              ml: 7,
+              mb: 2,
+            }}
           >
             Lets you review chat history on this page. Visitors see a short privacy notice in the
             widget.

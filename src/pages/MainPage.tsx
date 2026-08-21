@@ -115,7 +115,6 @@ const MainPage: React.FC = () => {
                   </Typography>
                   <Typography
                     variant="h6"
-                    paragraph
                     sx={(theme) => ({
                       mb: 3,
                       fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
@@ -179,7 +178,7 @@ const MainPage: React.FC = () => {
             overflow: 'hidden',
           })}
         >
-          <Grid container spacing={0} alignItems="stretch">
+          <Grid container spacing={0} sx={{ alignItems: 'stretch' }}>
             <Grid
               item
               xs={12}
@@ -236,8 +235,11 @@ const MainPage: React.FC = () => {
             variant="h3"
             component="h2"
             gutterBottom
-            textAlign="center"
-            sx={{ mb: 6, fontWeight: 600 }}
+            sx={{
+              textAlign: 'center',
+              mb: 6,
+              fontWeight: 600,
+            }}
           >
             Why Choose YARBA?
           </Typography>
@@ -260,7 +262,7 @@ const MainPage: React.FC = () => {
           <Typography variant="h3" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
             Ready to Elevate Your Career?
           </Typography>
-          <Typography variant="h6" color="primary" paragraph sx={{ mb: 4 }}>
+          <Typography variant="h6" color="primary" sx={{ mb: 4 }}>
             Create tailored application materials from your experience and the job you want.
           </Typography>
           <Button

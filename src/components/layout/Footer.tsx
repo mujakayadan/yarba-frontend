@@ -29,8 +29,8 @@ const Footer: React.FC = () => {
       >
         <Typography
           variant="body2"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             textAlign: 'center',
           }}
         >
@@ -53,9 +53,11 @@ const Footer: React.FC = () => {
             <Link
               component={RouterLink}
               to="/about"
-              color="text.secondary"
               underline="hover"
-              fontSize="0.875rem"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
             >
               About
             </Link>
@@ -64,9 +66,11 @@ const Footer: React.FC = () => {
             <Link
               component={RouterLink}
               to="/support"
-              color="text.secondary"
               underline="hover"
-              fontSize="0.875rem"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
             >
               Support
             </Link>
@@ -75,9 +79,11 @@ const Footer: React.FC = () => {
             <Link
               component={RouterLink}
               to="/faq"
-              color="text.secondary"
               underline="hover"
-              fontSize="0.875rem"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
             >
               FAQ
             </Link>
@@ -87,9 +93,11 @@ const Footer: React.FC = () => {
               <Link
                 component={RouterLink}
                 to={item.path}
-                color="text.secondary"
                 underline="hover"
-                fontSize="0.875rem"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.875rem',
+                }}
               >
                 {item.label}
               </Link>
@@ -99,9 +107,11 @@ const Footer: React.FC = () => {
             <Link
               component={RouterLink}
               to="/report"
-              color="text.secondary"
               underline="hover"
-              fontSize="0.875rem"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
             >
               Report Abuse
             </Link>
@@ -110,9 +120,11 @@ const Footer: React.FC = () => {
             <Link
               component={RouterLink}
               to="/contact"
-              color="text.secondary"
               underline="hover"
-              fontSize="0.875rem"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
             >
               Contact
             </Link>

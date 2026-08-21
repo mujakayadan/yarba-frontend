@@ -141,7 +141,11 @@ const ApplicationsPage: React.FC = () => {
               {applications.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Typography color="text.secondary">
+                    <Typography
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       No applications yet. Agents will create records when they prepare or submit
                       applications.
                     </Typography>
@@ -178,7 +182,11 @@ const ApplicationsPage: React.FC = () => {
                           rel="noopener noreferrer"
                           sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
                         >
-                          <LinkIcon fontSize="small" />
+                          <LinkIcon
+                            sx={{
+                              fontSize: 'small',
+                            }}
+                          />
                           Open
                         </Link>
                       ) : (

@@ -417,7 +417,12 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
             bgcolor: 'action.hover',
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Changes in this section are saved together.
           </Typography>
           <Button

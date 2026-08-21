@@ -71,7 +71,11 @@ const UploadPortfolioPage: React.FC = () => {
 
       {!parsedData && (
         <form onSubmit={handleSubmit}>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Upload a PDF or DOCX file. We'll parse it and you can review the extracted information.
           </Typography>
           <Box sx={{ mb: 2 }}>

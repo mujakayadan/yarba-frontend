@@ -23,7 +23,12 @@ export const CertificationsEditTab: React.FC<CertificationsEditTabProps> = ({ fo
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
           >
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {certification.name || 'Untitled Certification'}
             </Typography>
 
