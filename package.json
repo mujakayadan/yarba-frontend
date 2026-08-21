@@ -21,7 +21,7 @@
     "@mui/x-data-grid": "^9.11.0",
     "@react-oauth/google": "0.13.5",
     "@tanstack/react-query": "^5.101.4",
-    "@vercel/analytics": "^1.6.1",
+    "@vercel/analytics": "^2.0.1",
     "animated-backgrounds": "^2.0.0",
     "axios": "^1.17.0",
     "firebase": "^12.17.1",
