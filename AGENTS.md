@@ -2,7 +2,7 @@
 
 ## Stack
 
-- React 19, TypeScript, Vite, Material UI, Firebase, Vitest
+- React 19, TypeScript 7, Vite, Material UI, Firebase, Vitest
 - Node.js 24 and npm
 
 ## Commands

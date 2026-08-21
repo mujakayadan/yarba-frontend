@@ -9,6 +9,9 @@ updates:
       - dependency-name: typescript
         update-types:
           - version-update:semver-major
+      - dependency-name: '@typescript/native'
+        update-types:
+          - version-update:semver-major
     groups:
       production-dependencies:
         dependency-type: production
