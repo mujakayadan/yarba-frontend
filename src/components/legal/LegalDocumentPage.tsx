@@ -36,10 +36,22 @@ const LegalDocumentPage: React.FC<LegalDocumentPageProps> = ({ documentKey }) =>
         <Typography variant="h3" component="h1" gutterBottom>
           {document.title}
         </Typography>
-        <Typography color="text.secondary" sx={{ maxWidth: 720, mx: 'auto', mb: 2 }}>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+            maxWidth: 720,
+            mx: 'auto',
+            mb: 2,
+          }}
+        >
           {document.summary}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Version {document.version} · Last updated {document.lastUpdated}
         </Typography>
       </Box>
@@ -55,7 +67,13 @@ const LegalDocumentPage: React.FC<LegalDocumentPageProps> = ({ documentKey }) =>
               {section.title}
             </Typography>
             {section.paragraphs?.map((paragraph) => (
-              <Typography key={paragraph} variant="body1" paragraph>
+              <Typography
+                key={paragraph}
+                variant="body1"
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 {renderText(paragraph)}
               </Typography>
             ))}

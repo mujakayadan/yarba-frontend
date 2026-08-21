@@ -35,16 +35,25 @@ const ParsedProjectsDisplay: React.FC<ParsedProjectsDisplayProps> = ({ projects 
                     {project.name || 'N/A'}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
                     {project.date && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Date: {project.date}
                       </Typography>
                     )}
                     {project.link && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Link:{' '}
                         <MuiLink href={project.link} target="_blank" rel="noopener noreferrer">
                           {project.link}
@@ -52,7 +61,11 @@ const ParsedProjectsDisplay: React.FC<ParsedProjectsDisplayProps> = ({ projects 
                       </Typography>
                     )}
                     {project.bullet_points && project.bullet_points.length > 0 && (
-                      <Box mt={1}>
+                      <Box
+                        sx={{
+                          mt: 1,
+                        }}
+                      >
                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                           Details:
                         </Typography>
@@ -73,6 +86,9 @@ const ParsedProjectsDisplay: React.FC<ParsedProjectsDisplayProps> = ({ projects 
                     )}
                   </>
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < projects.length - 1 && <Divider component="li" sx={{ my: 1 }} />}

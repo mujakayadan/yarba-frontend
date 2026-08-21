@@ -28,21 +28,34 @@ const ParsedWorkExperienceDisplay: React.FC<ParsedWorkExperienceDisplayProps> = 
                     {exp.job_title || 'N/A'} at {exp.company || 'N/A'}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   <>
                     {exp.location && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Location: {exp.location}
                       </Typography>
                     )}
                     {exp.time && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Duration: {exp.time}
                       </Typography>
                     )}
                     {exp.responsibilities && exp.responsibilities.length > 0 && (
-                      <Box mt={1}>
+                      <Box
+                        sx={{
+                          mt: 1,
+                        }}
+                      >
                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                           Responsibilities:
                         </Typography>
@@ -63,6 +76,9 @@ const ParsedWorkExperienceDisplay: React.FC<ParsedWorkExperienceDisplayProps> = 
                     )}
                   </>
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < workExperience.length - 1 && <Divider component="li" sx={{ my: 1 }} />}

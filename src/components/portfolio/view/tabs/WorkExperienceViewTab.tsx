@@ -27,11 +27,22 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
             }}
           >
             <Box>
-              <Typography variant="h6" fontWeight="bold" color="primary.main">
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                }}
+              >
                 {job.job_title || job.position || 'Untitled Position'}
               </Typography>
               <Typography variant="subtitle1">{job.company}</Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {job.location}
               </Typography>
             </Box>
@@ -56,7 +67,13 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
           {job.responsibilities && job.responsibilities.length > 0 && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 1.5,
+                }}
+              >
                 Key Responsibilities:
               </Typography>
               <Box component="ol" sx={{ m: 0, pl: 3 }}>
@@ -74,7 +91,13 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
           {job.achievements && job.achievements.length > 0 && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 1.5,
+                }}
+              >
                 Key Achievements:
               </Typography>
               <Box component="ol" sx={{ m: 0, pl: 3 }}>
@@ -91,7 +114,12 @@ export const WorkExperienceViewTab: React.FC<PortfolioViewTabProps> = ({ sorted 
         </Box>
       ))}
       {sortedWorkExperience.length === 0 && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No work experience added yet
         </Typography>
       )}

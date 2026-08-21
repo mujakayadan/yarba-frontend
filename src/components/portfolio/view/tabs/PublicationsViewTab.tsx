@@ -16,10 +16,21 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                 {/* Publication Title/Name */}
                 <Grid item xs={12}>
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="subtitle2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Title
                     </Typography>
-                    <Typography variant="body1" fontWeight="medium">
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 'medium',
+                      }}
+                    >
                       {pub.name || pub.title || 'Untitled Publication'}
                     </Typography>
                   </Box>
@@ -29,7 +40,13 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                 {/* Publisher */}
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ my: 1 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="subtitle2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Publisher
                     </Typography>
                     <Typography variant="body1">{pub.publisher || 'Not specified'}</Typography>
@@ -39,7 +56,13 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                 {/* Date/Time */}
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ my: 1 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="subtitle2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Published Date
                     </Typography>
                     <Typography variant="body1">
@@ -53,7 +76,13 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                   <Grid item xs={12}>
                     <Divider sx={{ my: 1 }} />
                     <Box sx={{ mt: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Authors
                       </Typography>
                       <Typography variant="body1">{pub.authors.join(', ')}</Typography>
@@ -66,7 +95,13 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                   <Grid item xs={12}>
                     <Divider sx={{ my: 1 }} />
                     <Box sx={{ mt: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Description
                       </Typography>
                       <Typography variant="body1">{pub.description}</Typography>
@@ -84,7 +119,13 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
                       <Grid item xs={12}>
                         <Divider sx={{ my: 1 }} />
                         <Box sx={{ mt: 1 }}>
-                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          <Typography
+                            variant="subtitle2"
+                            gutterBottom
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
                             Link
                           </Typography>
                           <Typography
@@ -110,7 +151,12 @@ export const PublicationsViewTab: React.FC<PortfolioViewTabProps> = ({ sorted })
           ))}
         </Box>
       ) : (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No publications added yet
         </Typography>
       )}

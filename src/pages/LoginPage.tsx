@@ -61,9 +61,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
           <Typography
             component="h1"
             variant="h3"
-            fontWeight="700"
-            color="primary.main"
             gutterBottom
+            sx={{
+              fontWeight: '700',
+              color: 'primary.main',
+            }}
           >
             Welcome to YARBA
           </Typography>

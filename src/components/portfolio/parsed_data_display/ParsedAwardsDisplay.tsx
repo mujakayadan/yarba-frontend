@@ -26,14 +26,21 @@ const ParsedAwardsDisplay: React.FC<ParsedAwardsDisplayProps> = ({ awards }) => 
                     {award.name || 'N/A'}
                   </Typography>
                 }
-                secondaryTypographyProps={{ component: 'div' }}
                 secondary={
                   award.explanation && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {award.explanation}
                     </Typography>
                   )
                 }
+                slotProps={{
+                  secondary: { component: 'div' },
+                }}
               />
             </ListItem>
             {index < awards.length - 1 && <Divider component="li" sx={{ my: 1 }} />}

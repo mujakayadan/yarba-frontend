@@ -22,7 +22,12 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
                 {edu.degree_type || ''} {edu.degree}
               </Typography>
               <Typography variant="subtitle1">{edu.institution || edu.university_name}</Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {edu.time ||
                   (edu.start_date &&
                     `${edu.start_date}${edu.end_date ? ` - ${edu.end_date}` : ''}${edu.current ? ' - Present' : ''}`)}{' '}
@@ -48,7 +53,13 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
 
           {edu.transcript && edu.transcript.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 Transcript/Courses:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -61,7 +72,13 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
 
           {!edu.transcript && edu.courses && edu.courses.length > 0 && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 Relevant Courses:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -74,7 +91,12 @@ export const EducationViewTab: React.FC<PortfolioViewTabProps> = ({ sorted }) =>
         </Paper>
       ))}
       {sortedEducation.length === 0 && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No education details added yet
         </Typography>
       )}

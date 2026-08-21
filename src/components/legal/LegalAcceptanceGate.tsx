@@ -41,7 +41,12 @@ const LegalAcceptanceGate: React.FC = () => {
         <Typography component="h1" variant="h4" gutterBottom>
           Review Yarba’s updated policies
         </Typography>
-        <Typography color="text.secondary" paragraph>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           We materially updated our policies to cover public portfolio sites, AI processing,
           application automation, content safety, and privacy controls. Review the linked documents
           before continuing.

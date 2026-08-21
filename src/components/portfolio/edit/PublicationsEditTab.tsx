@@ -23,7 +23,12 @@ export const PublicationsEditTab: React.FC<PublicationsEditTabProps> = ({ form }
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
           >
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {publication.name || 'Untitled Publication'}
             </Typography>
 

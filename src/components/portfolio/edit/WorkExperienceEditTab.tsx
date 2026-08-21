@@ -36,7 +36,12 @@ export const WorkExperienceEditTab: React.FC<WorkExperienceEditTabProps> = ({ fo
             <Box
               sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
             >
-              <Typography variant="subtitle1" fontWeight="bold">
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {exp.job_title} at {exp.company}
               </Typography>
 
@@ -199,7 +204,12 @@ export const WorkExperienceEditTab: React.FC<WorkExperienceEditTabProps> = ({ fo
               ))}
 
               {exp.responsibilities.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   No responsibilities added yet
                 </Typography>
               )}

@@ -18,7 +18,13 @@ export const ProfileMediaEditTab: React.FC<ProfileEditTabProps> = ({
 
   return (
     <>
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         Upload a profile picture and signature for use across Yarba. Changes are saved immediately
         when you upload or remove a file.
       </Typography>
@@ -28,7 +34,13 @@ export const ProfileMediaEditTab: React.FC<ProfileEditTabProps> = ({
           <Typography variant="h6" gutterBottom>
             Profile Picture
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              marginBottom: '16px',
+            }}
+          >
             Shown on your profile page. Not automatically added to every resume template.
           </Typography>
 
@@ -75,7 +87,13 @@ export const ProfileMediaEditTab: React.FC<ProfileEditTabProps> = ({
           <Typography variant="h6" gutterBottom>
             Signature
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              marginBottom: '16px',
+            }}
+          >
             Inserted into cover letters that include a signature block. Use a PNG with a transparent
             background for the cleanest result.
           </Typography>
@@ -103,7 +121,12 @@ export const ProfileMediaEditTab: React.FC<ProfileEditTabProps> = ({
                   mb: 2,
                 }}
               >
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   No signature uploaded
                 </Typography>
               </Box>

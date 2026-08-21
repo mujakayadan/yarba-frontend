@@ -170,7 +170,12 @@ const PortfolioUploadPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Drag & Drop or Click to Upload
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Accepted formats: PDF, DOCX
               </Typography>
               <Button variant="contained" component="span" sx={{ mt: 2 }}>
@@ -187,7 +192,12 @@ const PortfolioUploadPage: React.FC = () => {
               <Typography variant="body1" sx={{ flexGrow: 1 }}>
                 {selectedFile.name}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {(selectedFile.size / 1024).toFixed(0)} KB
               </Typography>
             </Box>

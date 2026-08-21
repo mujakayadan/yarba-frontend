@@ -61,7 +61,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
               This page requires authentication, but we can't connect to our servers. Please check
               your internet connection and try again.
             </Typography>
-            <Box mt={2}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <Navigate to="/login" state={{ from: location, offline: true }} replace />
             </Box>
           </>

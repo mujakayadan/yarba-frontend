@@ -102,7 +102,12 @@ const ReportAbusePage: React.FC = () => {
       <Typography component="h1" variant="h3" gutterBottom>
         Report abuse
       </Typography>
-      <Typography color="text.secondary" paragraph>
+      <Typography
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         Report a public yarba.app portfolio that may violate the law or Yarba’s{' '}
         <Link component={RouterLink} to="/acceptable-use">
           Acceptable Use Policy
@@ -199,7 +204,6 @@ const ReportAbusePage: React.FC = () => {
             />
             <TextField
               aria-hidden="true"
-              inputProps={{ tabIndex: -1 }}
               autoComplete="off"
               label="Company website"
               value={companyWebsite}
@@ -210,6 +214,9 @@ const ReportAbusePage: React.FC = () => {
                 width: 1,
                 height: 1,
                 overflow: 'hidden',
+              }}
+              slotProps={{
+                htmlInput: { tabIndex: -1 },
               }}
             />
             <Button

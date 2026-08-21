@@ -47,7 +47,12 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
                   ))}
                 </Box>
               ) : (
-                <Typography color="text.secondary" sx={{ ml: 1 }}>
+                <Typography
+                  sx={{
+                    color: 'text.secondary',
+                    ml: 1,
+                  }}
+                >
                   No skills found in this category
                 </Typography>
               )}
@@ -56,7 +61,12 @@ export const SkillsViewTab: React.FC<PortfolioViewTabProps> = ({ portfolio }) =>
         })}
       </Box>
     ) : (
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         No skills added yet
       </Typography>
     )}

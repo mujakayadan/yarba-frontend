@@ -9,7 +9,13 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
   onPersonalInfoChange,
 }) => (
   <>
-    <Typography variant="body2" color="text.secondary" paragraph>
+    <Typography
+      variant="body2"
+      sx={{
+        color: 'text.secondary',
+        marginBottom: '16px',
+      }}
+    >
       This information appears on your resumes and cover letters. Keep it accurate and up to date.
     </Typography>
 
@@ -19,7 +25,14 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
       description="Your primary contact details used in document headers and application forms."
     />
 
-    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        flexWrap: 'wrap',
+        mb: 2,
+      }}
+    >
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
         <TextField
           fullWidth
@@ -51,7 +64,14 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
       </Box>
     </Stack>
 
-    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        flexWrap: 'wrap',
+        mb: 2,
+      }}
+    >
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
         <TextField
           fullWidth
@@ -81,7 +101,14 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
       description="Links to your professional profiles. Only filled links appear on your documents."
     />
 
-    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        flexWrap: 'wrap',
+        mb: 2,
+      }}
+    >
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
         <TextField
           fullWidth
@@ -108,7 +135,13 @@ export const PersonalInfoEditTab: React.FC<ProfileEditTabProps> = ({
       </Box>
     </Stack>
 
-    <Stack direction="row" spacing={1} flexWrap="wrap">
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        flexWrap: 'wrap',
+      }}
+    >
       <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
         <TextField
           fullWidth

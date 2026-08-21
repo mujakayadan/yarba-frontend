@@ -174,7 +174,13 @@ const PortfolioCreatePage: React.FC = () => {
       </Button>
 
       <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="body1" color="text.secondary" paragraph>
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           Start by adding your skills. You can add more details like work experience, education, and
           projects later.
         </Typography>
@@ -208,7 +214,12 @@ const PortfolioCreatePage: React.FC = () => {
                     />
                   ))}
                   {category.skills.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       No skills added yet
                     </Typography>
                   )}
@@ -225,8 +236,10 @@ const PortfolioCreatePage: React.FC = () => {
                 variant="outlined"
                 size="small"
                 sx={{ width: 200, mr: 2 }}
-                SelectProps={{
-                  native: true,
+                slotProps={{
+                  select: {
+                    native: true,
+                  },
                 }}
               >
                 {skills.map((category, index) => (
@@ -277,7 +290,14 @@ const PortfolioCreatePage: React.FC = () => {
         </Box>
       </Paper>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          mt: 2,
+          textAlign: 'center',
+        }}
+      >
         You'll be able to add work experience, education, and other details after creating your
         portfolio.
       </Typography>

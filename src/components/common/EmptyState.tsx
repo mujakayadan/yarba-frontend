@@ -34,7 +34,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     <Typography component="h2" variant="h6" gutterBottom>
       {title}
     </Typography>
-    <Typography color="text.secondary" sx={{ maxWidth: 560, mx: 'auto' }}>
+    <Typography
+      sx={{
+        color: 'text.secondary',
+        maxWidth: 560,
+        mx: 'auto',
+      }}
+    >
       {description}
     </Typography>
     {(primaryAction || secondaryAction) && (

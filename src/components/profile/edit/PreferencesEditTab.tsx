@@ -44,7 +44,13 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
   onSwitchChange,
 }) => (
   <>
-    <Typography variant="body2" color="text.secondary" paragraph>
+    <Typography
+      variant="body2"
+      sx={{
+        color: 'text.secondary',
+        marginBottom: '16px',
+      }}
+    >
       These settings control how AI generates and tailors your resumes and cover letters from your
       portfolio. Adjust the limits below to match the roles you apply for.
     </Typography>
@@ -52,8 +58,19 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
     <Accordion variant="outlined" sx={{ mb: 3 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box>
-          <Typography fontWeight={600}>Advanced generation limits</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            sx={{
+              fontWeight: 600,
+            }}
+          >
+            Advanced generation limits
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Optional controls for section length and density. Yarba defaults work for most users.
           </Typography>
         </Box>
@@ -65,7 +82,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Controls the length of the professional summary at the top of tailored resumes."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -76,7 +100,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Shortest summary the AI should write"
-              inputProps={{ min: 0, max: 100 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 100 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -89,7 +115,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Longest summary the AI should write"
-              inputProps={{ min: 0, max: 500 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 500 },
+              }}
             />
           </Box>
         </Stack>
@@ -99,7 +127,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Limits how many jobs and bullet points the AI includes when tailoring work history for a specific role."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -110,7 +145,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Most recent roles to include on a tailored resume"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -123,7 +160,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Achievements listed under each job entry"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
         </Stack>
@@ -133,7 +172,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Sets how many projects and details appear when generating resume content."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -144,7 +190,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Number of projects to highlight on a tailored resume"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -157,7 +205,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Details listed under each project"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
         </Stack>
@@ -167,7 +217,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Guides how the AI organizes your skills into categories and trims the list to fit the page."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 2,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -178,7 +235,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Skill groups such as Languages or Frameworks"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -191,12 +250,21 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Floor for skills kept in each category"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
         </Stack>
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -207,7 +275,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Ceiling for skills listed in each category"
-              inputProps={{ min: 0, max: 20 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 20 },
+              }}
             />
           </Box>
         </Stack>
@@ -217,7 +287,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Caps education entries and relevant coursework included in generated documents."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -228,7 +305,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Degrees or programs to include"
-              inputProps={{ min: 0, max: 5 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 5 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -241,7 +320,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Relevant courses listed per education entry"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
         </Stack>
@@ -251,7 +332,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Shapes the structure and reading level of AI-written cover letters."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -262,7 +350,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Body paragraphs in the generated letter"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -275,7 +365,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Reading level for the letter (e.g. 18 = simpler, 25 = professional)"
-              inputProps={{ min: 0, max: 100 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 100 },
+              }}
             />
           </Box>
         </Stack>
@@ -285,7 +377,14 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
           description="Limits for awards and publications when those sections are included in a resume."
         />
 
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            flexWrap: 'wrap',
+            mb: 3,
+          }}
+        >
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
             <TextField
               fullWidth
@@ -296,7 +395,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Awards to include on a tailored resume"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
           <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 4px)' } }}>
@@ -309,7 +410,9 @@ export const PreferencesEditTab: React.FC<ProfileEditTabProps> = ({
               onChange={onNumberInputChange}
               margin="normal"
               helperText="Publications to include on a tailored resume"
-              inputProps={{ min: 0, max: 10 }}
+              slotProps={{
+                htmlInput: { min: 0, max: 10 },
+              }}
             />
           </Box>
         </Stack>

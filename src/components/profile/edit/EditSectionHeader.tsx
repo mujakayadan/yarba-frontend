@@ -17,7 +17,13 @@ export const EditSectionHeader: React.FC<EditSectionHeaderProps> = ({
       {title}
     </Typography>
     {description && (
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          marginBottom: '16px',
+        }}
+      >
         {description}
       </Typography>
     )}

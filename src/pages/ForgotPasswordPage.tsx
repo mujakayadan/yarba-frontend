@@ -12,7 +12,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import Grid from '../mui/Grid';
 import { forgotPassword } from '../services/authService';
@@ -169,7 +169,12 @@ const ForgotPasswordPage: React.FC = () => {
               <Typography component="h1" variant="h4" sx={{ mb: 1 }}>
                 {confirmation ? PAGE_TEXT.confirmationTitle : PAGE_TEXT.title}
               </Typography>
-              <Typography color="text.secondary" sx={{ mb: 3 }}>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  mb: 3,
+                }}
+              >
                 {confirmation ? PAGE_TEXT.confirmationBody : PAGE_TEXT.description}
               </Typography>
 
@@ -226,12 +231,14 @@ const ForgotPasswordPage: React.FC = () => {
                       disabled={isSubmitting}
                       error={emailFieldError}
                       helperText={emailFieldError ? error : undefined}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <MailOutlineIcon color="action" fontSize="small" />
-                          </InputAdornment>
-                        ),
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <MailOutlinedIcon color="action" fontSize="small" />
+                            </InputAdornment>
+                          ),
+                        },
                       }}
                     />
                     <Button

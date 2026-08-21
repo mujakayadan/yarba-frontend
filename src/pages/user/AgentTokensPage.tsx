@@ -170,9 +170,18 @@ const AgentTokensPage: React.FC = () => {
               {activeTokens.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Stack spacing={1} alignItems="center">
+                    <Stack
+                      spacing={1}
+                      sx={{
+                        alignItems: 'center',
+                      }}
+                    >
                       <KeyIcon color="disabled" />
-                      <Typography color="text.secondary">
+                      <Typography
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         No active agent tokens. Create one for your apply automation client.
                       </Typography>
                     </Stack>
@@ -183,7 +192,14 @@ const AgentTokensPage: React.FC = () => {
                   <TableRow key={token.id} hover>
                     <TableCell>{token.label}</TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        useFlexGap
+                        sx={{
+                          flexWrap: 'wrap',
+                        }}
+                      >
                         {token.scopes.map((scope) => (
                           <Chip key={scope} label={scope} size="small" variant="outlined" />
                         ))}
@@ -234,9 +250,11 @@ const AgentTokensPage: React.FC = () => {
               type="number"
               value={expiresInDays}
               onChange={(e) => setExpiresInDays(e.target.value)}
-              inputProps={{ min: 1, max: 365 }}
               fullWidth
               helperText="Leave empty for no expiry (not recommended)"
+              slotProps={{
+                htmlInput: { min: 1, max: 365 },
+              }}
             />
             <Box>
               <Typography variant="subtitle2" gutterBottom>
@@ -255,7 +273,12 @@ const AgentTokensPage: React.FC = () => {
                     label={
                       <Box>
                         <Typography variant="body2">{scope.label}</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                          }}
+                        >
                           {scope.description}
                         </Typography>
                       </Box>
@@ -295,15 +318,17 @@ const AgentTokensPage: React.FC = () => {
             fullWidth
             multiline
             minRows={2}
-            InputProps={{
-              readOnly: true,
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleCopyToken} aria-label="Copy token">
-                    <CopyIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleCopyToken} aria-label="Copy token">
+                      <CopyIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
         </DialogContent>

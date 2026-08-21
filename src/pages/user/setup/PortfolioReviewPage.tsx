@@ -156,14 +156,25 @@ const PortfolioReviewPage: React.FC = () => {
             {parsedData.career_summary ? (
               <Box>
                 {parsedData.career_summary.default_job_title && (
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant="subtitle1"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {parsedData.career_summary.default_job_title}
                     {parsedData.career_summary.years_of_experience &&
                       ` (${parsedData.career_summary.years_of_experience} Experience)`}
                   </Typography>
                 )}
                 {parsedData.career_summary.default_summary && (
-                  <Typography variant="body1" paragraph>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      marginBottom: '16px',
+                    }}
+                  >
                     {parsedData.career_summary.default_summary}
                   </Typography>
                 )}
@@ -182,7 +193,13 @@ const PortfolioReviewPage: React.FC = () => {
                   )}
               </Box>
             ) : (
-              <Typography color="text.secondary">No career summary information found.</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                No career summary information found.
+              </Typography>
             )}
           </AccordionDetails>
         </Accordion>
@@ -197,7 +214,13 @@ const PortfolioReviewPage: React.FC = () => {
               <Box>
                 {parsedData.skills.map((skillGroup, index) => (
                   <Box key={index} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                    <Typography
+                      variant="subtitle1"
+                      gutterBottom
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {skillGroup.category}
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -209,7 +232,13 @@ const PortfolioReviewPage: React.FC = () => {
                 ))}
               </Box>
             ) : (
-              <Typography color="text.secondary">No skills information found.</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                No skills information found.
+              </Typography>
             )}
           </AccordionDetails>
         </Accordion>
@@ -228,10 +257,21 @@ const PortfolioReviewPage: React.FC = () => {
               <Box>
                 {sortByDateDesc(parsedData.work_experience).map((job, index) => (
                   <Box key={index} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {job.job_title} at {job.company}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {job.location && `${job.location} • `}
                       {job.time}
                     </Typography>
@@ -240,7 +280,9 @@ const PortfolioReviewPage: React.FC = () => {
                         <ListItem key={respIndex} sx={{ pl: 0 }}>
                           <ListItemText
                             primary={resp}
-                            primaryTypographyProps={{ variant: 'body2' }}
+                            slotProps={{
+                              primary: { variant: 'body2' },
+                            }}
                           />
                         </ListItem>
                       ))}
@@ -249,7 +291,13 @@ const PortfolioReviewPage: React.FC = () => {
                 ))}
               </Box>
             ) : (
-              <Typography color="text.secondary">No work experience information found.</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                No work experience information found.
+              </Typography>
             )}
           </AccordionDetails>
         </Accordion>
@@ -268,12 +316,23 @@ const PortfolioReviewPage: React.FC = () => {
               <Box>
                 {sortByDateDesc(parsedData.education).map((edu, index) => (
                   <Box key={index} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {edu.degree_type ? `${edu.degree_type} in ` : ''}
                       {edu.degree}
                     </Typography>
                     <Typography variant="body1">{edu.university_name}</Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {edu.location && `${edu.location} • `}
                       {edu.time}
                       {edu.GPA && ` • GPA: ${edu.GPA}`}
@@ -284,7 +343,9 @@ const PortfolioReviewPage: React.FC = () => {
                           <ListItem key={courseIndex} sx={{ pl: 0 }}>
                             <ListItemText
                               primary={course}
-                              primaryTypographyProps={{ variant: 'body2' }}
+                              slotProps={{
+                                primary: { variant: 'body2' },
+                              }}
                             />
                           </ListItem>
                         ))}
@@ -294,7 +355,13 @@ const PortfolioReviewPage: React.FC = () => {
                 ))}
               </Box>
             ) : (
-              <Typography color="text.secondary">No education information found.</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                No education information found.
+              </Typography>
             )}
           </AccordionDetails>
         </Accordion>
@@ -313,10 +380,21 @@ const PortfolioReviewPage: React.FC = () => {
               <Box>
                 {sortByDateDesc(parsedData.projects).map((project, index) => (
                   <Box key={index} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {project.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {project.date}
                       {project.link && (
                         <Box component="span" sx={{ ml: 1 }}>
@@ -332,7 +410,9 @@ const PortfolioReviewPage: React.FC = () => {
                         <ListItem key={pointIndex} sx={{ pl: 0 }}>
                           <ListItemText
                             primary={point}
-                            primaryTypographyProps={{ variant: 'body2' }}
+                            slotProps={{
+                              primary: { variant: 'body2' },
+                            }}
                           />
                         </ListItem>
                       ))}
@@ -341,7 +421,13 @@ const PortfolioReviewPage: React.FC = () => {
                 ))}
               </Box>
             ) : (
-              <Typography color="text.secondary">No projects information found.</Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
+                No projects information found.
+              </Typography>
             )}
           </AccordionDetails>
         </Accordion>
@@ -360,7 +446,12 @@ const PortfolioReviewPage: React.FC = () => {
               <Box>
                 {parsedData.awards.map((award, index) => (
                   <Box key={index} sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {award.name}
                     </Typography>
                     {award.explanation && (
