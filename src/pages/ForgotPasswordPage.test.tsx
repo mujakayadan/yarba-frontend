@@ -37,5 +37,27 @@ describe('ForgotPasswordPage', () => {
         'If an account exists for that email, password reset instructions will be sent.'
       )
     ).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: /email address/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /continue to sign in/i })).toHaveAttribute(
+      'href',
+      '/login'
+    );
+  });
+
+  it('shows a field error when the email is empty', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <ForgotPasswordPage />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Send reset instructions' }));
+
+    expect(forgotPassword).not.toHaveBeenCalled();
+    expect(screen.getByRole('textbox', { name: /email address/i })).toHaveAccessibleDescription(
+      'Enter your email address.'
+    );
   });
 });

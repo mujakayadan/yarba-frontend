@@ -6,7 +6,9 @@ import {
   PortfolioWebsiteResponse,
   SubdomainAvailabilityResponse,
   DeploymentStatus,
-} from '../types/models'; // Assuming these types will be defined
+  WebsitePublicationAcknowledgement,
+} from '../types/models';
+import { LEGAL_VERSION } from '../content/legalDocuments';
 
 const API_BASE_URL = '/portfolio-websites';
 
@@ -17,9 +19,17 @@ export const createPortfolioWebsite = async (
   forceRebuild: boolean = false
 ): Promise<PortfolioWebsiteResponse> => {
   const params = customSubdomain ? { custom_subdomain: customSubdomain } : {};
+  const publicationAcknowledgement: WebsitePublicationAcknowledgement = {
+    acceptable_use_version: LEGAL_VERSION,
+    rights_confirmed: true,
+  };
   const response = await api.post<PortfolioWebsiteResponse>(
     `${API_BASE_URL}/create`,
-    { config, force_rebuild: forceRebuild },
+    {
+      config,
+      force_rebuild: forceRebuild,
+      publication_acknowledgement: publicationAcknowledgement,
+    },
     { params }
   );
   return response.data;

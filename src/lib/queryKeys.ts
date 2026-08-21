@@ -51,6 +51,17 @@ export const websiteKeys = {
   portfolio: () => [...websiteKeys.all, 'portfolio'] as const,
 };
 
+export const legalKeys = {
+  all: ['legal'] as const,
+  acceptance: () => [...legalKeys.all, 'acceptance'] as const,
+};
+
+export const accountKeys = {
+  all: ['account'] as const,
+  export: () => [...accountKeys.all, 'export'] as const,
+  deletion: () => [...accountKeys.all, 'deletion'] as const,
+};
+
 export type ApplicationListParams = {
   skip?: number;
   limit?: number;

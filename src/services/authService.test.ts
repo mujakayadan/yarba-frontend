@@ -53,6 +53,7 @@ import {
   requestEmailVerification,
   resetPassword,
 } from './authService';
+import { buildLegalAcceptance } from './legalService';
 
 const nativeResponse = {
   user: {
@@ -84,7 +85,12 @@ describe('authService authentication adapters', () => {
     mocks.apiPost.mockResolvedValue({ data: nativeResponse });
 
     await loginWithEmail('user@example.com', 'password');
-    await registerWithEmail({ email: 'new@example.com', password: 'password' });
+    const legalAcceptance = buildLegalAcceptance('password_registration');
+    await registerWithEmail({
+      email: 'new@example.com',
+      password: 'password',
+      legal_acceptance: legalAcceptance,
+    });
 
     expect(mocks.apiPost).toHaveBeenNthCalledWith(1, '/auth/password/login', {
       email: 'user@example.com',
@@ -93,6 +99,7 @@ describe('authService authentication adapters', () => {
     expect(mocks.apiPost).toHaveBeenNthCalledWith(2, '/auth/password/register', {
       email: 'new@example.com',
       password: 'password',
+      legal_acceptance: legalAcceptance,
     });
     expect(mocks.firebaseEmailLogin).not.toHaveBeenCalled();
     expect(localStorage.getItem('auth_token')).toBe('access-token');

@@ -27,12 +27,14 @@ import {
   Badge as PersonalIcon,
   Description as StoryIcon,
   Image as MediaIcon,
+  PrivacyTip as PrivacyIcon,
   Work as ApplicationsIcon,
 } from '@mui/icons-material';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import ProfileEditPage from '../profile/ProfileEditPage';
 import UserPage from '../user/UserPage';
+import DataPrivacySettings from '../../components/settings/DataPrivacySettings';
 
 type SettingsSection =
   | {
@@ -49,6 +51,13 @@ type SettingsSection =
       description: string;
       icon: React.ReactNode;
       kind: 'account';
+    }
+  | {
+      slug: 'data-privacy';
+      label: string;
+      description: string;
+      icon: React.ReactNode;
+      kind: 'privacy';
     };
 
 const SETTINGS_SECTIONS: readonly SettingsSection[] = [
@@ -91,6 +100,13 @@ const SETTINGS_SECTIONS: readonly SettingsSection[] = [
     icon: <ApplicationsIcon />,
     kind: 'profile',
     profileIndex: 4,
+  },
+  {
+    slug: 'data-privacy',
+    label: 'Data & privacy',
+    description: 'Control optional analytics, exports, and account deletion.',
+    icon: <PrivacyIcon />,
+    kind: 'privacy',
   },
   {
     slug: 'account-security',
@@ -142,6 +158,8 @@ const SettingsPage: React.FC = () => {
         );
       case 'account':
         return <UserPage embedded />;
+      case 'privacy':
+        return <DataPrivacySettings />;
       default: {
         const exhaustiveCheck: never = section;
         return exhaustiveCheck;

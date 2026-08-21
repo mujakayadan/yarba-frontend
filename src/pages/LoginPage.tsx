@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Typography, Box, AppBar, Toolbar } from '@mui/material';
 import FirebaseAuth from '../components/auth/auth';
 import { Link as RouterLink } from 'react-router-dom';
+import Footer from '../components/layout/Footer';
 
 interface LoginPageProps {
   authMode?: 'login' | 'register';
@@ -76,6 +77,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
           <FirebaseAuth initialMode={authMode} />
         </Box>
       </Container>
+      <Footer />
     </>
   );
 };

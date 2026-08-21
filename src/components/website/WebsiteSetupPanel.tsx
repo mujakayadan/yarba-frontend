@@ -3,15 +3,19 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
   Chip,
   CircularProgress,
+  FormControlLabel,
   InputAdornment,
+  Link,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { CheckCircleOutline, ErrorOutline, Language } from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
 import Grid from '../../mui/Grid';
 import { PagePrimaryButton } from '../common/PagePrimaryButton';
 import WebsiteThemeSelector, { WEBSITE_THEMES } from './WebsiteThemeSelector';
@@ -28,10 +32,12 @@ interface WebsiteSetupPanelProps {
   isCheckingSubdomain: boolean;
   isLoading: boolean;
   error: string | null;
+  policyConfirmed: boolean;
   onThemeChange: (theme: string) => void;
   onSubdomainChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSuggestedSubdomain: (suggestion: string) => void;
   onStepChange: (step: number) => void;
+  onPolicyConfirmedChange: (confirmed: boolean) => void;
   onPublish: () => void;
 }
 
@@ -45,10 +51,12 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
   isCheckingSubdomain,
   isLoading,
   error,
+  policyConfirmed,
   onThemeChange,
   onSubdomainChange,
   onSuggestedSubdomain,
   onStepChange,
+  onPolicyConfirmedChange,
   onPublish,
 }) => {
   const selectedThemeOption =
@@ -146,13 +154,44 @@ export const WebsiteSetupPanel: React.FC<WebsiteSetupPanelProps> = ({
                 </Box>
               )}
 
+              <Alert severity="info" sx={{ mt: 3 }}>
+                Publishing makes selected portfolio information public and may allow search engines
+                and other people to copy it.
+              </Alert>
+              <FormControlLabel
+                sx={{ mt: 1, alignItems: 'flex-start' }}
+                control={
+                  <Checkbox
+                    checked={policyConfirmed}
+                    onChange={(event) => onPolicyConfirmedChange(event.target.checked)}
+                    disabled={isLoading}
+                  />
+                }
+                label={
+                  <>
+                    I confirm this site follows the{' '}
+                    <Link
+                      component={RouterLink}
+                      to="/acceptable-use"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Acceptable Use Policy
+                    </Link>{' '}
+                    and I have permission to publish its content.
+                  </>
+                }
+              />
+
               <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
                 <Button onClick={() => onStepChange(0)} disabled={isLoading}>
                   Back
                 </Button>
                 <PagePrimaryButton
                   onClick={onPublish}
-                  disabled={isLoading || !subdomain || subdomainAvailable !== true}
+                  disabled={
+                    isLoading || !subdomain || subdomainAvailable !== true || !policyConfirmed
+                  }
                   startIcon={isLoading ? <CircularProgress size={18} /> : <Language />}
                 >
                   {isLoading ? 'Publishing…' : 'Publish website'}

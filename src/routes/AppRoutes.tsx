@@ -34,6 +34,11 @@ const SupportPage = lazy(() => import('../pages/footer/SupportPage'));
 const FAQPage = lazy(() => import('../pages/footer/FAQPage'));
 const PrivacyPage = lazy(() => import('../pages/footer/PrivacyPage'));
 const TermsPage = lazy(() => import('../pages/footer/TermsPage'));
+const AcceptableUsePage = lazy(() => import('../pages/footer/AcceptableUsePage'));
+const CopyrightPolicyPage = lazy(() => import('../pages/footer/CopyrightPolicyPage'));
+const AIDataUsePage = lazy(() => import('../pages/footer/AIDataUsePage'));
+const SitePrivacyPage = lazy(() => import('../pages/footer/SitePrivacyPage'));
+const ReportAbusePage = lazy(() => import('../pages/footer/ReportAbusePage'));
 const ContactPage = lazy(() => import('../pages/footer/ContactPage'));
 const UploadPortfolioPage = lazy(() => import('../pages/portfolio/UploadPortfolioPage'));
 const WebsitePage = lazy(() => import('../pages/WebsitePage'));
@@ -112,6 +117,11 @@ const AppRoutes: React.FC = () => (
         <Route path="/blog" element={<Navigate to="/" replace />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/acceptable-use" element={<AcceptableUsePage />} />
+        <Route path="/copyright" element={<CopyrightPolicyPage />} />
+        <Route path="/ai-data-use" element={<AIDataUsePage />} />
+        <Route path="/site-privacy" element={<SitePrivacyPage />} />
+        <Route path="/report" element={<ReportAbusePage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Route>
 

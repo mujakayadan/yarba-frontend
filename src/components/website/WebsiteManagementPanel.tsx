@@ -47,6 +47,8 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
 }) => {
   const deploymentStatus = website.deployment_status.status;
   const deploymentInProgress = deploymentStatus === 'pending' || deploymentStatus === 'building';
+  const moderationStatus = website.moderation_status ?? 'under_review';
+  const moderationRestricted = moderationStatus !== 'active';
   const deploymentTitle =
     deploymentStatus === 'success'
       ? 'Your website is live'
@@ -66,6 +68,14 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
 
   return (
     <>
+      {moderationRestricted ? (
+        <Alert severity={moderationStatus === 'suspended' ? 'error' : 'warning'} sx={{ mb: 3 }}>
+          {website.moderation_message ??
+            (moderationStatus === 'suspended'
+              ? 'This website is suspended and cannot be published or use public chat. Contact support to request review.'
+              : 'This website is under content review and cannot be republished until review is complete.')}
+        </Alert>
+      ) : null}
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -180,7 +190,7 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
                 <Button
                   variant="outlined"
                   onClick={() => onConfirmAction('redeploy')}
-                  disabled={isLoading || deploymentInProgress}
+                  disabled={isLoading || deploymentInProgress || moderationRestricted}
                   startIcon={actionLoading ? <CircularProgress size={18} /> : <Refresh />}
                 >
                   Redeploy website
@@ -212,7 +222,7 @@ export const WebsiteManagementPanel: React.FC<WebsiteManagementPanelProps> = ({
           {section === 'chatbot' && (
             <WebsiteChatbotSettings
               website={website}
-              disabled={isLoading || deploymentInProgress}
+              disabled={isLoading || deploymentInProgress || moderationRestricted}
               onUpdated={onWebsiteUpdated}
               onDeploymentStarted={onDeploymentStarted}
             />

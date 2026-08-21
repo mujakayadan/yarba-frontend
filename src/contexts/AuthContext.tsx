@@ -12,6 +12,7 @@ import {
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
 import {
+  LegalAcceptanceRequest,
   PasswordAuthResponse,
   UpdateSetupProgressRequest,
   User,
@@ -61,11 +62,21 @@ export interface AuthContextState {
   setupStep: UserSetupStep;
   setupRoute: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<{ setupRoute: string }>;
-  signInWithGoogleFlow: () => Promise<{ isNewUser?: boolean; setupRoute?: string }>;
-  completeGoogleProviderSignIn: (idToken: string) => Promise<ProviderSignInResult>;
+  register: (
+    email: string,
+    password: string,
+    legalAcceptance: LegalAcceptanceRequest
+  ) => Promise<{ setupRoute: string }>;
+  signInWithGoogleFlow: (
+    legalAcceptance?: LegalAcceptanceRequest
+  ) => Promise<{ isNewUser?: boolean; setupRoute?: string }>;
+  completeGoogleProviderSignIn: (
+    idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest
+  ) => Promise<ProviderSignInResult>;
   completeAppleProviderSignIn: (
     idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest,
     displayName?: string
   ) => Promise<ProviderSignInResult>;
   signOut: () => Promise<void>;
@@ -337,7 +348,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Register function
-  const register = async (email: string, password: string): Promise<{ setupRoute: string }> => {
+  const register = async (
+    email: string,
+    password: string,
+    legalAcceptance: LegalAcceptanceRequest
+  ): Promise<{ setupRoute: string }> => {
     try {
       debug.log('Starting registration process for:', email);
       setLoading(true);
@@ -353,7 +368,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(errorMsg);
       }
 
-      const result = await registerWithEmail({ email, password });
+      const result = await registerWithEmail({
+        email,
+        password,
+        legal_acceptance: legalAcceptance,
+      });
 
       if (env.nativeAuth) {
         setFirebaseUser(null);
@@ -391,7 +410,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Sign in with Google flow
-  const signInWithGoogleFlow = async (): Promise<{ isNewUser?: boolean; setupRoute?: string }> => {
+  const signInWithGoogleFlow = async (
+    legalAcceptance?: LegalAcceptanceRequest
+  ): Promise<{ isNewUser?: boolean; setupRoute?: string }> => {
     try {
       debug.log('Starting Google sign-in flow');
       setLoading(true);
@@ -407,7 +428,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(errorMsg);
       }
 
-      const result = await loginWithGoogleService();
+      const result = await loginWithGoogleService(legalAcceptance);
       debug.log('Google sign-in flow completed with result:', result);
 
       const fbUser = await getCurrentFirebaseUser();
@@ -467,14 +488,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const completeGoogleProviderSignIn = (idToken: string): Promise<ProviderSignInResult> =>
-    completeNativeProviderSignIn(() => exchangeGoogleIdToken(idToken));
+  const completeGoogleProviderSignIn = (
+    idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest
+  ): Promise<ProviderSignInResult> =>
+    completeNativeProviderSignIn(() => exchangeGoogleIdToken(idToken, legalAcceptance));
 
   const completeAppleProviderSignIn = (
     idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest,
     displayName?: string
   ): Promise<ProviderSignInResult> =>
-    completeNativeProviderSignIn(() => exchangeAppleIdToken(idToken, displayName));
+    completeNativeProviderSignIn(() => exchangeAppleIdToken(idToken, legalAcceptance, displayName));
 
   // Sign out function
   const signOut = async () => {

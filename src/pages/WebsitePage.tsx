@@ -65,6 +65,7 @@ const WebsitePage: React.FC = () => {
   const [subdomain, setSubdomain] = useState<string>('');
   const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null);
   const [subdomainError, setSubdomainError] = useState<string | null>(null);
+  const [publishingPolicyConfirmed, setPublishingPolicyConfirmed] = useState(false);
   const [suggestedSubdomains, setSuggestedSubdomains] = useState<string[]>([]);
   const [isCheckingSubdomain, setIsCheckingSubdomain] = useState<boolean>(false);
   const {
@@ -212,12 +213,17 @@ const WebsitePage: React.FC = () => {
       setError('Please enter a valid and available subdomain.');
       return;
     }
+    if (!publishingPolicyConfirmed) {
+      setError('Confirm the publishing policy before making this website public.');
+      return;
+    }
     setActionLoading(true);
     setError(null);
     try {
       const config: PortfolioWebsiteConfig = { ...DEFAULT_CONFIG, theme: selectedTheme };
       const newWebsite = await createPortfolioWebsite(config, subdomain);
       setWebsite(newWebsite);
+      setPublishingPolicyConfirmed(false);
       setActiveStep(2);
       if (isDeploymentInProgress(newWebsite.deployment_status)) {
         pollDeploymentStatus();
@@ -261,6 +267,7 @@ const WebsitePage: React.FC = () => {
       setSelectedTheme(WEBSITE_THEMES[0].value);
       setSubdomainAvailable(null);
       setSubdomainError(null);
+      setPublishingPolicyConfirmed(false);
       stopPolling();
     } catch (err: unknown) {
       setError(extractApiErrorMessage(err, WEBSITE_ACTION_ERROR));
@@ -433,10 +440,12 @@ const WebsitePage: React.FC = () => {
           isCheckingSubdomain={isCheckingSubdomain}
           isLoading={isLoading}
           error={error}
+          policyConfirmed={publishingPolicyConfirmed}
           onThemeChange={setSelectedTheme}
           onSubdomainChange={handleSubdomainChange}
           onSuggestedSubdomain={handleSuggestedSubdomain}
           onStepChange={setActiveStep}
+          onPolicyConfirmedChange={setPublishingPolicyConfirmed}
           onPublish={handleCreateAndDeploy}
         />
       ) : (

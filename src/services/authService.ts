@@ -5,6 +5,7 @@ import type {
   ChangePasswordRequest,
   ConfirmVerificationRequest,
   ForgotPasswordRequest,
+  LegalAcceptanceRequest,
   LoginRequest,
   LoginResponse,
   PasswordAuthResponse,
@@ -64,7 +65,9 @@ export const getFirebaseIdToken = async (): Promise<string | null> => {
   }
 };
 
-export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | null> => {
+export const exchangeFirebaseTokenForJWT = async (
+  legalAcceptance?: LegalAcceptanceRequest
+): Promise<LoginResponse | null> => {
   if (tokenExchangeInProgress) {
     debug.warn('Token exchange already in progress, skipping duplicate request');
     if (lastTokenExchangeError) {
@@ -93,7 +96,10 @@ export const exchangeFirebaseTokenForJWT = async (): Promise<LoginResponse | nul
 
   try {
     debug.log('Sending Firebase token to backend for JWT exchange');
-    const response = await api.post<LoginResponse>('/auth/login', { id_token: idToken });
+    const response = await api.post<LoginResponse>('/auth/login', {
+      id_token: idToken,
+      ...(legalAcceptance ? { legal_acceptance: legalAcceptance } : {}),
+    });
     debug.log('JWT exchange successful');
 
     tokenExchangeInProgress = false;
@@ -180,12 +186,12 @@ export const deactivatePasswordAccount = async (): Promise<void> => {
 export const registerWithEmail = async (data: RegisterRequest): Promise<LoginResponse> => {
   try {
     debug.log('Sending registration details to backend for:', data.email);
-    const { email, password } = data;
+    const { email, password, legal_acceptance } = data;
     if (env.nativeAuth) {
-      return await passwordRegister({ email, password });
+      return await passwordRegister({ email, password, legal_acceptance });
     }
 
-    const response = await api.post<LoginResponse>('/auth/register', { email, password });
+    const response = await api.post<LoginResponse>('/auth/register', data);
     debug.log('Backend registration successful for:', data.email);
 
     if (response.data.access_token) {
@@ -274,7 +280,9 @@ export const completeFirebaseEmailRegistration = async (
   await signInWithFirebaseEmail(email, password);
 };
 
-export const loginWithGoogle = async (): Promise<LoginResponse> => {
+export const loginWithGoogle = async (
+  legalAcceptance?: LegalAcceptanceRequest
+): Promise<LoginResponse> => {
   try {
     debug.log('Starting Google sign-in process');
     const firebaseUser = await signInWithFirebaseGoogle();
@@ -290,7 +298,7 @@ export const loginWithGoogle = async (): Promise<LoginResponse> => {
       }
     }
 
-    const tokenResponse = await exchangeFirebaseTokenForJWT();
+    const tokenResponse = await exchangeFirebaseTokenForJWT(legalAcceptance);
 
     if (tokenResponse?.access_token) {
       storeToken(tokenResponse.access_token);

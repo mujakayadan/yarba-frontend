@@ -48,6 +48,7 @@ vi.mock('../services/oauthService', () => ({
 }));
 
 import { AuthProvider, useAuth } from './AuthContext';
+import { buildLegalAcceptance } from '../services/legalService';
 
 const authResponse = {
   user: {
@@ -82,12 +83,34 @@ const AuthHarness = () => {
       <span>{loading ? 'loading' : isAuthenticated ? 'authenticated' : 'signed-out'}</span>
       <span>{firebaseUser ? 'firebase-user' : 'no-firebase-user'}</span>
       <button onClick={() => void login('user@example.com', 'password')}>Log in</button>
-      <button onClick={() => void register('user@example.com', 'password')}>Register</button>
+      <button
+        onClick={() =>
+          void register(
+            'user@example.com',
+            'password',
+            buildLegalAcceptance('password_registration')
+          )
+        }
+      >
+        Register
+      </button>
       <button onClick={() => void signOut()}>Log out</button>
-      <button onClick={() => void completeGoogleProviderSignIn('google-id-token')}>
+      <button
+        onClick={() =>
+          void completeGoogleProviderSignIn('google-id-token', buildLegalAcceptance('google_oauth'))
+        }
+      >
         Direct Google
       </button>
-      <button onClick={() => void completeAppleProviderSignIn('apple-id-token', 'Example User')}>
+      <button
+        onClick={() =>
+          void completeAppleProviderSignIn(
+            'apple-id-token',
+            buildLegalAcceptance('apple_oauth'),
+            'Example User'
+          )
+        }
+      >
         Direct Apple
       </button>
     </div>
@@ -126,6 +149,7 @@ describe('AuthProvider password adapter selection', () => {
     expect(mocks.registerWithEmail).toHaveBeenCalledWith({
       email: 'user@example.com',
       password: 'password',
+      legal_acceptance: buildLegalAcceptance('password_registration'),
     });
     expect(mocks.completeFirebaseRegistration).not.toHaveBeenCalled();
     expect(mocks.getFirebaseUser).not.toHaveBeenCalled();
@@ -199,9 +223,16 @@ describe('AuthProvider password adapter selection', () => {
 
     await screen.findByText('authenticated');
     expect(screen.getByText('no-firebase-user')).toBeInTheDocument();
-    expect(mocks.googleExchange).toHaveBeenCalledWith('google-id-token');
+    expect(mocks.googleExchange).toHaveBeenCalledWith(
+      'google-id-token',
+      buildLegalAcceptance('google_oauth')
+    );
 
     await user.click(screen.getByRole('button', { name: 'Direct Apple' }));
-    expect(mocks.appleExchange).toHaveBeenCalledWith('apple-id-token', 'Example User');
+    expect(mocks.appleExchange).toHaveBeenCalledWith(
+      'apple-id-token',
+      buildLegalAcceptance('apple_oauth'),
+      'Example User'
+    );
   });
 });

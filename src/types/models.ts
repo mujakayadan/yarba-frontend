@@ -253,11 +253,41 @@ export interface TexHeader {
 export interface RegisterRequest {
   email: string;
   password: string;
+  legal_acceptance: LegalAcceptanceRequest;
 }
 
 export interface PasswordCredentialsRequest {
   email: string;
   password: string;
+  legal_acceptance?: LegalAcceptanceRequest;
+}
+
+export type LegalAcceptanceSurface =
+  | 'password_registration'
+  | 'firebase_registration'
+  | 'google_oauth'
+  | 'apple_oauth'
+  | 'settings_reacceptance';
+
+export interface LegalAcceptanceRequest {
+  terms_version: string;
+  acceptable_use_version: string;
+  privacy_version: string;
+  ai_data_use_version: string;
+  terms_accepted: true;
+  acceptable_use_accepted: true;
+  privacy_acknowledged: true;
+  ai_data_use_acknowledged: true;
+  minimum_age_confirmed: true;
+  acceptance_surface: LegalAcceptanceSurface;
+}
+
+export interface LegalAcceptanceStatus {
+  requires_acceptance: boolean;
+  current_versions: Record<'terms' | 'acceptable_use' | 'privacy' | 'ai_data_use', string>;
+  accepted_versions: Partial<
+    Record<'terms' | 'acceptable_use' | 'privacy' | 'ai_data_use', string>
+  >;
 }
 
 export interface ForgotPasswordRequest {
@@ -316,15 +346,68 @@ export interface OAuthNonceResponse {
 
 export interface GoogleOAuthExchangeRequest {
   id_token: string;
+  legal_acceptance?: LegalAcceptanceRequest;
 }
 
 export interface AppleOAuthExchangeRequest {
   id_token: string;
   display_name?: string;
+  legal_acceptance?: LegalAcceptanceRequest;
 }
 
 export interface AuthActionResponse {
   message: string;
+}
+
+export type AbuseReportCategory =
+  | 'illegal_content'
+  | 'sexual_content'
+  | 'minor_safety'
+  | 'non_consensual_intimate_image'
+  | 'copyright'
+  | 'impersonation'
+  | 'harassment'
+  | 'privacy'
+  | 'malware_or_phishing'
+  | 'other';
+
+export interface AbuseReportRequest {
+  subdomain: string;
+  reported_url?: string;
+  category: AbuseReportCategory;
+  description: string;
+  reporter_email?: string;
+  company_website?: string;
+}
+
+export interface AbuseReportResponse {
+  report_id: string;
+  status: 'received';
+  message: string;
+  response_due_at?: string;
+}
+
+export interface AccountExportStatus {
+  request_id?: string;
+  status: 'not_requested' | 'pending' | 'processing' | 'ready' | 'failed' | 'expired';
+  created_at?: string;
+  completed_at?: string;
+  expires_at?: string;
+  download_url?: string;
+  error_message?: string;
+}
+
+export interface AccountDeletionStatus {
+  request_id?: string;
+  status: 'not_requested' | 'pending' | 'processing' | 'completed' | 'cancelled';
+  requested_at?: string;
+  scheduled_for?: string;
+  can_cancel: boolean;
+}
+
+export interface AccountDeletionRequest {
+  confirmation: 'DELETE';
+  current_password?: string;
 }
 
 export interface ApiErrorResponse {
@@ -402,10 +485,18 @@ export interface PortfolioWebsiteConfig {
   chatbot_store_conversations?: boolean; // default: false
 }
 
+export interface WebsitePublicationAcknowledgement {
+  acceptable_use_version: string;
+  rights_confirmed: true;
+}
+
 export interface PortfolioWebsiteResponse {
   website_url: string; // HttpUrl
   subdomain: string;
   deployment_status: DeploymentStatus;
+  moderation_status: 'active' | 'under_review' | 'suspended';
+  moderation_message?: string | null;
+  suspended_at?: string | null;
   config: PortfolioWebsiteConfig;
   last_updated: string; // datetime
 }

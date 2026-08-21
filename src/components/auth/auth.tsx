@@ -24,6 +24,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { env } from '../../config/env';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
 import NativeOAuthButtons from './NativeOAuthButtons';
+import LegalAgreementFields from '../legal/LegalAgreementFields';
+import { buildLegalAcceptance } from '../../services/legalService';
 
 const debug = createDebugger('FirebaseAuth');
 
@@ -42,6 +44,8 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const [localError, setLocalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [legalAgreementConfirmed, setLegalAgreementConfirmed] = useState(false);
+  const [legalAgreementError, setLegalAgreementError] = useState(false);
 
   // Auth context
   const {
@@ -96,6 +100,8 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    setLegalAgreementConfirmed(false);
+    setLegalAgreementError(false);
     setLocalError(null);
     setError(null);
   }, [setError]);
@@ -119,6 +125,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     }
 
     if (mode === 'register') {
+      if (!legalAgreementConfirmed) {
+        setLegalAgreementError(true);
+        setLocalError('You must confirm the legal terms before creating an account.');
+        return;
+      }
       if (env.nativeAuth) {
         const passwordError = validateNativePassword(password);
         if (passwordError) {
@@ -148,7 +159,14 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         navigate(redirectPath, { replace: true });
       } else {
         debug.log('Attempting to register');
-        const { setupRoute } = await register(normalizedEmail, password);
+        const acceptanceSurface = env.nativeAuth
+          ? 'password_registration'
+          : 'firebase_registration';
+        const { setupRoute } = await register(
+          normalizedEmail,
+          password,
+          buildLegalAcceptance(acceptanceSurface)
+        );
         debug.log('Registration successful');
 
         // Navigate directly to the setup route or dashboard
@@ -169,6 +187,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
 
   // Handle Google sign-in
   const handleGoogleSignIn = async () => {
+    if (mode === 'register' && !legalAgreementConfirmed) {
+      setLegalAgreementError(true);
+      setLocalError('Confirm the legal terms before continuing with Google.');
+      return;
+    }
     if (isOffline) {
       setLocalError(
         'Cannot authenticate with Google while offline. Please check your internet connection.'
@@ -182,7 +205,9 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     setIsSubmitting(true);
 
     try {
-      const { isNewUser, setupRoute } = await signInWithGoogleFlow();
+      const { isNewUser, setupRoute } = await signInWithGoogleFlow(
+        mode === 'register' ? buildLegalAcceptance('google_oauth') : undefined
+      );
       debug.log('Google sign-in successful. isNewUser:', isNewUser);
 
       // Navigate to the appropriate route
@@ -424,6 +449,22 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                   </>
                 )}
 
+                {mode === 'register' ? (
+                  <Grid item xs={12}>
+                    <LegalAgreementFields
+                      checked={legalAgreementConfirmed}
+                      disabled={isSubmitting}
+                      error={legalAgreementError}
+                      onChange={(checked) => {
+                        setLegalAgreementConfirmed(checked);
+                        if (checked) {
+                          setLegalAgreementError(false);
+                        }
+                      }}
+                    />
+                  </Grid>
+                ) : null}
+
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -451,7 +492,8 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
 
               {nativeOAuthEnabled ? (
                 <NativeOAuthButtons
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (mode === 'register' && !legalAgreementConfirmed)}
+                  legalAcceptanceRequired={mode === 'register'}
                   onGoogleToken={completeGoogleProviderSignIn}
                   onAppleToken={completeAppleProviderSignIn}
                   onAuthenticated={handleNativeProviderAuthenticated}
@@ -462,7 +504,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                   variant="outlined"
                   startIcon={<GoogleIcon />}
                   onClick={handleGoogleSignIn}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (mode === 'register' && !legalAgreementConfirmed)}
                   sx={{ mb: 2 }}
                 >
                   Continue with Google

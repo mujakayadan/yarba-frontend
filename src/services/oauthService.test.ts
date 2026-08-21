@@ -15,6 +15,7 @@ vi.mock('../utils/auth', () => ({
 }));
 
 import { exchangeAppleIdToken, exchangeGoogleIdToken, issueOAuthNonce } from './oauthService';
+import { buildLegalAcceptance } from './legalService';
 
 const authResponse = {
   user: {
@@ -55,22 +56,28 @@ describe('oauthService', () => {
 
   it('exchanges a Google ID token and stores only the backend access token', async () => {
     mocks.apiPost.mockResolvedValue({ data: authResponse });
+    const legalAcceptance = buildLegalAcceptance('google_oauth');
 
-    await expect(exchangeGoogleIdToken('google-id-token')).resolves.toEqual(authResponse);
+    await expect(exchangeGoogleIdToken('google-id-token', legalAcceptance)).resolves.toEqual(
+      authResponse
+    );
 
     expect(mocks.apiPost).toHaveBeenCalledWith('/auth/oauth/google', {
       id_token: 'google-id-token',
+      legal_acceptance: legalAcceptance,
     });
     expect(mocks.storeToken).toHaveBeenCalledWith('backend-access-token');
   });
 
   it('exchanges an Apple ID token with a one-time display name', async () => {
     mocks.apiPost.mockResolvedValue({ data: authResponse });
+    const legalAcceptance = buildLegalAcceptance('apple_oauth');
 
-    await exchangeAppleIdToken('apple-id-token', 'Example User');
+    await exchangeAppleIdToken('apple-id-token', legalAcceptance, 'Example User');
 
     expect(mocks.apiPost).toHaveBeenCalledWith('/auth/oauth/apple', {
       id_token: 'apple-id-token',
+      legal_acceptance: legalAcceptance,
       display_name: 'Example User',
     });
     expect(mocks.storeToken).toHaveBeenCalledWith('backend-access-token');
@@ -91,9 +98,9 @@ describe('oauthService', () => {
       },
     });
 
-    await expect(exchangeGoogleIdToken('secret-google-token')).rejects.toBeInstanceOf(
-      ApiRequestError
-    );
+    await expect(
+      exchangeGoogleIdToken('secret-google-token', buildLegalAcceptance('google_oauth'))
+    ).rejects.toBeInstanceOf(ApiRequestError);
 
     const loggedValues = consoleSpies
       .flatMap((spy) => spy.mock.calls)

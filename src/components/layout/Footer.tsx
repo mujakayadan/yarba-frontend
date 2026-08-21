@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { LEGAL_NAV_ITEMS } from '../../content/legalDocuments';
 
 const Footer: React.FC = () => {
   return (
@@ -81,26 +82,28 @@ const Footer: React.FC = () => {
               FAQ
             </Link>
           </Box>
+          {LEGAL_NAV_ITEMS.map((item) => (
+            <Box component="li" key={item.key} sx={{ display: 'inline' }}>
+              <Link
+                component={RouterLink}
+                to={item.path}
+                color="text.secondary"
+                underline="hover"
+                fontSize="0.875rem"
+              >
+                {item.label}
+              </Link>
+            </Box>
+          ))}
           <Box component="li" sx={{ display: 'inline' }}>
             <Link
               component={RouterLink}
-              to="/privacy"
+              to="/report"
               color="text.secondary"
               underline="hover"
               fontSize="0.875rem"
             >
-              Privacy
-            </Link>
-          </Box>
-          <Box component="li" sx={{ display: 'inline' }}>
-            <Link
-              component={RouterLink}
-              to="/terms"
-              color="text.secondary"
-              underline="hover"
-              fontSize="0.875rem"
-            >
-              Terms
+              Report Abuse
             </Link>
           </Box>
           <Box component="li" sx={{ display: 'inline' }}>

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NATIVE_PASSWORD_POLICY_MESSAGE } from '../../utils/passwordPolicy';
+import { buildLegalAcceptance } from '../../services/legalService';
 
 const mocks = vi.hoisted(() => ({
   nativeAuth: true,
@@ -12,6 +13,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('../../config/env', () => ({
+  isDev: false,
   env: {
     get nativeAuth() {
       return mocks.nativeAuth;
@@ -54,6 +56,7 @@ const completeRegistration = async (password: string) => {
   const passwordFields = screen.getAllByLabelText(/^password|re-enter password/i);
   await user.type(passwordFields[0], password);
   await user.type(passwordFields[1], password);
+  await user.click(screen.getByRole('checkbox'));
   await user.click(screen.getByRole('button', { name: /sign up/i }));
 };
 
@@ -111,6 +114,10 @@ describe('registration password policy', () => {
 
     await completeRegistration('abcdef');
 
-    expect(mocks.register).toHaveBeenCalledWith('user@example.com', 'abcdef');
+    expect(mocks.register).toHaveBeenCalledWith(
+      'user@example.com',
+      'abcdef',
+      buildLegalAcceptance('firebase_registration')
+    );
   });
 });

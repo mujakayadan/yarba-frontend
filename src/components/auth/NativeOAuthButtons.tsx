@@ -1,22 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppleIcon from '@mui/icons-material/Apple';
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Stack } from '@mui/material';
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { env } from '../../config/env';
 import type { ProviderSignInResult } from '../../contexts/AuthContext';
 import { ProviderPopupCancelledError, signInWithApple } from '../../services/appleOAuthAdapter';
 import { issueOAuthNonce } from '../../services/oauthService';
+import { buildLegalAcceptance } from '../../services/legalService';
+import type { LegalAcceptanceRequest } from '../../types/models';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
 
 const OAUTH_UI_TEXT = {
@@ -24,9 +15,8 @@ const OAUTH_UI_TEXT = {
   appleCancelled: 'Apple sign-in was cancelled.',
   appleFailure: 'Unable to complete Apple sign-in. Please try again.',
   configurationMissing: 'Direct provider sign-in is not configured for this environment.',
-  googleDialogTitle: 'Continue with Google',
+  googleButton: 'Continue with Google',
   googleFailure: 'Google sign-in was cancelled or could not be completed. Please try again.',
-  googlePrepare: 'Prepare Google sign-in',
   googlePreparing: 'Preparing Google sign-in…',
   googleRetry: 'Try Google again',
   providerFailure: 'Unable to complete provider sign-in. Please try again.',
@@ -34,19 +24,28 @@ const OAUTH_UI_TEXT = {
 
 interface NativeOAuthButtonsProps {
   disabled: boolean;
-  onGoogleToken: (idToken: string) => Promise<ProviderSignInResult>;
-  onAppleToken: (idToken: string, displayName?: string) => Promise<ProviderSignInResult>;
+  legalAcceptanceRequired: boolean;
+  onGoogleToken: (
+    idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest
+  ) => Promise<ProviderSignInResult>;
+  onAppleToken: (
+    idToken: string,
+    legalAcceptance?: LegalAcceptanceRequest,
+    displayName?: string
+  ) => Promise<ProviderSignInResult>;
   onAuthenticated: (result: ProviderSignInResult) => void;
 }
 
 const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   disabled,
+  legalAcceptanceRequired,
   onGoogleToken,
   onAppleToken,
   onAuthenticated,
 }) => {
-  const [googleDialogOpen, setGoogleDialogOpen] = useState(false);
   const [googleNonce, setGoogleNonce] = useState<string | null>(null);
+  const [googleNonceEpoch, setGoogleNonceEpoch] = useState(0);
   const [activeProvider, setActiveProvider] = useState<'google' | 'apple' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const operationInFlight = useRef(false);
@@ -55,28 +54,55 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   const appleConfigured = Boolean(env.oauth.appleServiceId && env.oauth.appleRedirectUri);
   const isBusy = disabled || activeProvider !== null;
 
-  const prepareGoogleSignIn = async () => {
-    if (!googleConfigured || operationInFlight.current) {
+  useEffect(() => {
+    if (!googleConfigured || disabled) {
       return;
     }
-    operationInFlight.current = true;
-    setGoogleDialogOpen(true);
+
+    let cancelled = false;
     setGoogleNonce(null);
-    setError(null);
     setActiveProvider('google');
-    try {
-      const nonceResponse = await issueOAuthNonce('google');
-      setGoogleNonce(nonceResponse.nonce);
-    } catch (nonceError: unknown) {
-      setError(extractApiErrorMessage(nonceError, OAUTH_UI_TEXT.providerFailure));
-    } finally {
-      operationInFlight.current = false;
-      setActiveProvider(null);
+
+    const loadNonce = async () => {
+      try {
+        const nonceResponse = await issueOAuthNonce('google');
+        if (cancelled) {
+          return;
+        }
+        setGoogleNonce(nonceResponse.nonce);
+        setError(null);
+      } catch (nonceError: unknown) {
+        if (cancelled) {
+          return;
+        }
+        setGoogleNonce(null);
+        setError(extractApiErrorMessage(nonceError, OAUTH_UI_TEXT.providerFailure));
+      } finally {
+        if (!cancelled) {
+          setActiveProvider((current) => (current === 'google' ? null : current));
+        }
+      }
+    };
+
+    void loadNonce();
+    return () => {
+      cancelled = true;
+    };
+  }, [disabled, googleConfigured, googleNonceEpoch]);
+
+  const retryGoogleNonce = () => {
+    if (operationInFlight.current) {
+      return;
     }
+    setError(null);
+    setGoogleNonceEpoch((current) => current + 1);
   };
 
   const handleGoogleSuccess = async (response: CredentialResponse) => {
-    if (!response.credential || operationInFlight.current) {
+    if (operationInFlight.current) {
+      return;
+    }
+    if (!response.credential) {
       setGoogleNonce(null);
       setError(OAUTH_UI_TEXT.googleFailure);
       return;
@@ -86,8 +112,10 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     setActiveProvider('google');
     setError(null);
     try {
-      const result = await onGoogleToken(response.credential);
-      setGoogleDialogOpen(false);
+      const result = await onGoogleToken(
+        response.credential,
+        legalAcceptanceRequired ? buildLegalAcceptance('google_oauth') : undefined
+      );
       setGoogleNonce(null);
       onAuthenticated(result);
     } catch (exchangeError: unknown) {
@@ -102,15 +130,6 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   const handleGoogleError = () => {
     setGoogleNonce(null);
     setError(OAUTH_UI_TEXT.googleFailure);
-  };
-
-  const handleGoogleDialogClose = () => {
-    if (operationInFlight.current) {
-      return;
-    }
-    setGoogleDialogOpen(false);
-    setGoogleNonce(null);
-    setError(null);
   };
 
   const handleAppleSignIn = async () => {
@@ -133,7 +152,11 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
         clientId: env.oauth.appleServiceId,
         redirectUri: env.oauth.appleRedirectUri,
       });
-      const result = await onAppleToken(appleResult.idToken, appleResult.displayName);
+      const result = await onAppleToken(
+        appleResult.idToken,
+        legalAcceptanceRequired ? buildLegalAcceptance('apple_oauth') : undefined,
+        appleResult.displayName
+      );
       onAuthenticated(result);
     } catch (providerError: unknown) {
       const message =
@@ -153,29 +176,39 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
 
   return (
     <>
-      {error && !googleDialogOpen ? (
+      {error ? (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       ) : null}
-      <Stack spacing={1.5}>
-        {googleConfigured ? (
-          <Button
-            type="button"
-            fullWidth
-            variant="outlined"
-            onClick={() => void prepareGoogleSignIn()}
-            disabled={isBusy}
-          >
-            {activeProvider === 'google' ? (
-              <>
-                <CircularProgress size={20} sx={{ mr: 1 }} />
-                {OAUTH_UI_TEXT.googlePreparing}
-              </>
+      <Stack spacing={1.5} alignItems="center">
+        {googleConfigured && env.oauth.googleClientId ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: 44, width: '100%' }}>
+            {disabled ? (
+              <Button type="button" fullWidth variant="outlined" disabled>
+                {OAUTH_UI_TEXT.googleButton}
+              </Button>
+            ) : googleNonce ? (
+              <GoogleOAuthProvider clientId={env.oauth.googleClientId}>
+                <GoogleLogin
+                  nonce={googleNonce}
+                  onSuccess={(response) => void handleGoogleSuccess(response)}
+                  onError={handleGoogleError}
+                  useOneTap={false}
+                  theme="outline"
+                  size="large"
+                  shape="rectangular"
+                  text="continue_with"
+                />
+              </GoogleOAuthProvider>
+            ) : activeProvider === 'google' ? (
+              <CircularProgress aria-label={OAUTH_UI_TEXT.googlePreparing} />
             ) : (
-              OAUTH_UI_TEXT.googlePrepare
+              <Button type="button" fullWidth variant="outlined" onClick={retryGoogleNonce}>
+                {OAUTH_UI_TEXT.googleRetry}
+              </Button>
             )}
-          </Button>
+          </Box>
         ) : null}
         {appleConfigured ? (
           <Button
@@ -201,56 +234,6 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
           </Button>
         ) : null}
       </Stack>
-
-      {googleConfigured ? (
-        <Dialog
-          open={googleDialogOpen}
-          onClose={handleGoogleDialogClose}
-          aria-labelledby="google-sign-in-title"
-          maxWidth="xs"
-          fullWidth
-        >
-          <DialogTitle id="google-sign-in-title">{OAUTH_UI_TEXT.googleDialogTitle}</DialogTitle>
-          <DialogContent>
-            <Typography color="text.secondary" sx={{ mb: 2 }}>
-              Use Google&apos;s secure sign-in button to continue.
-            </Typography>
-            {error ? (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            ) : null}
-            <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: 44 }}>
-              {googleNonce && env.oauth.googleClientId ? (
-                <GoogleOAuthProvider clientId={env.oauth.googleClientId}>
-                  <GoogleLogin
-                    nonce={googleNonce}
-                    onSuccess={(response) => void handleGoogleSuccess(response)}
-                    onError={handleGoogleError}
-                    useOneTap={false}
-                    theme="outline"
-                    size="large"
-                    shape="rectangular"
-                    text="continue_with"
-                  />
-                </GoogleOAuthProvider>
-              ) : activeProvider === 'google' ? (
-                <CircularProgress aria-label={OAUTH_UI_TEXT.googlePreparing} />
-              ) : null}
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            {!googleNonce && error ? (
-              <Button type="button" onClick={() => void prepareGoogleSignIn()}>
-                {OAUTH_UI_TEXT.googleRetry}
-              </Button>
-            ) : null}
-            <Button type="button" onClick={handleGoogleDialogClose}>
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
-      ) : null}
     </>
   );
 };
