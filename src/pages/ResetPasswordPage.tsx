@@ -18,7 +18,6 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import Grid from '../mui/Grid';
-import { env } from '../config/env';
 import { resetPassword } from '../services/authService';
 import { headerGradient } from '../theme/tokens';
 import { extractApiErrorMessage } from '../utils/apiErrors';
@@ -31,7 +30,6 @@ const PAGE_TEXT = {
   confirmPasswordLabel: 'Confirm new password',
   showPassword: 'Show password',
   hidePassword: 'Hide password',
-  minLength: 'Use at least 6 characters.',
   submit: 'Reset password',
   submitting: 'Resetting…',
   success: 'Your password has been reset. You can now sign in.',
@@ -69,11 +67,7 @@ const ResetPasswordPage: React.FC = () => {
       setError(PAGE_TEXT.missingLink);
       return;
     }
-    const passwordError = env.nativeAuth
-      ? validateNativePassword(newPassword)
-      : newPassword.length < 6
-        ? PAGE_TEXT.minLength
-        : null;
+    const passwordError = validateNativePassword(newPassword);
     if (passwordError) {
       setError(passwordError);
       return;
@@ -235,9 +229,7 @@ const ResetPasswordPage: React.FC = () => {
                       value={newPassword}
                       onChange={(event) => setNewPassword(event.target.value)}
                       disabled={fieldsDisabled}
-                      helperText={
-                        env.nativeAuth ? NATIVE_PASSWORD_POLICY_MESSAGE : PAGE_TEXT.minLength
-                      }
+                      helperText={NATIVE_PASSWORD_POLICY_MESSAGE}
                       sx={{ mb: 2 }}
                       slotProps={{
                         input: {

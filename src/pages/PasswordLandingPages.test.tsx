@@ -1,4 +1,4 @@
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
@@ -10,10 +10,6 @@ import {
 } from '../services/authService';
 import ResetPasswordPage from './ResetPasswordPage';
 import VerifyEmailPage from './VerifyEmailPage';
-
-vi.mock('../config/env', () => ({
-  env: { nativeAuth: true },
-}));
 
 vi.mock('../services/authService', () => ({
   confirmEmailVerification: vi.fn(),
