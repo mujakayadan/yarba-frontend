@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -42,6 +41,9 @@ describe('ForgotPasswordPage', () => {
       'href',
       '/login'
     );
+
+    await user.click(screen.getByRole('button', { name: /use a different email/i }));
+    expect(screen.getByRole('textbox', { name: /email address/i })).toHaveValue('');
   });
 
   it('shows a field error when the email is empty', async () => {

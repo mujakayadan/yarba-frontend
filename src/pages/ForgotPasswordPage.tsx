@@ -65,6 +65,7 @@ const ForgotPasswordPage: React.FC = () => {
   };
 
   const handleUseDifferentEmail = () => {
+    setEmail('');
     setConfirmation(null);
     setError(null);
   };
