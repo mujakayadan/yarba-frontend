@@ -1,6 +1,15 @@
-export const LEGAL_VERSION = '2026-08-19';
-export const LEGAL_LAST_UPDATED = 'August 19, 2026';
+export const LEGAL_VERSION = '2026-09-09';
+export const LEGAL_LAST_UPDATED = 'September 9, 2026';
 export const LEGAL_CONTACT_EMAIL = 'admin@yarba.app';
+
+export const LEGAL_DOCUMENT_BACKEND_TYPES = {
+  terms: 'terms',
+  privacy: 'privacy',
+  'acceptable-use': 'acceptable_use',
+  copyright: 'copyright_dmca',
+  'ai-data-use': 'ai_data_use',
+  'site-privacy': 'site_visitor_privacy',
+} as const;
 
 export type LegalDocumentKey =
   'terms' | 'privacy' | 'acceptable-use' | 'copyright' | 'ai-data-use' | 'site-privacy';
@@ -18,6 +27,18 @@ export interface LegalDocument {
   version: string;
   lastUpdated: string;
   sections: readonly LegalSection[];
+}
+
+export function formatLegalDocumentContent(document: LegalDocument): string {
+  const blocks = [document.title, document.summary];
+  for (const section of document.sections) {
+    const body = [
+      ...(section.paragraphs ?? []),
+      ...(section.items ?? []).map((item) => `- ${item}`),
+    ].join('\n\n');
+    blocks.push(`${section.title}\n\n${body}`);
+  }
+  return `${blocks.join('\n\n').trim()}\n`;
 }
 
 const sharedContact = `Questions, rights requests, and legal notices may be sent to ${LEGAL_CONTACT_EMAIL}.`;
