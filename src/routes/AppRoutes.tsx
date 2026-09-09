@@ -85,6 +85,7 @@ const AppRoutes: React.FC = () => (
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/report-abuse" element={<Navigate to="/report" replace />} />
 
       <Route
         element={
