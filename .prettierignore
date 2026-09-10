@@ -4,3 +4,5 @@ build
 coverage
 package-lock.json
 .husky/_
+android
+ios

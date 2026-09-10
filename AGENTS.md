@@ -3,6 +3,7 @@
 ## Stack
 
 - React 19, TypeScript 7, Vite, Material UI, Firebase, Vitest
+- Capacitor 8 for iOS/Android packaging (`docs/mobile/`)
 - Node.js 24 and npm
 
 ## Commands
@@ -14,6 +15,7 @@ npm run lint
 npm run format:check
 npm run build
 npm test
+npm run cap:sync
 ```
 
 ## Conventions
