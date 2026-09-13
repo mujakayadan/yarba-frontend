@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Yarba</string>
+    <string name="title_activity_main">Yarba</string>
+    <string name="package_name">com.yarba.app</string>
+    <string name="custom_url_scheme">com.yarba.app</string>
+</resources>

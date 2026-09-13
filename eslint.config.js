@@ -8,7 +8,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['build/**', 'coverage/**', 'dist/**'],
+    ignores: ['build/**', 'coverage/**', 'dist/**', 'android/**', 'ios/**'],
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,

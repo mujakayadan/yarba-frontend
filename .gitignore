@@ -11,6 +11,18 @@
 # production
 /build
 
+# Capacitor generated web copies and local native tooling
+android/app/src/main/assets/public
+android/app/build
+android/build
+android/.gradle
+android/local.properties
+android/.idea
+ios/App/App/public
+ios/App/Pods
+ios/App/output
+ios/App/build
+
 # misc
 .DS_Store
 .env
