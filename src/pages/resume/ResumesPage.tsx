@@ -61,6 +61,7 @@ import { queryClient } from '../../providers/QueryProvider';
 import { triggerBlobDownload } from '../../utils/pdfDownload';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { EmptyState } from '../../components/common/EmptyState';
+import { MobileRecordCard, MoreOptionsButton, ResponsiveRecordList } from '../../components/common';
 
 // Type for the PDF response from the server
 interface PdfResponse {
@@ -519,144 +520,197 @@ const ResumesPage: React.FC = () => {
         />
       ) : (
         <>
-          <TableContainer component={Paper} sx={{ mb: 3 }}>
-            <Table sx={{ minWidth: 650 }} aria-label="resumes table">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                    }}
+          <ResponsiveRecordList
+            cards={resumes.map((resume) => (
+              <MobileRecordCard
+                key={resume.id}
+                title={
+                  formatUnderscoredText(getJobTitle(resume)) || resume.title || 'Untitled resume'
+                }
+                subtitle={formatUnderscoredText(resume.company_name) || undefined}
+                meta={`Updated ${formatDate(resume.updated_at)}`}
+                onOpen={() => handleViewResume(resume.id)}
+                menuButton={
+                  <MoreOptionsButton
+                    label={`More options for ${formatUnderscoredText(getJobTitle(resume)) || resume.title}`}
+                    onClick={(event) => handleMenuOpen(event, resume.id)}
                   >
-                    Company
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    Position
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    Last Updated
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {resumes.map((resume) => (
-                  <TableRow
-                    key={resume.id}
-                    sx={{
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        cursor: 'pointer',
-                      },
-                      height: '72px',
-                    }}
-                    onClick={() => handleViewResume(resume.id)}
-                  >
-                    <TableCell>{formatUnderscoredText(resume.company_name)}</TableCell>
-                    <TableCell>{formatUnderscoredText(getJobTitle(resume))}</TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
+                    <MoreVertIcon />
+                  </MoreOptionsButton>
+                }
+                actions={
+                  <>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<VisibilityIcon />}
+                      onClick={() => handleViewResume(resume.id)}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={
+                        generatingPdf && !pdfPreview.open ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <PdfIcon />
+                        )
+                      }
+                      onClick={() => handleViewPdf(resume.id)}
+                      disabled={generatingPdf}
+                    >
+                      {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                    </Button>
+                  </>
+                }
+              />
+            ))}
+            table={
+              <TableContainer component={Paper} sx={{ mb: 3 }}>
+                <Table sx={{ minWidth: 650 }} aria-label="resumes table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
                         sx={{
-                          color: 'text.secondary',
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
                         }}
                       >
-                        {formatDate(resume.updated_at)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-                      <ButtonGroup size="small" variant="outlined">
-                        <Tooltip
-                          title="View"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button onClick={() => handleViewResume(resume.id)}>
-                            <VisibilityIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="See PDF"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button
-                            variant="outlined"
-                            startIcon={
-                              generatingPdf && !pdfPreview.open ? (
-                                <CircularProgress size={16} />
-                              ) : (
-                                <PdfIcon />
-                              )
-                            }
-                            onClick={() => handleViewPdf(resume.id)}
-                            disabled={generatingPdf}
-                          >
-                            {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="Delete"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button
-                            onClick={() => {
-                              setSelectedResumeId(resume.id);
-                              setDeleteDialogOpen(true);
+                        Company
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        Position
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        Last Updated
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {resumes.map((resume) => (
+                      <TableRow
+                        key={resume.id}
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                            cursor: 'pointer',
+                          },
+                          height: '72px',
+                        }}
+                        onClick={() => handleViewResume(resume.id)}
+                      >
+                        <TableCell>{formatUnderscoredText(resume.company_name)}</TableCell>
+                        <TableCell>{formatUnderscoredText(getJobTitle(resume))}</TableCell>
+                        <TableCell>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
                             }}
-                            color="error"
                           >
-                            <DeleteIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="More options"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
+                            {formatDate(resume.updated_at)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell
+                          sx={{ textAlign: 'center' }}
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <Button onClick={(e) => handleMenuOpen(e, resume.id)}>
-                            <MoreVertIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          <ButtonGroup size="small" variant="outlined">
+                            <Tooltip
+                              title="View"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button onClick={() => handleViewResume(resume.id)}>
+                                <VisibilityIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="See PDF"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={
+                                  generatingPdf && !pdfPreview.open ? (
+                                    <CircularProgress size={16} />
+                                  ) : (
+                                    <PdfIcon />
+                                  )
+                                }
+                                onClick={() => handleViewPdf(resume.id)}
+                                disabled={generatingPdf}
+                              >
+                                {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="Delete"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button
+                                onClick={() => {
+                                  setSelectedResumeId(resume.id);
+                                  setDeleteDialogOpen(true);
+                                }}
+                                color="error"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="More options"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button onClick={(e) => handleMenuOpen(e, resume.id)}>
+                                <MoreVertIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            }
+          />
 
           <Box
             sx={{

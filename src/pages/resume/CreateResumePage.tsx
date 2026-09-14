@@ -23,10 +23,28 @@ import {
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { ResumeCreateRequest } from '../../types/models';
 import { useToast } from '../../contexts/ToastContext';
-import { Settings as SettingsIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
+
+const preferenceRowSx = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 1.5,
+  flexWrap: 'wrap',
+} as const;
+
+const preferenceColumnSx = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 1,
+  '& > .MuiBox-root > .MuiTypography-root:last-child': {
+    minWidth: 0,
+    textAlign: 'right',
+  },
+} as const;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -45,7 +63,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`resume-creation-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: '0 3px 3px 3px' }}>{children}</Box>}
+      {value === index && <Box sx={{ pt: 1 }}>{children}</Box>}
     </div>
   );
 }
@@ -158,17 +176,36 @@ const CreateResumePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ mt: 3 }}>
-        <ViewPageHeader
-          title="Create a tailored resume"
-          description="Paste a job description or extract one from a public job URL. Yarba will use your portfolio and settings to tailor the result."
-          secondaryAction={<Button onClick={() => navigate('/resumes')}>Back to resumes</Button>}
-        />
-      </Box>
-      <Paper elevation={3} sx={{ p: 4, mt: 3, mb: 3 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="resume creation tabs">
+    <Container
+      maxWidth="md"
+      sx={{
+        px: { xs: 2.5, sm: 3 },
+        pt: { xs: 2, sm: 3 },
+        pb: { xs: 3, sm: 4 },
+      }}
+    >
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/resumes')} sx={{ mb: 1 }}>
+        Back to resumes
+      </Button>
+      <ViewPageHeader
+        title="Create a tailored resume"
+        description="Paste a job description or extract one from a public job URL. Yarba will use your portfolio and settings to tailor the result."
+      />
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 2, sm: 3, md: 4 },
+          mb: 3,
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="resume creation tabs"
+            variant="fullWidth"
+          >
             <Tab label="Job Description" id="resume-creation-tab-0" />
             <Tab label="Job URL" id="resume-creation-tab-1" />
           </Tabs>
@@ -284,7 +321,15 @@ const CreateResumePage: React.FC = () => {
                 </Button>
               </Box>
 
-              <Box sx={{ mt: 1, mb: 2, display: 'flex', gap: 2 }}>
+              <Box
+                sx={{
+                  mt: 1,
+                  mb: 2,
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: 2,
+                }}
+              >
                 <Button
                   variant="outlined"
                   color="secondary"
@@ -324,10 +369,17 @@ const CreateResumePage: React.FC = () => {
       )}
 
       {!loading && (
-        <Card elevation={1} sx={{ mb: 3 }}>
-          <CardContent>
+        <Card elevation={1} sx={{ mb: 3, borderRadius: 2 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Box
-              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'space-between',
+                alignItems: { xs: 'stretch', sm: 'center' },
+                gap: 1.5,
+                mb: 2,
+              }}
             >
               <Typography variant="h6">Resume Preferences</Typography>
               <Button
@@ -335,6 +387,7 @@ const CreateResumePage: React.FC = () => {
                 startIcon={<SettingsIcon />}
                 onClick={handleEditPreferences}
                 size="small"
+                sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}
               >
                 Edit Preferences
               </Button>
@@ -354,8 +407,8 @@ const CreateResumePage: React.FC = () => {
                     Content Limits
                   </Typography>
 
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={preferenceColumnSx}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -370,7 +423,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -388,7 +441,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -406,7 +459,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -424,7 +477,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -440,7 +493,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -454,7 +507,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -470,7 +523,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -493,8 +546,8 @@ const CreateResumePage: React.FC = () => {
                     System Settings
                   </Typography>
 
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={preferenceColumnSx}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -510,7 +563,7 @@ const CreateResumePage: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={preferenceRowSx}>
                       <Typography
                         variant="body2"
                         sx={{

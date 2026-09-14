@@ -58,6 +58,7 @@ import { queryClient } from '../../providers/QueryProvider';
 import { triggerBlobDownload } from '../../utils/pdfDownload';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { EmptyState } from '../../components/common/EmptyState';
+import { MobileRecordCard, MoreOptionsButton, ResponsiveRecordList } from '../../components/common';
 
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -370,151 +371,198 @@ const CoverLettersPage: React.FC = () => {
         />
       ) : (
         <>
-          <TableContainer
-            component={Paper}
-            sx={{
-              borderRadius: 2,
-              overflow: 'hidden',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              mb: 3,
-            }}
-          >
-            <Table sx={{ minWidth: 650 }} aria-label="cover letters table">
-              <TableHead sx={{ backgroundColor: 'rgba(0,0,0,0.03)' }}>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                    }}
+          <ResponsiveRecordList
+            cards={coverLetters.map((coverLetter) => (
+              <MobileRecordCard
+                key={coverLetter.id}
+                title={getCoverLetterTitle(coverLetter)}
+                meta={`Updated ${formatDate(coverLetter.updated_at)}`}
+                onOpen={() => handleViewCoverLetter(coverLetter.id)}
+                menuButton={
+                  <MoreOptionsButton
+                    label={`More options for ${getCoverLetterTitle(coverLetter)}`}
+                    onClick={(event) => handleMenuOpen(event, coverLetter.id)}
                   >
-                    Title
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    Last Updated
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      fontSize: '0.875rem',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {coverLetters.map((coverLetter) => (
-                  <TableRow
-                    key={coverLetter.id}
-                    hover
-                    sx={{
-                      '&:last-child td, &:last-child th': { border: 0 },
-                      transition: 'background-color 0.2s ease',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' },
-                    }}
-                    onClick={() => handleViewCoverLetter(coverLetter.id)}
-                  >
-                    <TableCell component="th" scope="row" sx={{ cursor: 'pointer' }}>
-                      <Typography
-                        variant="subtitle1"
+                    <MoreVertIcon />
+                  </MoreOptionsButton>
+                }
+                actions={
+                  <>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<VisibilityIcon />}
+                      onClick={() => handleViewCoverLetter(coverLetter.id)}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={
+                        generatingPdf && !pdfPreview.open ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <PdfIcon />
+                        )
+                      }
+                      onClick={() => handleViewPdf(coverLetter.id)}
+                      disabled={generatingPdf}
+                    >
+                      {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                    </Button>
+                  </>
+                }
+              />
+            ))}
+            table={
+              <TableContainer
+                component={Paper}
+                sx={{
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                  mb: 3,
+                }}
+              >
+                <Table sx={{ minWidth: 650 }} aria-label="cover letters table">
+                  <TableHead sx={{ backgroundColor: 'rgba(0,0,0,0.03)' }}>
+                    <TableRow>
+                      <TableCell
                         sx={{
-                          fontWeight: 500,
-                          '&:hover': { textDecoration: 'underline' },
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
                         }}
                       >
-                        {getCoverLetterTitle(coverLetter)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
+                        Title
+                      </TableCell>
+                      <TableCell
                         sx={{
-                          color: 'text.secondary',
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
                         }}
                       >
-                        {formatDate(coverLetter.updated_at)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                      <ButtonGroup size="small" variant="outlined">
-                        <Tooltip
-                          title="View"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button onClick={() => handleViewCoverLetter(coverLetter.id)}>
-                            <VisibilityIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="See PDF"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button
-                            variant="outlined"
-                            startIcon={
-                              generatingPdf && !pdfPreview.open ? (
-                                <CircularProgress size={16} />
-                              ) : (
-                                <PdfIcon />
-                              )
-                            }
-                            onClick={() => handleViewPdf(coverLetter.id)}
-                            disabled={generatingPdf}
-                          >
-                            {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="Delete"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button
-                            onClick={() => {
-                              setSelectedCoverLetterId(coverLetter.id);
-                              setDeleteDialogOpen(true);
+                        Last Updated
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.875rem',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {coverLetters.map((coverLetter) => (
+                      <TableRow
+                        key={coverLetter.id}
+                        hover
+                        sx={{
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          transition: 'background-color 0.2s ease',
+                          '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' },
+                        }}
+                        onClick={() => handleViewCoverLetter(coverLetter.id)}
+                      >
+                        <TableCell component="th" scope="row" sx={{ cursor: 'pointer' }}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: 500,
+                              '&:hover': { textDecoration: 'underline' },
                             }}
-                            color="error"
                           >
-                            <DeleteIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          title="More options"
-                          placement="top"
-                          slotProps={{
-                            transition: { timeout: 0 },
-                          }}
-                        >
-                          <Button onClick={(e) => handleMenuOpen(e, coverLetter.id)}>
-                            <MoreVertIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                            {getCoverLetterTitle(coverLetter)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
+                            {formatDate(coverLetter.updated_at)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center" onClick={(e) => e.stopPropagation()}>
+                          <ButtonGroup size="small" variant="outlined">
+                            <Tooltip
+                              title="View"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button onClick={() => handleViewCoverLetter(coverLetter.id)}>
+                                <VisibilityIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="See PDF"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={
+                                  generatingPdf && !pdfPreview.open ? (
+                                    <CircularProgress size={16} />
+                                  ) : (
+                                    <PdfIcon />
+                                  )
+                                }
+                                onClick={() => handleViewPdf(coverLetter.id)}
+                                disabled={generatingPdf}
+                              >
+                                {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="Delete"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button
+                                onClick={() => {
+                                  setSelectedCoverLetterId(coverLetter.id);
+                                  setDeleteDialogOpen(true);
+                                }}
+                                color="error"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title="More options"
+                              placement="top"
+                              slotProps={{
+                                transition: { timeout: 0 },
+                              }}
+                            >
+                              <Button onClick={(e) => handleMenuOpen(e, coverLetter.id)}>
+                                <MoreVertIcon fontSize="small" />
+                              </Button>
+                            </Tooltip>
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            }
+          />
 
           <Box
             sx={{

@@ -1,6 +1,17 @@
 import { alpha, type Theme } from '@mui/material/styles';
 import type { NavVariant } from '../../theme/appearance';
+import { DISPLAY_FONT_FAMILY } from '../../theme/fonts';
 import { drawerGradient } from '../../theme/tokens';
+
+export const getDrawerNavPrimaryTypographySx = (label: string) => ({
+  fontWeight: 600,
+  fontSize: label.length > 10 ? '0.85rem' : '1rem',
+  letterSpacing: label.length > 10 ? '0' : '0.02em',
+  fontFamily: DISPLAY_FONT_FAMILY,
+  whiteSpace: 'nowrap' as const,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
 
 export const getDrawerNavItemSx = (navVariant: NavVariant) => {
   if (navVariant === 'gradient') {

@@ -20,11 +20,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { Link as LinkIcon } from '@mui/icons-material';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { PageLoadingState } from '../../components/common/PageState';
+import { EmptyState } from '../../components/common/EmptyState';
+import { MobileRecordCard, ResponsiveRecordList } from '../../components/common';
 import { useApplications } from '../../hooks/useApplications';
 import type { JobApplication } from '../../types/application';
 import { Link as RouterLink } from 'react-router-dom';
@@ -124,88 +125,111 @@ const ApplicationsPage: React.FC = () => {
         </Alert>
       )}
 
-      <Paper elevation={1}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Company</TableCell>
-                <TableCell>Job title</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Created</TableCell>
-                <TableCell>Updated</TableCell>
-                <TableCell align="right">Link</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {applications.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Typography
-                      sx={{
-                        color: 'text.secondary',
-                      }}
-                    >
-                      No applications yet. Agents will create records when they prepare or submit
-                      applications.
-                    </Typography>
-                    <Button
-                      component={RouterLink}
-                      to="/user/agent-tokens"
-                      variant="outlined"
-                      sx={{ mt: 2 }}
-                    >
-                      Set up agent access
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                applications.map((application: JobApplication) => (
-                  <TableRow key={application.id} hover>
-                    <TableCell>{application.company_name || '—'}</TableCell>
-                    <TableCell>{application.job_title || '—'}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={formatStatus(application.status)}
-                        size="small"
-                        color={statusColor(application.status)}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(application.created_at)}</TableCell>
-                    <TableCell>{formatDate(application.updated_at)}</TableCell>
-                    <TableCell align="right">
-                      {application.job_url ? (
-                        <Link
-                          href={application.job_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
-                        >
-                          <LinkIcon
-                            sx={{
-                              fontSize: 'small',
-                            }}
+      {applications.length === 0 ? (
+        <EmptyState
+          title="No applications yet"
+          description="Agents will create records when they prepare or submit applications."
+          primaryAction={
+            <Button component={RouterLink} to="/user/agent-tokens" variant="outlined">
+              Set up agent access
+            </Button>
+          }
+        />
+      ) : (
+        <ResponsiveRecordList
+          cards={applications.map((application: JobApplication) => (
+            <MobileRecordCard
+              key={application.id}
+              title={application.job_title || 'Untitled role'}
+              subtitle={application.company_name || undefined}
+              meta={`Updated ${formatDate(application.updated_at)}`}
+              actions={
+                application.job_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    href={application.job_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    startIcon={<LinkIcon />}
+                  >
+                    Open
+                  </Button>
+                ) : undefined
+              }
+            >
+              <Box sx={{ mt: 1 }}>
+                <Chip
+                  label={formatStatus(application.status)}
+                  size="small"
+                  color={statusColor(application.status)}
+                  variant="outlined"
+                />
+              </Box>
+            </MobileRecordCard>
+          ))}
+          table={
+            <Paper elevation={1}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Company</TableCell>
+                      <TableCell>Job title</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Created</TableCell>
+                      <TableCell>Updated</TableCell>
+                      <TableCell align="right">Link</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {applications.map((application: JobApplication) => (
+                      <TableRow key={application.id} hover>
+                        <TableCell>{application.company_name || '—'}</TableCell>
+                        <TableCell>{application.job_title || '—'}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={formatStatus(application.status)}
+                            size="small"
+                            color={statusColor(application.status)}
+                            variant="outlined"
                           />
-                          Open
-                        </Link>
-                      ) : (
-                        '—'
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
+                        </TableCell>
+                        <TableCell>{formatDate(application.created_at)}</TableCell>
+                        <TableCell>{formatDate(application.updated_at)}</TableCell>
+                        <TableCell align="right">
+                          {application.job_url ? (
+                            <Link
+                              href={application.job_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
+                            >
+                              <LinkIcon
+                                sx={{
+                                  fontSize: 'small',
+                                }}
+                              />
+                              Open
+                            </Link>
+                          ) : (
+                            '—'
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {isFetching && !isLoading && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+                  <CircularProgress size={20} />
+                </Box>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        {isFetching && !isLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-            <CircularProgress size={20} />
-          </Box>
-        )}
-      </Paper>
+            </Paper>
+          }
+        />
+      )}
 
       {total > PAGE_SIZE && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>

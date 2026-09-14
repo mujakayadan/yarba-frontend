@@ -8,6 +8,7 @@ import { AppThemeProvider } from './contexts/AppearanceContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import AppRoutes from './routes/AppRoutes';
 import { isDev } from './config/env';
+import { isNativeRuntime } from './platform/nativeRuntime';
 import {
   PrivacyPreferencesProvider,
   usePrivacyPreferences,
@@ -19,11 +20,14 @@ const Analytics = lazy(() =>
 
 const OptionalAnalytics: React.FC = () => {
   const { analyticsEnabled } = usePrivacyPreferences();
-  return analyticsEnabled ? (
+  if (isNativeRuntime() || !analyticsEnabled) {
+    return null;
+  }
+  return (
     <Suspense fallback={null}>
       <Analytics />
     </Suspense>
-  ) : null;
+  );
 };
 
 const UserPrivacyPreferences: React.FC<{ children: React.ReactNode }> = ({ children }) => {
