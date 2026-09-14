@@ -13,8 +13,10 @@ Yarba packages the existing Vite/React app with Capacitor 8. The web app on Verc
 
 - [Android Studio Otter 2025.2.1+](https://developer.android.com/studio)
 - Android SDK Platform 36
-- JDK 21 (Android Studio’s bundled JDK is enough)
-- An emulator (Pixel 8 / API 36) or a USB-debuggable device
+- JDK **21** for Gradle (Studio’s own JBR may be Java 25; that is too new for Capacitor 8 / Gradle 8.14)
+- An emulator (Pixel-class phone / API 36) or a USB-debuggable device
+- On Windows, Capacitor looks for Android Studio at `C:\Program Files\Android\Android Studio\bin\studio64.exe`. If `npm run cap:android` cannot launch it, set `CAPACITOR_ANDROID_STUDIO_PATH` to that file.
+- Decline the AGP Upgrade Assistant if it offers Android Gradle Plugin 9. Capacitor 8 needs AGP **8.13** and Gradle **8.14.3**.
 
 ### iOS (macOS only)
 
@@ -46,10 +48,15 @@ npx cap run android
 
 ## Configuration
 
-- `capacitor.config.ts` — app ID, display name, `webDir`
-- Web env still uses `VITE_*` via `src/config/env.ts`. Native builds bake the env from the machine that ran `npm run build`.
+- `capacitor.config.ts` — app ID, display name, `webDir`. `CapacitorHttp` is enabled so native builds call the API through the Android/iOS stack and skip WebView CORS.
+- Web env still uses `VITE_*` via `src/config/env.ts`. Native builds bake the env from the machine that ran `npm run build` (this repo’s production build uses the hosted API, not `localhost:8000`).
+- On Android, `http://localhost` / `127.0.0.1` in `VITE_API_URL` is rewritten to `http://10.0.2.2` (the host machine from the emulator). That rewrite only applies when the baked URL is actually localhost.
+- Capacitor’s WebView origin is `https://localhost`. If you disable `CapacitorHttp`, the API must allow that origin (`API_CORS_ORIGINS` should include `https://localhost` and `capacitor://localhost`).
+- Android console/network errors: `adb logcat --pid=$(adb shell pidof com.yarba.app)` and look for `Capacitor/Console`.
+- Vercel Analytics does not load in native builds.
+- Display type (`Dreaming Outloud`) is self-hosted in `public/fonts/` so the Android WebView does not fall back to generic `cursive`.
+- Native launcher icons are generated from `public/logo.svg` (same mark as the header). Regenerate with `npx --yes --package=@resvg/resvg-js node scripts/generate-native-icons.mjs`.
 - Do not commit signing keystores, `android/local.properties`, or Apple certificates.
-- Backend CORS for Capacitor origins is frontend #21 / a backend follow-up. Local Android may use `https://localhost` as the WebView origin.
 
 ## Out of scope here
 

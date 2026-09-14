@@ -11,3 +11,5 @@ export { EditPageActionBar } from './EditPageActionBar';
 export { PagePrimaryButton, PAGE_PRIMARY_ACTION_MIN_WIDTH } from './PagePrimaryButton';
 export { IconTabBar, type IconTabBarItem } from './IconTabBar';
 export { DeferredTabPanel, TabPanelFallback, TAB_PANEL_MIN_HEIGHT } from './DeferredTabPanel';
+export { MobileRecordCard, MoreOptionsButton } from './MobileRecordCard';
+export { ResponsiveRecordList } from './ResponsiveRecordList';

@@ -17,8 +17,6 @@ import {
   Mail as CoverLetterIcon,
   Add as AddIcon,
   Person as PersonIcon,
-  CheckCircle as CompleteIcon,
-  RadioButtonUnchecked as IncompleteIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +27,7 @@ import { useUserPortfolio } from '../hooks/usePortfolio';
 import { useResumes } from '../hooks/useResumes';
 import { useCoverLetters } from '../hooks/useCoverLetters';
 import { EmptyState } from '../components/common/EmptyState';
+import { GettingStartedCard } from '../components/dashboard/GettingStartedCard';
 
 // Define a unified type for recent items
 interface RecentItem {
@@ -200,8 +199,8 @@ const DashboardPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          mb: 5,
-          mt: 2,
+          mb: 2,
+          mt: 1,
         }}
       >
         <Typography
@@ -209,6 +208,7 @@ const DashboardPage: React.FC = () => {
           sx={{
             textAlign: 'center',
             fontWeight: 'normal',
+            fontSize: { xs: '1.5rem', sm: '2.125rem' },
           }}
         >
           <Box component="span" sx={{ color: 'primary.main' }}>
@@ -237,64 +237,7 @@ const DashboardPage: React.FC = () => {
       )}
 
       {showGettingStarted && (
-        <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 }, mb: 5 }}>
-          <Typography component="h2" variant="h5" gutterBottom>
-            Get started
-          </Typography>
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              mb: 2,
-            }}
-          >
-            Follow these steps to give Yarba enough context for useful, tailored applications.
-          </Typography>
-          <Stack divider={<Divider flexItem />}>
-            {gettingStartedItems.map((item) => (
-              <Box
-                key={item.label}
-                sx={{
-                  display: 'flex',
-                  alignItems: { xs: 'flex-start', sm: 'center' },
-                  gap: 2,
-                  py: 2,
-                  flexDirection: { xs: 'column', sm: 'row' },
-                }}
-              >
-                <Box sx={{ display: 'flex', gap: 1.5, flex: 1 }}>
-                  {item.complete ? (
-                    <CompleteIcon color="success" aria-label="Complete" />
-                  ) : (
-                    <IncompleteIcon color="disabled" aria-label="Not complete" />
-                  )}
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                      }}
-                    >
-                      {item.label}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'text.secondary',
-                      }}
-                    >
-                      {item.description}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Button
-                  variant={item.complete ? 'text' : 'outlined'}
-                  onClick={() => navigate(item.path)}
-                >
-                  {item.complete ? 'Review' : item.action}
-                </Button>
-              </Box>
-            ))}
-          </Stack>
-        </Paper>
+        <GettingStartedCard items={gettingStartedItems} onNavigate={navigate} />
       )}
 
       {/* Document Summary */}

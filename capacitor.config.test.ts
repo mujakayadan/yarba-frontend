@@ -8,6 +8,9 @@ describe('capacitor config', () => {
     expect(config.appName).toBe('Yarba');
     expect(config.webDir).toBe('build');
     expect(config.server?.androidScheme).toBe('https');
+    expect(config.server?.cleartext).toBe(true);
+    expect(config.android?.allowMixedContent).toBe(true);
+    expect(config.plugins?.CapacitorHttp).toEqual({ enabled: true });
   });
 
   it('uses the audited Android and iOS SDK floors', () => {

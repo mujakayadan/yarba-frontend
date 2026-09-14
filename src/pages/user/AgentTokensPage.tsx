@@ -37,6 +37,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { PagePrimaryButton } from '../../components/common/PagePrimaryButton';
 import { PageLoadingState } from '../../components/common/PageState';
+import { EmptyState } from '../../components/common/EmptyState';
+import { MobileRecordCard, ResponsiveRecordList } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
 import { useAgentTokenMutations, useAgentTokens } from '../../hooks/useAgentTokens';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
@@ -153,79 +155,94 @@ const AgentTokensPage: React.FC = () => {
         </Alert>
       )}
 
-      <Paper elevation={1}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Label</TableCell>
-                <TableCell>Scopes</TableCell>
-                <TableCell>Expires</TableCell>
-                <TableCell>Last used</TableCell>
-                <TableCell>Created</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {activeTokens.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Stack
-                      spacing={1}
-                      sx={{
-                        alignItems: 'center',
-                      }}
-                    >
-                      <KeyIcon color="disabled" />
-                      <Typography
-                        sx={{
-                          color: 'text.secondary',
-                        }}
-                      >
-                        No active agent tokens. Create one for your apply automation client.
-                      </Typography>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                activeTokens.map((token) => (
-                  <TableRow key={token.id} hover>
-                    <TableCell>{token.label}</TableCell>
-                    <TableCell>
-                      <Stack
-                        direction="row"
-                        spacing={0.5}
-                        useFlexGap
-                        sx={{
-                          flexWrap: 'wrap',
-                        }}
-                      >
-                        {token.scopes.map((scope) => (
-                          <Chip key={scope} label={scope} size="small" variant="outlined" />
-                        ))}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{formatDate(token.expires_at)}</TableCell>
-                    <TableCell>{formatDate(token.last_used_at)}</TableCell>
-                    <TableCell>{formatDate(token.created_at)}</TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Revoke token">
-                        <IconButton
-                          color="error"
-                          onClick={() => setRevokeTarget({ id: token.id, label: token.label })}
-                          aria-label={`Revoke ${token.label}`}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      {activeTokens.length === 0 ? (
+        <EmptyState
+          title="No active agent tokens"
+          description="Create one for your apply automation client."
+          icon={<KeyIcon color="disabled" />}
+        />
+      ) : (
+        <ResponsiveRecordList
+          cards={activeTokens.map((token) => (
+            <MobileRecordCard
+              key={token.id}
+              title={token.label}
+              meta={`Expires ${formatDate(token.expires_at)} · Last used ${formatDate(token.last_used_at)}`}
+              actions={
+                <Button
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => setRevokeTarget({ id: token.id, label: token.label })}
+                  aria-label={`Revoke ${token.label}`}
+                >
+                  Revoke
+                </Button>
+              }
+            >
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: 'wrap', mt: 1 }}>
+                {token.scopes.map((scope) => (
+                  <Chip key={scope} label={scope} size="small" variant="outlined" />
+                ))}
+              </Stack>
+            </MobileRecordCard>
+          ))}
+          table={
+            <Paper elevation={1}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Label</TableCell>
+                      <TableCell>Scopes</TableCell>
+                      <TableCell>Expires</TableCell>
+                      <TableCell>Last used</TableCell>
+                      <TableCell>Created</TableCell>
+                      <TableCell align="right">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {activeTokens.map((token) => (
+                      <TableRow key={token.id} hover>
+                        <TableCell>{token.label}</TableCell>
+                        <TableCell>
+                          <Stack
+                            direction="row"
+                            spacing={0.5}
+                            useFlexGap
+                            sx={{
+                              flexWrap: 'wrap',
+                            }}
+                          >
+                            {token.scopes.map((scope) => (
+                              <Chip key={scope} label={scope} size="small" variant="outlined" />
+                            ))}
+                          </Stack>
+                        </TableCell>
+                        <TableCell>{formatDate(token.expires_at)}</TableCell>
+                        <TableCell>{formatDate(token.last_used_at)}</TableCell>
+                        <TableCell>{formatDate(token.created_at)}</TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Revoke token">
+                            <IconButton
+                              color="error"
+                              onClick={() => setRevokeTarget({ id: token.id, label: token.label })}
+                              aria-label={`Revoke ${token.label}`}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          }
+        />
+      )}
 
       <Box sx={{ mt: 3 }}>
         <Button component={RouterLink} to="/user" variant="text">

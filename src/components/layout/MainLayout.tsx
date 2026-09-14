@@ -40,6 +40,7 @@ import { useAppearance } from '../../contexts/AppearanceContext';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { env } from '../../config/env';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import { DISPLAY_FONT_FAMILY } from '../../theme/fonts';
 import { headerGradient } from '../../theme/tokens';
 import Footer from './Footer';
 import { ProfileMenuAppearance } from './ProfileMenuAppearance';
@@ -48,6 +49,7 @@ import {
   getDrawerNavIconSx,
   getDrawerNavItemSx,
   getDrawerNavLabelSx,
+  getDrawerNavPrimaryTypographySx,
   getDrawerPaperSx,
 } from './drawerNavStyles';
 
@@ -171,15 +173,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   sx={drawerNavLabelSx}
                   slotProps={{
                     primary: {
-                      sx: {
-                        fontWeight: 600,
-                        fontSize: item.text.length > 10 ? '0.85rem' : '1rem',
-                        letterSpacing: item.text.length > 10 ? '0' : '0.02em',
-                        fontFamily: "'Dreaming Outloud Pro', cursive",
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      },
+                      sx: getDrawerNavPrimaryTypographySx(item.text),
                     },
                   }}
                 />
@@ -233,15 +227,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 sx={drawerNavLabelSx}
                 slotProps={{
                   primary: {
-                    sx: {
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      letterSpacing: '0.02em',
-                      fontFamily: "'Dreaming Outloud Pro', cursive",
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    },
+                    sx: getDrawerNavPrimaryTypographySx('Logout'),
                   },
                 }}
               />
@@ -308,7 +294,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   variant="h5"
                   component="span"
                   sx={{
-                    fontFamily: "'Dreaming Outloud Pro', cursive",
+                    fontFamily: DISPLAY_FONT_FAMILY,
                     fontWeight: 'bold',
                     color: 'white',
                     lineHeight: 1,
@@ -320,7 +306,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   variant="caption"
                   component="span"
                   sx={{
-                    fontFamily: "'Dreaming Outloud Pro', cursive",
+                    fontFamily: DISPLAY_FONT_FAMILY,
                     color: 'white',
                     fontSize: '0.85rem',
                     opacity: 0.9,
@@ -339,7 +325,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   mr: 2,
                   opacity: 0.9,
                   display: { xs: 'none', sm: 'none', md: 'block' },
-                  fontFamily: "'Dreaming Outloud Pro', cursive",
+                  fontFamily: DISPLAY_FONT_FAMILY,
                   fontSize: '1.1rem',
                 }}
               >

@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Dreaming Outloud';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/dreaming-outloud.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Dreaming Outloud Pro';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/dreaming-outloud.woff') format('woff');
+}
+
 body {
   margin: 0;
   font-family:
