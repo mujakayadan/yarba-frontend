@@ -239,7 +239,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   );
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
       <AppBar
         position="fixed"
         sx={{
@@ -249,10 +249,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           backgroundImage: headerGradient(),
           zIndex: (t) => t.zIndex.drawer + 1,
           boxShadow: 3,
+          pt: 'env(safe-area-inset-top, 0px)',
           height: {
-            xs: '56px',
-            sm: '56px',
-            md: '64px',
+            xs: 'calc(56px + env(safe-area-inset-top, 0px))',
+            sm: 'calc(56px + env(safe-area-inset-top, 0px))',
+            md: 'calc(64px + env(safe-area-inset-top, 0px))',
           },
         }}
       >
@@ -260,7 +261,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           sx={{
             minHeight: { xs: 56, sm: 56, md: 64 },
             py: { xs: 0, md: 0.5 },
-            px: { xs: 1, sm: 2 }, // Reduce horizontal padding on mobile for more space
+            pl: { xs: 'max(8px, env(safe-area-inset-left, 0px))', sm: 2 },
+            pr: { xs: 'max(8px, env(safe-area-inset-right, 0px))', sm: 2 },
           }}
         >
           {!hideDrawer && (
@@ -311,6 +313,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                     fontSize: '0.85rem',
                     opacity: 0.9,
                     lineHeight: 1,
+                    display: { xs: 'none', sm: 'block' },
                   }}
                 >
                   Yet Another Resume Builder App
@@ -512,7 +515,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 duration: theme.transitions.duration.enteringScreen,
               }),
               boxSizing: 'border-box',
-              paddingTop: isMobile ? '56px' : '64px', // Proper padding for header height
+              paddingTop: isMobile
+                ? 'calc(56px + env(safe-area-inset-top, 0px))'
+                : 'calc(64px + env(safe-area-inset-top, 0px))',
               marginTop: 0, // Ensure no additional margin
               height: '100%',
               ...getDrawerPaperSx(navVariant),
@@ -541,9 +546,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   : `calc(100% - ${miniDrawerWidth}px)`,
           },
           marginTop: {
-            xs: '56px', // Mobile header height
-            sm: '56px', // Small tablets
-            md: '64px', // Desktop header height
+            xs: 'calc(56px + env(safe-area-inset-top, 0px))',
+            sm: 'calc(56px + env(safe-area-inset-top, 0px))',
+            md: 'calc(64px + env(safe-area-inset-top, 0px))',
           },
           marginLeft: {
             xs: 0, // Mobile: no margin
@@ -557,7 +562,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           animation: 'fadeIn 0.5s ease-out forwards 0.2s',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 'calc(100vh - 64px)', // Subtract the header height
+          minHeight: {
+            xs: 'calc(100dvh - 56px - env(safe-area-inset-top, 0px))',
+            md: 'calc(100dvh - 64px - env(safe-area-inset-top, 0px))',
+          },
         }}
       >
         <Box sx={{ flexGrow: 1 }}>{children ?? <Outlet />}</Box>

@@ -52,6 +52,7 @@ npx cap run android
 - Web env still uses `VITE_*` via `src/config/env.ts`. Native builds bake the env from the machine that ran `npm run build` (this repo’s production build uses the hosted API, not `localhost:8000`).
 - On Android, `http://localhost` / `127.0.0.1` in `VITE_API_URL` is rewritten to `http://10.0.2.2` (the host machine from the emulator). That rewrite only applies when the baked URL is actually localhost.
 - Capacitor’s WebView origin is `https://localhost`. If you disable `CapacitorHttp`, the API must allow that origin (`API_CORS_ORIGINS` should include `https://localhost` and `capacitor://localhost`).
+- `index.html` uses `viewport-fit=cover` so notch and home-indicator insets (`env(safe-area-inset-*)`) apply to the header, drawer, and footer.
 - Android console/network errors: `adb logcat --pid=$(adb shell pidof com.yarba.app)` and look for `Capacitor/Console`.
 - Vercel Analytics does not load in native builds.
 - Display type (`Dreaming Outloud`) is self-hosted in `public/fonts/` so the Android WebView does not fall back to generic `cursive`.

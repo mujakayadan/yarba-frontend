@@ -10,12 +10,10 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   AutoFixHigh as GenerateIcon,
-  Save as SaveIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { generateCoverLetterContent, updateCoverLetter } from '../../services/coverLetterService';
@@ -25,6 +23,8 @@ import { useCoverLetter } from '../../hooks/useCoverLetter';
 import { useResume } from '../../hooks/useResume';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
+import { EditPageActionBar } from '../../components/common/EditPageActionBar';
+import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 
 const contentToEditableText = (content: CoverLetter['content']): string => {
   if (typeof content === 'string') {
@@ -136,7 +136,7 @@ const CoverLetterEditPage: React.FC = () => {
 
   if (isError || !initialCoverLetter) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, px: { xs: 2.5, sm: 3 } }}>
         <Alert severity="warning" sx={{ mb: 2 }}>
           Cover letter not found.
         </Alert>
@@ -148,35 +148,38 @@ const CoverLetterEditPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
-      <Paper elevation={1} sx={{ p: 3 }}>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2,
-          }}
-        >
-          <Typography variant="h5">{pageTitle}</Typography>
-          <Stack direction="row" spacing={1}>
-            <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
-              Back
-            </Button>
-            <Button startIcon={<VisibilityIcon />} onClick={handleView}>
+    <Box
+      sx={{
+        width: '100%',
+        px: { xs: 2.5, sm: 3 },
+        pt: { xs: 2, sm: 3 },
+        pb: { xs: 4, sm: 4 },
+      }}
+    >
+      <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
+        <ViewPageHeader title={pageTitle} />
+        <EditPageActionBar
+          backLabel="Back to Cover Letters"
+          onBack={handleBack}
+          onSave={handleSave}
+          saving={saving}
+          saveDisabled={!hasChanges}
+          secondaryActions={
+            <Button variant="outlined" startIcon={<VisibilityIcon />} onClick={handleView}>
               View
             </Button>
-          </Stack>
-        </Stack>
+          }
+        />
 
         <Divider sx={{ mb: 2 }} />
 
-        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 2 }}>
           <Button
             variant="outlined"
             startIcon={<GenerateIcon />}
             onClick={() => handleGenerate(false)}
             disabled={generating}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Generate
           </Button>
@@ -185,6 +188,7 @@ const CoverLetterEditPage: React.FC = () => {
             startIcon={<GenerateIcon />}
             onClick={() => handleGenerate(true)}
             disabled={generating}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Regenerate
           </Button>
@@ -199,24 +203,6 @@ const CoverLetterEditPage: React.FC = () => {
           label="Cover Letter Content"
           variant="outlined"
         />
-
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            justifyContent: 'flex-end',
-            mt: 3,
-          }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            disabled={saving || !hasChanges}
-          >
-            {saving ? <CircularProgress size={24} /> : 'Save Changes'}
-          </Button>
-        </Stack>
       </Paper>
     </Box>
   );

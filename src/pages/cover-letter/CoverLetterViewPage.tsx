@@ -184,7 +184,14 @@ const CoverLetterViewPage: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box
+        sx={{
+          width: '100%',
+          p: 3,
+          pl: { xs: 2.5, md: 3 },
+          pt: 2,
+        }}
+      >
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
@@ -197,7 +204,14 @@ const CoverLetterViewPage: React.FC = () => {
 
   if (!coverLetter) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box
+        sx={{
+          width: '100%',
+          p: 3,
+          pl: { xs: 2.5, md: 3 },
+          pt: 2,
+        }}
+      >
         <Alert severity="warning">Cover letter not found.</Alert>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mt: 2 }}>
           Back to Cover Letters
@@ -207,7 +221,14 @@ const CoverLetterViewPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box
+      sx={{
+        width: '100%',
+        p: 3,
+        pl: { xs: 2.5, md: 3 },
+        pt: 2,
+      }}
+    >
       {/* Navigation breadcrumbs */}
       <Breadcrumbs sx={{ mb: 3 }}>
         <MuiLink underline="hover" color="inherit" onClick={handleBack} sx={{ cursor: 'pointer' }}>
