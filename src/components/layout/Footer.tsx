@@ -8,8 +8,10 @@ const Footer: React.FC = () => {
     <Box
       component="footer"
       sx={{
-        py: 2,
-        px: 3,
+        pt: 2,
+        pb: 'max(16px, env(safe-area-inset-bottom, 0px))',
+        pl: 'max(24px, env(safe-area-inset-left, 0px))',
+        pr: 'max(24px, env(safe-area-inset-right, 0px))',
         mt: 'auto',
         backgroundColor: 'background.default',
         borderTop: 1,

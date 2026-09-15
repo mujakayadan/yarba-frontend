@@ -167,7 +167,7 @@ const EditResumePage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="md" sx={{ mt: { xs: 2, sm: 4 }, px: { xs: 2.5, sm: 3 } }}>
         <PageLoadingState />
       </Container>
     );
@@ -175,7 +175,7 @@ const EditResumePage: React.FC = () => {
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="md" sx={{ mt: { xs: 2, sm: 4 }, px: { xs: 2.5, sm: 3 } }}>
         <PageErrorState
           title="Edit Resume"
           message={error}
@@ -188,7 +188,7 @@ const EditResumePage: React.FC = () => {
 
   if (!initialResume) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="md" sx={{ mt: { xs: 2, sm: 4 }, px: { xs: 2.5, sm: 3 } }}>
         <PageErrorState
           title="Edit Resume"
           message="Resume not found."
@@ -200,8 +200,8 @@ const EditResumePage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
+    <Container maxWidth="md" sx={{ mt: { xs: 2, sm: 4 }, mb: 4, px: { xs: 2.5, sm: 3 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 } }}>
         <ViewPageHeader title="Edit Resume" />
 
         <EditPageActionBar
@@ -502,7 +502,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                           mb: 1,
                         }}
                       >
@@ -588,7 +590,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Position #{idx + 1}</Typography>
@@ -746,7 +750,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Education #{idx + 1}</Typography>
@@ -916,7 +922,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Project #{idx + 1}</Typography>
@@ -1039,7 +1047,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Award #{idx + 1}</Typography>
@@ -1139,7 +1149,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Publication #{idx + 1}</Typography>
@@ -1251,7 +1263,9 @@ const EditResumePage: React.FC = () => {
                         sx={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}
                       >
                         <Typography variant="subtitle2">Certification #{idx + 1}</Typography>

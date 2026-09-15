@@ -399,14 +399,14 @@ const WebsitePage: React.FC = () => {
 
   if (isLoading && !website && activeStep === 0) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: 4, px: { xs: 2.5, sm: 3 } }}>
         <PageLoadingState label="Loading your portfolio website…" />
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: 4, px: { xs: 2.5, sm: 3 } }}>
       <ViewPageHeader
         title="Portfolio website"
         description={

@@ -155,8 +155,8 @@ const CoverLetterNewPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Box sx={{ width: '100%', px: { xs: 2.5, sm: 3 }, pt: { xs: 2, sm: 3 }, pb: { xs: 3, sm: 4 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
         <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
           Create New Cover Letter
         </Typography>
@@ -244,7 +244,9 @@ const CoverLetterNewPage: React.FC = () => {
                 borderRadius: 1,
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
+                alignItems: { xs: 'stretch', sm: 'center' },
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 1.5,
                 minHeight: '56px', // Match TextField height
                 mt: 3, // Adjust margin to align with label
               }}
@@ -263,11 +265,12 @@ const CoverLetterNewPage: React.FC = () => {
           </FormControl>
 
           <Stack
-            direction="row"
+            direction={{ xs: 'column-reverse', sm: 'row' }}
             spacing={2}
             sx={{
               justifyContent: 'flex-end',
               mt: 4,
+              '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } },
             }}
           >
             <Button variant="outlined" color="secondary" onClick={handleCancel} disabled={loading}>
