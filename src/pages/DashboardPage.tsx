@@ -193,7 +193,7 @@ const DashboardPage: React.FC = () => {
   const showGettingStarted = gettingStartedItems.some((item) => !item.complete);
 
   return (
-    <Box sx={{ p: 3, pl: 2, pt: 2 }}>
+    <Box sx={{ px: { xs: 2.5, sm: 3 }, pt: 2, pb: 3 }}>
       <Box
         sx={{
           display: 'flex',
@@ -209,6 +209,8 @@ const DashboardPage: React.FC = () => {
             textAlign: 'center',
             fontWeight: 'normal',
             fontSize: { xs: '1.5rem', sm: '2.125rem' },
+            overflowWrap: 'anywhere',
+            px: 1,
           }}
         >
           <Box component="span" sx={{ color: 'primary.main' }}>

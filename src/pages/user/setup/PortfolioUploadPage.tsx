@@ -15,7 +15,11 @@ import { CloudUpload as CloudUploadIcon, InsertDriveFile as FileIcon } from '@mu
 import { useAuth } from '../../../contexts/AuthContext';
 import { parsePortfolioDocument } from '../../../services/portfolioService';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
-import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
+import {
+  SetupStepHeader,
+  setupActionBarSx,
+  setupPageContainerSx,
+} from '../../../components/user/setup/SetupStepHeader';
 
 // Styled components for file upload area
 const UploadBox = styled(Box)(({ theme }) => ({
@@ -125,17 +129,7 @@ const PortfolioUploadPage: React.FC = () => {
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth={false}
-      sx={{
-        mt: 8,
-        mb: 8,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <Container component="main" maxWidth={false} sx={setupPageContainerSx}>
       <Paper
         elevation={3}
         sx={{
@@ -206,11 +200,17 @@ const PortfolioUploadPage: React.FC = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Box sx={setupActionBarSx}>
           <Button variant="outlined" onClick={handleBack} disabled={uploading}>
             Back
           </Button>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 1.5,
+            }}
+          >
             <Button variant="outlined" onClick={handleSkip} disabled={uploading}>
               Skip for now
             </Button>

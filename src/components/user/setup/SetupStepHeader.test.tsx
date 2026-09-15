@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { SetupStepHeader } from './SetupStepHeader';
+import { SetupStepHeader, setupPageContainerSx } from './SetupStepHeader';
 
 describe('SetupStepHeader', () => {
   it('orients users within the shortened setup flow', () => {
@@ -17,5 +17,9 @@ describe('SetupStepHeader', () => {
     expect(screen.getByRole('heading', { name: 'Build your portfolio' })).toBeInTheDocument();
     expect(screen.getByText('Your essentials')).toBeInTheDocument();
     expect(screen.getAllByText('Build your portfolio')).toHaveLength(2);
+  });
+
+  it('keeps setup pages inset from the screen edge', () => {
+    expect(setupPageContainerSx.px).toEqual({ xs: 2.5, sm: 3 });
   });
 });

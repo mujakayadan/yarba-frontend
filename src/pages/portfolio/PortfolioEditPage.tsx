@@ -41,7 +41,7 @@ const PortfolioEditPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
+    <Box sx={{ width: '100%', px: { xs: 2.5, sm: 3 }, pt: { xs: 2, sm: 3 }, pb: { xs: 3, sm: 4 } }}>
       <EditPageActionBar
         backLabel="Back to Portfolio"
         onBack={form.handleCancel}
@@ -66,7 +66,7 @@ const PortfolioEditPage: React.FC = () => {
         >
           <Box
             sx={{
-              p: 3,
+              p: { xs: 2, sm: 3 },
               minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: form.isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',
