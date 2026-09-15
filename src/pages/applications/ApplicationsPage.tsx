@@ -95,7 +95,7 @@ const ApplicationsPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ px: { xs: 2.5, sm: 3 }, pt: 2, pb: 3 }}>
       <ViewPageHeader
         title="Applications"
         description="Track job applications prepared and submitted through Yarba automation agents."
