@@ -17,7 +17,10 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useProfile } from '../../../contexts/ProfileContext';
 import { useProfileMutations } from '../../../hooks/useProfileMutations';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
-import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
+import {
+  SetupStepHeader,
+  setupPageContainerSx,
+} from '../../../components/user/setup/SetupStepHeader';
 
 interface PersonalInfoFormData {
   fullName: string;
@@ -143,7 +146,11 @@ const PersonalInfoSetupPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Container component="main" maxWidth="sm" sx={{ textAlign: 'center', mt: 8 }}>
+      <Container
+        component="main"
+        maxWidth="sm"
+        sx={{ textAlign: 'center', mt: 8, px: { xs: 2.5, sm: 3 } }}
+      >
         <CircularProgress />
         <Typography sx={{ mt: 2 }}>Loading your information...</Typography>
       </Container>
@@ -151,17 +158,7 @@ const PersonalInfoSetupPage: React.FC = () => {
   }
 
   return (
-    <Container
-      component="main"
-      maxWidth={false}
-      sx={{
-        mt: 8,
-        mb: 8,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <Container component="main" maxWidth={false} sx={setupPageContainerSx}>
       <Paper
         elevation={3}
         sx={{
@@ -288,6 +285,7 @@ const PersonalInfoSetupPage: React.FC = () => {
               onClick={handleSaveAndNext}
               disabled={isFormBusy}
               startIcon={saving ? <CircularProgress size={20} color="inherit" /> : null}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               {saving ? 'Saving...' : 'Next'}
             </Button>

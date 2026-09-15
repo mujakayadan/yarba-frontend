@@ -57,8 +57,8 @@ const PortfolioViewPage: React.FC = () => {
 
   if (!portfolio) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+      <Box sx={{ p: 3, px: { xs: 2.5, sm: 3 } }}>
+        <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
           <Typography variant="h5" gutterBottom>
             Portfolio
           </Typography>
@@ -79,7 +79,7 @@ const PortfolioViewPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
+    <Box sx={{ width: '100%', px: { xs: 2.5, sm: 3 }, pt: { xs: 2, sm: 3 }, pb: { xs: 3, sm: 4 } }}>
       <ViewPageHeader
         title="Portfolio"
         action={
@@ -106,7 +106,7 @@ const PortfolioViewPage: React.FC = () => {
         >
           <Box
             sx={{
-              p: 3,
+              p: { xs: 2, sm: 3 },
               minHeight: TAB_PANEL_MIN_HEIGHT,
               opacity: isTabPending ? 0.6 : 1,
               transition: 'opacity 150ms',

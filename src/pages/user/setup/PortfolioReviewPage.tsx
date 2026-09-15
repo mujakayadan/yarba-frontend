@@ -27,7 +27,11 @@ import { sortByDateDesc } from '../../../utils/dateSort';
 import type { ParsedPortfolioData } from '../../../types/portfolio';
 import { createPortfolioFromParsedData } from '../../../services/portfolioService';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
-import { SetupStepHeader } from '../../../components/user/setup/SetupStepHeader';
+import {
+  SetupStepHeader,
+  setupActionBarSx,
+  setupPageContainerSx,
+} from '../../../components/user/setup/SetupStepHeader';
 
 const PortfolioReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -85,7 +89,11 @@ const PortfolioReviewPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container component="main" maxWidth="sm" sx={{ textAlign: 'center', mt: 8 }}>
+      <Container
+        component="main"
+        maxWidth="sm"
+        sx={{ textAlign: 'center', mt: 8, px: { xs: 2.5, sm: 3 } }}
+      >
         <CircularProgress />
         <Typography sx={{ mt: 2 }}>Loading parsed portfolio data...</Typography>
       </Container>
@@ -94,7 +102,7 @@ const PortfolioReviewPage: React.FC = () => {
 
   if (!parsedData) {
     return (
-      <Container component="main" maxWidth="sm" sx={{ p: 3, mt: 8 }}>
+      <Container component="main" maxWidth="sm" sx={{ p: 3, mt: 8, px: { xs: 2.5, sm: 3 } }}>
         <Paper elevation={3} sx={{ p: 4 }}>
           <Typography variant="h5" gutterBottom align="center">
             Portfolio Data Not Found
@@ -113,17 +121,7 @@ const PortfolioReviewPage: React.FC = () => {
   }
 
   return (
-    <Container
-      component="main"
-      maxWidth={false}
-      sx={{
-        mt: 8,
-        mb: 8,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <Container component="main" maxWidth={false} sx={setupPageContainerSx}>
       <Paper
         elevation={3}
         sx={{
@@ -466,7 +464,7 @@ const PortfolioReviewPage: React.FC = () => {
 
         <Divider sx={{ my: 4 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Box sx={setupActionBarSx}>
           <Button variant="outlined" onClick={handleBack} disabled={saving}>
             Back
           </Button>

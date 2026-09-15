@@ -143,8 +143,8 @@ const PortfolioCreatePage: React.FC = () => {
   // If no profile exists, show message to create profile first
   if (!profile) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+      <Box sx={{ p: 3, px: { xs: 2.5, sm: 3 } }}>
+        <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
           <Typography variant="h5" gutterBottom>
             Create Portfolio
           </Typography>
@@ -168,12 +168,21 @@ const PortfolioCreatePage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto', p: 3 }}>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 800,
+        mx: 'auto',
+        px: { xs: 2.5, sm: 3 },
+        pt: { xs: 2, sm: 3 },
+        pb: { xs: 3, sm: 4 },
+      }}
+    >
       <Button startIcon={<ArrowBackIcon />} onClick={handleCancel} sx={{ mb: 2 }}>
         Back to Portfolio
       </Button>
 
-      <Paper elevation={3} sx={{ p: 4 }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
         <Typography
           variant="body1"
           sx={{
@@ -227,7 +236,15 @@ const PortfolioCreatePage: React.FC = () => {
               </Box>
             ))}
 
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'stretch', sm: 'center' },
+                gap: 2,
+                mt: 3,
+              }}
+            >
               <TextField
                 select
                 label="Category"
@@ -235,7 +252,7 @@ const PortfolioCreatePage: React.FC = () => {
                 onChange={handleNewCategoryChange}
                 variant="outlined"
                 size="small"
-                sx={{ width: 200, mr: 2 }}
+                sx={{ width: { xs: '100%', sm: 200 } }}
                 slotProps={{
                   select: {
                     native: true,
@@ -255,7 +272,7 @@ const PortfolioCreatePage: React.FC = () => {
                 onChange={(e) => setNewSkill(e.target.value)}
                 variant="outlined"
                 size="small"
-                sx={{ flexGrow: 1, mr: 2 }}
+                sx={{ flexGrow: 1 }}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -264,7 +281,12 @@ const PortfolioCreatePage: React.FC = () => {
                 }}
               />
 
-              <Button variant="outlined" onClick={handleAddSkill} disabled={!newSkill.trim()}>
+              <Button
+                variant="outlined"
+                onClick={handleAddSkill}
+                disabled={!newSkill.trim()}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
+              >
                 Add
               </Button>
             </Box>
@@ -279,7 +301,16 @@ const PortfolioCreatePage: React.FC = () => {
             </Button>
           </Box>
 
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              mt: 4,
+              display: 'flex',
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+              justifyContent: 'space-between',
+              gap: 1.5,
+              '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } },
+            }}
+          >
             <Button variant="outlined" onClick={handleCancel} disabled={loading}>
               Cancel
             </Button>
