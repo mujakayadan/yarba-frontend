@@ -165,7 +165,7 @@ const TemplatesPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', px: { xs: 2.5, sm: 3 }, pt: { xs: 2, sm: 3 }, pb: { xs: 3, sm: 4 } }}>
       <Paper elevation={1} sx={{ mb: 4 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs

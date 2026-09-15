@@ -460,7 +460,7 @@ const ResumesPage: React.FC = () => {
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalResumes);
   return (
-    <Box sx={{ width: '100%', p: 3, pl: 2, pt: 2 }}>
+    <Box sx={{ width: '100%', px: { xs: 2.5, sm: 3 }, pt: 2, pb: 3 }}>
       <ViewPageHeader
         title="Resumes"
         description="Create role-specific resumes from your portfolio, then edit, preview, and export them."

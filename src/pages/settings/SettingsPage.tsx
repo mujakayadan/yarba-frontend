@@ -168,7 +168,7 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 1280, mx: 'auto', p: { xs: 2, md: 3 } }}>
+    <Box sx={{ width: '100%', maxWidth: 1280, mx: 'auto', p: { xs: 2.5, md: 3 } }}>
       <ViewPageHeader
         title="Settings"
         description="Manage the information Yarba uses, how AI creates your documents, application automation, and account security."
@@ -199,7 +199,7 @@ const SettingsPage: React.FC = () => {
           alignItems: 'stretch',
           overflow: 'hidden',
           borderRadius: 3,
-          minHeight: 560,
+          minHeight: { xs: 'auto', md: 560 },
         }}
       >
         {!isMobile && (

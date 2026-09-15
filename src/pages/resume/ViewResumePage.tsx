@@ -1457,7 +1457,14 @@ const ViewResumePage: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box
+        sx={{
+          width: '100%',
+          p: 3,
+          pl: { xs: 2.5, md: 3 },
+          pt: 2,
+        }}
+      >
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
@@ -1470,7 +1477,14 @@ const ViewResumePage: React.FC = () => {
 
   if (!resume) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box
+        sx={{
+          width: '100%',
+          p: 3,
+          pl: { xs: 2.5, md: 3 },
+          pt: 2,
+        }}
+      >
         <Alert severity="warning">Resume not found</Alert>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mt: 2 }}>
           Back to Resumes
@@ -1484,7 +1498,7 @@ const ViewResumePage: React.FC = () => {
       sx={{
         width: '100%',
         p: 3,
-        pl: { xs: 2, md: 3 },
+        pl: { xs: 2.5, md: 3 },
         pt: 2,
       }}
     >

@@ -40,6 +40,7 @@ import { useAppearance } from '../../contexts/AppearanceContext';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { env } from '../../config/env';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { DISPLAY_FONT_FAMILY } from '../../theme/fonts';
 import { headerGradient } from '../../theme/tokens';
 import Footer from './Footer';
@@ -86,6 +87,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [imageError, setImageError] = useState(false);
+  useKeyboardInset();
 
   useEffect(() => {
     if (hideDrawer) {
@@ -566,6 +568,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
             xs: 'calc(100dvh - 56px - env(safe-area-inset-top, 0px))',
             md: 'calc(100dvh - 64px - env(safe-area-inset-top, 0px))',
           },
+          pb: 'var(--keyboard-inset, 0px)',
         }}
       >
         <Box sx={{ flexGrow: 1 }}>{children ?? <Outlet />}</Box>

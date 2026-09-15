@@ -311,7 +311,7 @@ const CoverLettersPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: '100%' }}>
+    <Box sx={{ p: { xs: 2.5, sm: 3, md: 4 }, maxWidth: '100%' }}>
       <ViewPageHeader
         title="Cover letters"
         description="Generate a focused cover letter from one of your tailored resumes."

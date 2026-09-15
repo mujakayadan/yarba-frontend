@@ -429,7 +429,7 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
             variant="contained"
             onClick={handleSave}
             disabled={loading || !isDirty}
-            sx={{ minWidth: 152 }}
+            sx={{ minWidth: 152, width: { xs: '100%', sm: 'auto' } }}
           >
             {loading ? 'Saving…' : isDirty ? 'Save changes' : 'Saved'}
           </Button>
