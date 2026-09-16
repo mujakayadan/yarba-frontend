@@ -1,6 +1,6 @@
 # App Store and Google Play review notes
 
-Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in, share sheet, file picking, or deep links until those issues land.
+Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in, file picking, or deep links until those issues land.
 
 Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab.
 
@@ -21,7 +21,7 @@ Provide a reviewer account with a completed portfolio and at least one resume. U
 | On-screen keyboard inset                                 | Shipped           | #28   | Focused fields stay above the keyboard on long forms                                                 |
 | Native Google sign-in and Sign in with Apple             | Not in this build | #22   | Blocked on Apple Developer enrollment and Firebase cutover                                           |
 | Secure native session storage                            | Shipped           | #23   | JWT lives in Keychain / Keystore; leftover WebView `auth_token` is migrated once                     |
-| PDF preview, export, and system share sheet              | Not in this build | #24   | Export currently uses the in-app PDF viewer/download                                                 |
+| PDF preview, export, and system share sheet              | Shipped           | #24   | Resume and cover-letter PDFs preview in-app; Share PDF opens the system sheet                        |
 | Document and profile-image picking                       | Not in this build | #25   | Uploads still use the WebView file input                                                             |
 | System browser, OAuth callbacks, and deep links          | Not in this build | #26   | OAuth still follows the web redirect path                                                            |
 

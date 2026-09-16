@@ -60,20 +60,8 @@ import { Resume } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
-import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { exportPdfBlob, pdfExportActionLabel, resolvePdfBlob } from '../../utils/pdfDownload';
 import ReactMarkdown from 'react-markdown';
-
-interface PdfResponse {
-  pdf_url: string;
-}
-
-const isPdfResponse = (response: any): response is PdfResponse => {
-  return response && typeof response.pdf_url === 'string';
-};
-
-const isBlob = (response: any): response is Blob => {
-  return response instanceof Blob;
-};
 
 // Set up the worker for PDF.js
 const ViewResumePage: React.FC = () => {
@@ -134,16 +122,8 @@ const ViewResumePage: React.FC = () => {
 
     setGeneratingPdf(true);
     try {
-      const response = await getResumePdf(id);
-
-      // Check if response has pdf_url property (new format)
-      if (isPdfResponse(response)) {
-        pdfPreview.openPreviewFromUrl(response.pdf_url);
-      } else if (isBlob(response)) {
-        pdfPreview.openPreviewFromBlob(response);
-      } else {
-        throw new Error('Unexpected response format from PDF service');
-      }
+      const blob = await resolvePdfBlob(await getResumePdf(id), () => downloadResumePdf(id));
+      pdfPreview.openPreviewFromBlob(blob);
     } catch (err: any) {
       console.error('Failed to load PDF:', err);
 
@@ -189,7 +169,7 @@ const ViewResumePage: React.FC = () => {
       }
 
       const blob = await downloadResumePdf(id);
-      triggerBlobDownload(blob, `${resume.title}.pdf`);
+      await exportPdfBlob(blob, `${resume.title}.pdf`);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       const downloadErrorMsg =
@@ -1608,7 +1588,7 @@ const ViewResumePage: React.FC = () => {
             disabled={generatingPdf}
             size="small"
           >
-            {generatingPdf ? 'Loading...' : 'Download PDF'}
+            {generatingPdf ? 'Loading...' : pdfExportActionLabel()}
           </Button>
         </Stack>
       </Box>
@@ -1792,7 +1772,7 @@ const ViewResumePage: React.FC = () => {
               onClick={handleDownloadPdf}
               size="small"
             >
-              Download
+              {pdfExportActionLabel(true)}
             </Button>
           ) : undefined
         }

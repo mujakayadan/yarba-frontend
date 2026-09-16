@@ -1,5 +1,6 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -9,9 +10,12 @@ import {
   DialogTitle,
   IconButton,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { ensurePdfWorkerConfigured } from '../../utils/pdfConfig';
+import { SAFE_AREA } from '../../theme/safeArea';
 
 interface PdfPreviewDialogProps {
   open: boolean;
@@ -41,10 +45,21 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
   onPrevious,
   onNext,
   onLoadError,
-  pageWidth = Math.min(window.innerWidth * 0.8, 800),
+  pageWidth,
   footerActions,
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [reactPdf, setReactPdf] = useState<ReactPdfModule | null>(null);
+  const [viewerError, setViewerError] = useState<string | null>(null);
+
+  const computedWidth = useMemo(() => {
+    if (pageWidth) {
+      return pageWidth;
+    }
+    const inset = isPhone ? 32 : 96;
+    return Math.min(Math.max(window.innerWidth - inset, 240), 800);
+  }, [isPhone, pageWidth]);
 
   useEffect(() => {
     if (!open) {
@@ -52,6 +67,7 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
     }
 
     let cancelled = false;
+    setViewerError(null);
 
     const loadPdfPreview = async () => {
       try {
@@ -61,7 +77,9 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
           setReactPdf(module);
         }
       } catch {
-        // Pdf viewer failed to load; spinner remains visible.
+        if (!cancelled) {
+          setViewerError('PDF preview could not load. Try downloading the file instead.');
+        }
       }
     };
 
@@ -70,24 +88,32 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, pdfUrl]);
 
   const Document = reactPdf?.Document;
   const Page = reactPdf?.Page;
+
+  const handleDocumentError = (error: Error) => {
+    setViewerError('This PDF could not be displayed. Try sharing or downloading it instead.');
+    onLoadError?.(error);
+  };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen={isPhone}
       maxWidth="lg"
       fullWidth
       slotProps={{
         paper: {
           sx: {
-            height: '90vh',
-            maxHeight: '90vh',
+            height: isPhone ? '100%' : '90vh',
+            maxHeight: isPhone ? '100%' : '90vh',
             display: 'flex',
             flexDirection: 'column',
+            pt: isPhone ? SAFE_AREA.top : 0,
+            pb: isPhone ? SAFE_AREA.bottom : 0,
           },
         },
       }}
@@ -109,12 +135,16 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
           alignItems: 'center',
         }}
       >
-        {pdfUrl && Document && Page ? (
+        {viewerError ? (
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {viewerError}
+          </Alert>
+        ) : pdfUrl && Document && Page ? (
           <Box sx={{ border: '1px solid black', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
             <Document
               file={pdfUrl}
               onLoadSuccess={onDocumentLoadSuccess}
-              onLoadError={onLoadError}
+              onLoadError={handleDocumentError}
               loading={<CircularProgress />}
               error={<Typography color="error">Failed to load PDF</Typography>}
             >
@@ -122,7 +152,7 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
                 pageNumber={pageNumber}
                 renderTextLayer={false}
                 renderAnnotationLayer={false}
-                width={pageWidth}
+                width={computedWidth}
               />
             </Document>
           </Box>
@@ -131,11 +161,13 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ justifyContent: 'space-between', px: 3, py: 2 }}>
+      <DialogActions
+        sx={{ justifyContent: 'space-between', px: 3, py: 2, flexWrap: 'wrap', gap: 1 }}
+      >
         <Typography variant="body2">
           {numPages ? `Page ${pageNumber} of ${numPages}` : 'Loading pages...'}
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
           <Button
             onClick={onPrevious}
             disabled={pageNumber <= 1 || !numPages}

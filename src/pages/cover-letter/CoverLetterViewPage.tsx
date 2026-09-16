@@ -42,7 +42,7 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 import { useResume } from '../../hooks/useResume';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { exportPdfBlob, pdfExportActionLabel, resolvePdfBlob } from '../../utils/pdfDownload';
 
 const CoverLetterViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -144,11 +144,9 @@ const CoverLetterViewPage: React.FC = () => {
 
     setGeneratingPdf(true);
     try {
-      const pdfResponse = await getCoverLetterPdf(id);
-
-      // Fetch the PDF from the URL
-      const response = await fetch(pdfResponse.pdf_url);
-      const blob = await response.blob();
+      const blob = await resolvePdfBlob(await getCoverLetterPdf(id), () =>
+        downloadCoverLetterPdf(id)
+      );
       pdfPreview.openPreviewFromBlob(blob);
     } catch (err: any) {
       console.error('Failed to generate PDF:', err);
@@ -165,7 +163,7 @@ const CoverLetterViewPage: React.FC = () => {
     try {
       const blob = await downloadCoverLetterPdf(id);
       const filename = coverLetterTitle ? `${coverLetterTitle}.pdf` : `cover-letter-${id}.pdf`;
-      triggerBlobDownload(blob, filename);
+      await exportPdfBlob(blob, filename);
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
       setPdfError('Failed to download PDF. Please try again.');
@@ -296,7 +294,7 @@ const CoverLetterViewPage: React.FC = () => {
             onClick={handleDownloadPdf}
             disabled={generatingPdf}
           >
-            Download PDF
+            {pdfExportActionLabel()}
           </Button>
           <Button startIcon={<EditIcon />} onClick={handleEdit} variant="outlined">
             Edit
@@ -602,7 +600,6 @@ const CoverLetterViewPage: React.FC = () => {
         onDocumentLoadSuccess={pdfPreview.onDocumentLoadSuccess}
         onPrevious={pdfPreview.previousPage}
         onNext={pdfPreview.nextPage}
-        pageWidth={550}
         footerActions={
           <Button
             startIcon={<PdfIcon />}
@@ -611,7 +608,7 @@ const CoverLetterViewPage: React.FC = () => {
             disabled={generatingPdf}
             size="small"
           >
-            Download PDF
+            {pdfExportActionLabel(true)}
           </Button>
         }
       />

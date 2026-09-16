@@ -10,6 +10,6 @@ export async function ensurePdfWorkerConfigured(): Promise<void> {
     import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
   ]);
 
-  pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(workerUrl, window.location.href).toString();
   workerConfigured = true;
 }

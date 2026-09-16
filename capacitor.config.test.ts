@@ -61,9 +61,15 @@ describe('capacitor config', () => {
 
     expect(settings).toContain("include ':capacitor-splash-screen'");
     expect(settings).toContain('aparajita-capacitor-secure-storage');
+    expect(settings).toContain("include ':capacitor-filesystem'");
+    expect(settings).toContain("include ':capacitor-share'");
     expect(gradle).toContain("implementation project(':capacitor-splash-screen')");
     expect(gradle).toContain('aparajita-capacitor-secure-storage');
+    expect(gradle).toContain("implementation project(':capacitor-filesystem')");
+    expect(gradle).toContain("implementation project(':capacitor-share')");
     expect(spm).toContain('CapacitorSplashScreen');
     expect(spm).toContain('AparajitaCapacitorSecureStorage');
+    expect(spm).toContain('CapacitorFilesystem');
+    expect(spm).toContain('CapacitorShare');
   });
 });

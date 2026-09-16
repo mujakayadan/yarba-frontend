@@ -58,25 +58,10 @@ import { useResumes } from '../../hooks/useResumes';
 import { useUserPortfolio } from '../../hooks/usePortfolio';
 import { resumeKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { exportPdfBlob, pdfExportActionLabel, resolvePdfBlob } from '../../utils/pdfDownload';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { MobileRecordCard, MoreOptionsButton, ResponsiveRecordList } from '../../components/common';
-
-// Type for the PDF response from the server
-interface PdfResponse {
-  pdf_url: string;
-}
-
-// Type guard to check if response is PdfResponse
-const isPdfResponse = (response: any): response is PdfResponse => {
-  return response && typeof response.pdf_url === 'string';
-};
-
-// Type guard to check if response is Blob
-const isBlob = (response: any): response is Blob => {
-  return response instanceof Blob;
-};
 
 // Set up the worker for PDF.js
 // Define the API Resume interface
@@ -315,15 +300,10 @@ const ResumesPage: React.FC = () => {
         setSelectedResumeName(resume.title);
       }
 
-      const response = await getResumePdf(resumeId);
-
-      if (isPdfResponse(response)) {
-        pdfPreview.openPreviewFromUrl(response.pdf_url);
-      } else if (isBlob(response)) {
-        pdfPreview.openPreviewFromBlob(response);
-      } else {
-        throw new Error('Unexpected response format from PDF service');
-      }
+      const blob = await resolvePdfBlob(await getResumePdf(resumeId), () =>
+        downloadResumePdf(resumeId)
+      );
+      pdfPreview.openPreviewFromBlob(blob);
 
       setSelectedResumeId(resumeId);
     } catch (error: any) {
@@ -364,7 +344,7 @@ const ResumesPage: React.FC = () => {
 
       const blob = await downloadResumePdf(resumeId);
       const filename = resume ? `${resume.title}.pdf` : `resume-${resumeId}.pdf`;
-      triggerBlobDownload(blob, filename);
+      await exportPdfBlob(blob, filename);
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       // Extract and display the error message
@@ -802,7 +782,7 @@ const ResumesPage: React.FC = () => {
           <ListItemIcon>
             <PdfIcon fontSize="small" sx={{ mr: 1 }} />
           </ListItemIcon>
-          Download PDF
+          {pdfExportActionLabel()}
         </MenuItem>
         <MenuItem onClick={() => selectedResumeId && handleDuplicateResume(selectedResumeId)}>
           <ListItemIcon>
@@ -933,7 +913,7 @@ const ResumesPage: React.FC = () => {
               onClick={() => handleDownloadPdf(selectedResumeId)}
               size="small"
             >
-              Download
+              {pdfExportActionLabel(true)}
             </Button>
           ) : undefined
         }
