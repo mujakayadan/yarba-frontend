@@ -28,6 +28,10 @@ import type { ParsedPortfolioData } from '../../../types/portfolio';
 import { createPortfolioFromParsedData } from '../../../services/portfolioService';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
 import {
+  clearParsedPortfolioDraft,
+  readParsedPortfolioDraft,
+} from '../../../utils/onboardingDraft';
+import {
   SetupStepHeader,
   setupActionBarSx,
   setupPageContainerSx,
@@ -42,17 +46,15 @@ const PortfolioReviewPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Retrieve parsed data from localStorage
-    const data = localStorage.getItem('parsedPortfolioData');
-    if (data) {
-      try {
-        const parsed = JSON.parse(data) as ParsedPortfolioData;
+    try {
+      const parsed = readParsedPortfolioDraft();
+      if (parsed) {
         setParsedData(parsed);
-      } catch {
-        setError('Unable to load parsed data. Please try uploading your document again.');
+      } else {
+        setError('No parsed data found. Please upload your document first.');
       }
-    } else {
-      setError('No parsed data found. Please upload your document first.');
+    } catch {
+      setError('Unable to load parsed data. Please try uploading your document again.');
     }
     setLoading(false);
   }, []);
@@ -66,8 +68,7 @@ const PortfolioReviewPage: React.FC = () => {
 
       await createPortfolioFromParsedData(parsedData);
 
-      // Clean up localStorage
-      localStorage.removeItem('parsedPortfolioData');
+      clearParsedPortfolioDraft();
 
       // Complete the setup
       await updateUserSetupProgress({ setup_completed: true });

@@ -53,4 +53,17 @@ describe('capacitor config', () => {
       /<key>UISupportedInterfaceOrientations<\/key>\s*<array>\s*<string>UIInterfaceOrientationPortrait<\/string>\s*<\/array>/
     );
   });
+
+  it('registers native splash and secure-storage plugins', () => {
+    const settings = readFileSync('android/capacitor.settings.gradle', 'utf8');
+    const gradle = readFileSync('android/app/capacitor.build.gradle', 'utf8');
+    const spm = readFileSync('ios/App/CapApp-SPM/Package.swift', 'utf8');
+
+    expect(settings).toContain("include ':capacitor-splash-screen'");
+    expect(settings).toContain('aparajita-capacitor-secure-storage');
+    expect(gradle).toContain("implementation project(':capacitor-splash-screen')");
+    expect(gradle).toContain('aparajita-capacitor-secure-storage');
+    expect(spm).toContain('CapacitorSplashScreen');
+    expect(spm).toContain('AparajitaCapacitorSecureStorage');
+  });
 });

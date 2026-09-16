@@ -60,9 +60,10 @@ npx cap run android
 - Native launcher icons and splash images are generated from `public/logo.svg` (same mark as the header). Regenerate with `npm run cap:icons`.
 - Capacitor `SystemBars` injects `--safe-area-inset-*` CSS variables. Layout chrome uses those with `env()` fallbacks so Android WebView inset bugs do not clip the header or footer.
 - On Android 15+, Capacitor may pad the WebView below the camera cutout when Chromium is older than 140. The window background is the header mauve (`#8E5C96`) so that strip is not white; the WebView itself stays opaque (`android.backgroundColor`) so the page does not inherit that color. `SystemBars.setStyle` also paints the window from that color — keep the activity on a light NoActionBar theme, not DayNight, or a night-mode emulator can flash black behind the WebView.
+- Native JWTs use `@aparajita/capacitor-secure-storage` (iOS Keychain / Android Keystore). Cold start hydrates into memory before the first API call. A leftover WebView `auth_token` is migrated once and then deleted. The website still uses `localStorage`. After adding this plugin, run `npx cap update android` (and `ios` on a Mac).
 - Phones launch in portrait. After adding `@capacitor/splash-screen` or changing `capacitor.config.ts`, run `npx cap update android` (and `ios` on a Mac).
 - Do not commit signing keystores, `android/local.properties`, or Apple certificates.
 
 ## Out of scope here
 
-Native plugins (secure storage, share, filesystem, social login), store listing, and signed release builds are later issues under [#18](https://github.com/mujakayadan/yarba-frontend/issues/18).
+Native plugins still later under [#18](https://github.com/mujakayadan/yarba-frontend/issues/18): share, filesystem, social login, store listing, and signed release builds.
