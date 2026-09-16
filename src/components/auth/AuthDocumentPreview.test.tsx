@@ -8,6 +8,7 @@ describe('AuthDocumentPreview', () => {
 
     expect(screen.getByText('Charlie Bucket')).toBeInTheDocument();
     expect(screen.getByText('Profile')).toBeInTheDocument();
+    expect(screen.getByTestId('charlie-portrait').querySelector('svg')).toBeInTheDocument();
     expect(container.querySelector('img')).not.toBeInTheDocument();
   });
 

@@ -1,5 +1,6 @@
 import { keyframes } from '@emotion/react';
 import { Box, Chip, Paper, Stack, Typography } from '@mui/material';
+import CharliePortrait from './CharliePortrait';
 
 type AuthDocumentPreviewProps = {
   mode: 'login' | 'register';
@@ -163,7 +164,7 @@ const ResumePreview = () => (
           />
         </Box>
       </Box>
-      <Box sx={{ width: 1, bgcolor: 'rgba(63, 114, 175, 0.16)' }} />
+      <CharliePortrait />
       <Box sx={{ flex: 0.85 }}>
         <Typography sx={sectionLabelSx}>Strengths</Typography>
         <Stack spacing={0.55} sx={{ mt: 0.7 }}>
