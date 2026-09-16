@@ -112,6 +112,11 @@ interface APIResume {
   updated_at: string;
 }
 
+type PdfOperation = {
+  resumeId: string;
+  action: 'preview' | 'download';
+};
+
 // Define page size options
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 const DEFAULT_PAGE_SIZE = 10;
@@ -127,13 +132,16 @@ const ResumesPage: React.FC = () => {
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingResume, setDeletingResume] = useState(false);
-  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [pdfOperation, setPdfOperation] = useState<PdfOperation | null>(null);
   const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
   const [availablePortfolios, setAvailablePortfolios] = useState<Portfolio[]>([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
   const [updatingResume, setUpdatingResume] = useState(false);
   const pdfPreview = usePdfPreview();
   const [selectedResumeName, setSelectedResumeName] = useState<string>('');
+  const generatingPdf = pdfOperation !== null;
+  const isPdfPreviewLoading = (resumeId: string) =>
+    pdfOperation?.action === 'preview' && pdfOperation.resumeId === resumeId;
 
   const listParams = useMemo(
     () => ({
@@ -296,7 +304,9 @@ const ResumesPage: React.FC = () => {
   };
 
   const handleViewPdf = async (resumeId: string) => {
-    setGeneratingPdf(true);
+    if (pdfOperation) return;
+
+    setPdfOperation({ resumeId, action: 'preview' });
     try {
       // Log the resume details before requesting PDF
       const resume = resumes.find((r) => r.id === resumeId);
@@ -343,12 +353,14 @@ const ResumesPage: React.FC = () => {
 
       showError(errorMsg);
     } finally {
-      setGeneratingPdf(false);
+      setPdfOperation(null);
     }
   };
 
   const handleDownloadPdf = async (resumeId: string) => {
-    setGeneratingPdf(true);
+    if (pdfOperation) return;
+
+    setPdfOperation({ resumeId, action: 'download' });
     try {
       // Log the resume details before requesting PDF
       const resume = resumes.find((r) => r.id === resumeId);
@@ -416,7 +428,7 @@ const ResumesPage: React.FC = () => {
 
       showError(errorMsg);
     } finally {
-      setGeneratingPdf(false);
+      setPdfOperation(null);
       handleMenuClose();
     }
   };
@@ -552,7 +564,7 @@ const ResumesPage: React.FC = () => {
                       size="small"
                       variant="outlined"
                       startIcon={
-                        generatingPdf && !pdfPreview.open ? (
+                        isPdfPreviewLoading(resume.id) ? (
                           <CircularProgress size={16} />
                         ) : (
                           <PdfIcon />
@@ -561,7 +573,7 @@ const ResumesPage: React.FC = () => {
                       onClick={() => handleViewPdf(resume.id)}
                       disabled={generatingPdf}
                     >
-                      {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                      {isPdfPreviewLoading(resume.id) ? 'Loading...' : 'See PDF'}
                     </Button>
                   </>
                 }
@@ -662,7 +674,7 @@ const ResumesPage: React.FC = () => {
                               <Button
                                 variant="outlined"
                                 startIcon={
-                                  generatingPdf && !pdfPreview.open ? (
+                                  isPdfPreviewLoading(resume.id) ? (
                                     <CircularProgress size={16} />
                                   ) : (
                                     <PdfIcon />
@@ -671,7 +683,7 @@ const ResumesPage: React.FC = () => {
                                 onClick={() => handleViewPdf(resume.id)}
                                 disabled={generatingPdf}
                               >
-                                {generatingPdf && !pdfPreview.open ? 'Loading...' : 'See PDF'}
+                                {isPdfPreviewLoading(resume.id) ? 'Loading...' : 'See PDF'}
                               </Button>
                             </Tooltip>
                             <Tooltip
