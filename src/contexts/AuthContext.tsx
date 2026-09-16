@@ -21,7 +21,7 @@ import {
 import { AUTH_UNAUTHORIZED_EVENT } from '../utils/authEvents';
 import { clearAuthenticatedUserCache } from '../lib/clearUserQueryCache';
 import { env } from '../config/env';
-import { getToken, removeToken } from '../utils/auth';
+import { flushAuthStorage, getToken, hydrateAuthToken, removeToken } from '../utils/auth';
 import { exchangeAppleIdToken, exchangeGoogleIdToken } from '../services/oauthService';
 
 const debug = createDebugger('AuthContext');
@@ -181,7 +181,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = getToken();
 
     if (!token) {
-      debug.warn('No auth token found in localStorage');
+      debug.warn('No auth token found in storage');
       setLoading(false);
       return;
     }
@@ -246,6 +246,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       debug.warn('Unauthorized API response received');
       clearAuthenticatedUserCache();
       removeToken();
+      void flushAuthStorage();
       setIsAuthenticated(false);
       setUser(null);
       setLoading(false);
@@ -254,6 +255,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const initializeAuth = async () => {
       try {
+        await hydrateAuthToken();
         const isOffline = checkNetworkConnectivity();
         if (isOffline) {
           debug.warn('Device is offline, skipping auth bootstrap');
@@ -512,6 +514,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearAuthenticatedUserCache();
       // Clean up local state
       removeToken();
+      await flushAuthStorage();
       delete api.defaults.headers.common['Authorization'];
 
       setUser(null);
@@ -527,6 +530,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (env.nativeAuth) {
         clearAuthenticatedUserCache();
         removeToken();
+        await flushAuthStorage();
         delete api.defaults.headers.common['Authorization'];
         setUser(null);
         setFirebaseUser(null);

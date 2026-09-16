@@ -15,6 +15,7 @@ import { CloudUpload as CloudUploadIcon, InsertDriveFile as FileIcon } from '@mu
 import { useAuth } from '../../../contexts/AuthContext';
 import { parsePortfolioDocument } from '../../../services/portfolioService';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
+import { storeParsedPortfolioDraft } from '../../../utils/onboardingDraft';
 import {
   SetupStepHeader,
   setupActionBarSx,
@@ -95,8 +96,7 @@ const PortfolioUploadPage: React.FC = () => {
 
       const parsedData = await parsePortfolioDocument(selectedFile);
 
-      // Store parsed data in localStorage for the review page
-      localStorage.setItem('parsedPortfolioData', JSON.stringify(parsedData));
+      storeParsedPortfolioDraft(parsedData);
 
       // Proceed to portfolio review page
       await updateUserSetupProgress({ current_setup_step: 6 });

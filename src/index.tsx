@@ -4,14 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { initChunkLoadRecovery } from './utils/chunkLoadRecovery';
+import { hydrateAuthToken } from './utils/auth';
 
 initChunkLoadRecovery();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
 
-reportWebVitals();
+void hydrateAuthToken().finally(() => {
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+  reportWebVitals();
+});

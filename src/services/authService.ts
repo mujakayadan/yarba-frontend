@@ -1,5 +1,5 @@
 import api from './api';
-import { removeToken, storeToken } from '../utils/auth';
+import { flushAuthStorage, removeToken, storeToken } from '../utils/auth';
 import type {
   AuthActionResponse,
   ChangePasswordRequest,
@@ -330,11 +330,13 @@ export const logout = async (): Promise<void> => {
       }
     } finally {
       removeToken();
+      await flushAuthStorage();
     }
   } else {
     try {
       await signOutFirebase();
       removeToken();
+      await flushAuthStorage();
     } catch (error) {
       debug.error('Logout error:', error);
       throw error;
