@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   CircularProgress,
@@ -9,14 +8,13 @@ import {
   Link,
   Paper,
   TextField,
-  Toolbar,
   Typography,
 } from '@mui/material';
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import Grid from '../mui/Grid';
+import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
 import { forgotPassword } from '../services/authService';
-import { headerGradient } from '../theme/tokens';
 import { extractApiErrorMessage } from '../utils/apiErrors';
 
 const PAGE_TEXT = {
@@ -81,23 +79,7 @@ const ForgotPasswordPage: React.FC = () => {
         flexDirection: 'column',
       }}
     >
-      <AppBar
-        position="sticky"
-        sx={{
-          backgroundImage: headerGradient(),
-          boxShadow: 3,
-        }}
-      >
-        <Toolbar sx={{ minHeight: { xs: 56, md: 64 }, px: { xs: 1.5, sm: 2 } }}>
-          <RouterLink
-            to="/"
-            aria-label="YARBA home"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <img src="/logo.svg" alt="YARBA" style={{ height: 44, width: 'auto' }} />
-          </RouterLink>
-        </Toolbar>
-      </AppBar>
+      <BrandedAuthAppBar />
 
       <Box
         component="main"

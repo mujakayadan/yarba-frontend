@@ -75,7 +75,7 @@ A thin website wrapper fails [App Store Guideline 4.2](https://developer.apple.c
 4. Document and profile-image picking (#25)
 5. System browser, OAuth callbacks, and deep links (#26)
 
-Also required before submit, but not counted in the five: branded splash/safe areas (#29), in-app deletion reachability (#30), and a written billing decision (#31).
+Also required before submit, but not counted in the five: branded splash/safe areas (#29; draft review notes in `docs/mobile/app-review-notes.md`), in-app deletion reachability (#30), and a written billing decision (#31).
 
 ## Supported-device matrix (v1)
 
@@ -98,13 +98,13 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Sign in with Apple approach documented             | Pass        | This document                                                                                  |
 | Apple Developer Program enrolled                   | Fail        | Operator — enroll before #22/#33/#34                                                           |
 | Google Play Console enrolled                       | Fail        | Operator — $25; personal accounts also need a 12-tester / 14-day closed test before production |
-| Capacitor iOS + Android projects                   | In progress | #20                                                                                            |
+| Capacitor iOS + Android projects                   | Pass        | #20                                                                                            |
 | Native auth (Google + Apple) against Yarba backend | Fail        | #22; keep Firebase until migration completes                                                   |
 | Secure native token storage                        | Fail        | #23                                                                                            |
 | Native PDF share                                   | Fail        | #24                                                                                            |
 | Native file/image picking                          | Fail        | #25                                                                                            |
 | Deep links + system browser                        | Fail        | #26                                                                                            |
-| App-like shell (splash, icons, safe areas)         | Fail        | #29                                                                                            |
+| App-like shell (splash, icons, safe areas)         | In progress | #29 — branded splash/icons/system bars on Android; iOS Simulator still needs a Mac             |
 | Billing decision recorded                          | Fail        | #31 — decide before adding payments                                                            |
 | Signed TestFlight / Play testing builds            | Fail        | #33 — needs store accounts                                                                     |
 | Store listings and review notes                    | Fail        | #34                                                                                            |

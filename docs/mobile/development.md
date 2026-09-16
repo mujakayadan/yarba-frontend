@@ -57,7 +57,10 @@ npx cap run android
 - Android console/network errors: `adb logcat --pid=$(adb shell pidof com.yarba.app)` and look for `Capacitor/Console`.
 - Vercel Analytics does not load in native builds.
 - Display type (`Dreaming Outloud`) is self-hosted in `public/fonts/` so the Android WebView does not fall back to generic `cursive`.
-- Native launcher icons are generated from `public/logo.svg` (same mark as the header). Regenerate with `npx --yes --package=@resvg/resvg-js node scripts/generate-native-icons.mjs`.
+- Native launcher icons and splash images are generated from `public/logo.svg` (same mark as the header). Regenerate with `npm run cap:icons`.
+- Capacitor `SystemBars` injects `--safe-area-inset-*` CSS variables. Layout chrome uses those with `env()` fallbacks so Android WebView inset bugs do not clip the header or footer.
+- On Android 15+, Capacitor may pad the WebView below the camera cutout when Chromium is older than 140. The window background is the header mauve (`#8E5C96`) so that strip is not white; the WebView itself stays opaque (`android.backgroundColor`) so the page does not inherit that color. `SystemBars.setStyle` also paints the window from that color — keep the activity on a light NoActionBar theme, not DayNight, or a night-mode emulator can flash black behind the WebView.
+- Phones launch in portrait. After adding `@capacitor/splash-screen` or changing `capacitor.config.ts`, run `npx cap update android` (and `ios` on a Mac).
 - Do not commit signing keystores, `android/local.properties`, or Apple certificates.
 
 ## Out of scope here

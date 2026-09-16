@@ -43,6 +43,7 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { DISPLAY_FONT_FAMILY } from '../../theme/fonts';
 import { headerGradient } from '../../theme/tokens';
+import { brandedAppBarHeight, SAFE_AREA } from '../../theme/safeArea';
 import Footer from './Footer';
 import { ProfileMenuAppearance } from './ProfileMenuAppearance';
 import {
@@ -251,20 +252,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           backgroundImage: headerGradient(),
           zIndex: (t) => t.zIndex.drawer + 1,
           boxShadow: 3,
-          pt: 'env(safe-area-inset-top, 0px)',
-          height: {
-            xs: 'calc(56px + env(safe-area-inset-top, 0px))',
-            sm: 'calc(56px + env(safe-area-inset-top, 0px))',
-            md: 'calc(64px + env(safe-area-inset-top, 0px))',
-          },
+          pt: SAFE_AREA.top,
+          height: brandedAppBarHeight,
         }}
       >
         <Toolbar
           sx={{
             minHeight: { xs: 56, sm: 56, md: 64 },
             py: { xs: 0, md: 0.5 },
-            pl: { xs: 'max(8px, env(safe-area-inset-left, 0px))', sm: 2 },
-            pr: { xs: 'max(8px, env(safe-area-inset-right, 0px))', sm: 2 },
+            pl: { xs: `max(8px, ${SAFE_AREA.left})`, sm: 2 },
+            pr: { xs: `max(8px, ${SAFE_AREA.right})`, sm: 2 },
           }}
         >
           {!hideDrawer && (
@@ -517,9 +514,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                 duration: theme.transitions.duration.enteringScreen,
               }),
               boxSizing: 'border-box',
-              paddingTop: isMobile
-                ? 'calc(56px + env(safe-area-inset-top, 0px))'
-                : 'calc(64px + env(safe-area-inset-top, 0px))',
+              paddingTop: isMobile ? brandedAppBarHeight.xs : brandedAppBarHeight.md,
               marginTop: 0, // Ensure no additional margin
               height: '100%',
               ...getDrawerPaperSx(navVariant),
@@ -547,11 +542,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
                   ? `calc(100% - ${drawerWidth}px)`
                   : `calc(100% - ${miniDrawerWidth}px)`,
           },
-          marginTop: {
-            xs: 'calc(56px + env(safe-area-inset-top, 0px))',
-            sm: 'calc(56px + env(safe-area-inset-top, 0px))',
-            md: 'calc(64px + env(safe-area-inset-top, 0px))',
-          },
+          marginTop: brandedAppBarHeight,
           marginLeft: {
             xs: 0, // Mobile: no margin
             md: hideDrawer || !user ? 0 : drawerOpen ? `${drawerWidth}px` : `${miniDrawerWidth}px`,
@@ -565,8 +556,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
           display: 'flex',
           flexDirection: 'column',
           minHeight: {
-            xs: 'calc(100dvh - 56px - env(safe-area-inset-top, 0px))',
-            md: 'calc(100dvh - 64px - env(safe-area-inset-top, 0px))',
+            xs: `calc(100dvh - 56px - ${SAFE_AREA.top})`,
+            md: `calc(100dvh - 64px - ${SAFE_AREA.top})`,
           },
           pb: 'var(--keyboard-inset, 0px)',
         }}
