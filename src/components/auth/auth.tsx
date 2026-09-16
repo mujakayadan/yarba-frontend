@@ -26,6 +26,7 @@ import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../ut
 import NativeOAuthButtons from './NativeOAuthButtons';
 import LegalAgreementFields from '../legal/LegalAgreementFields';
 import { buildLegalAcceptance } from '../../services/legalService';
+import AuthDocumentPreview from './AuthDocumentPreview';
 
 const debug = createDebugger('FirebaseAuth');
 
@@ -276,49 +277,33 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     <Grid
       container
       spacing={0}
-      sx={{ maxWidth: 900, mx: 'auto', boxShadow: 3, borderRadius: 1, overflow: 'hidden' }}
+      sx={{
+        width: '100%',
+        maxWidth: 1040,
+        mx: 'auto',
+        bgcolor: 'background.paper',
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: { xs: 2, sm: 3 },
+        boxShadow: '0 24px 70px rgba(40, 55, 90, 0.14)',
+        overflow: 'hidden',
+      }}
     >
       <Grid
         item
         xs={12}
-        md={6}
+        md={5}
         sx={{
-          display: 'block',
+          display: 'flex',
           order: { xs: 2, md: 1 },
         }}
       >
-        <Box
-          sx={{
-            aspectRatio: mode === 'login' ? '1/1' : '2/3',
-            borderRight: { xs: 'none', md: '1px solid rgba(0, 0, 0, 0.12)' },
-            borderTop: { xs: '1px solid rgba(0, 0, 0, 0.12)', md: 'none' },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            width: '100%',
-            minHeight: { xs: '200px', sm: '300px', md: 'auto' },
-            height: { md: '100%' },
-            p: 0,
-          }}
-        >
-          <img
-            src={mode === 'login' ? '/login_resume.webp' : '/register_cover_letter.webp'}
-            alt={mode === 'login' ? 'Login' : 'Register'}
-            style={{
-              maxWidth: '100%',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
-          />
-        </Box>
+        <AuthDocumentPreview mode={mode} />
       </Grid>
       <Grid
         item
         xs={12}
-        md={6}
+        md={7}
         sx={{
           display: 'flex',
           alignItems: 'stretch',
@@ -336,16 +321,21 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
           <Paper
             elevation={0}
             sx={{
-              p: 4,
+              p: { xs: 3, sm: 4.5, md: 5 },
               width: '100%',
               borderRadius: 0,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
             }}
           >
-            <Typography variant="h5" component="h1" align="center" gutterBottom>
+            <Typography variant="h4" component="h1" sx={{ mb: 0.75 }}>
               {mode === 'login' ? 'Sign In' : 'Create an Account'}
+            </Typography>
+            <Typography color="text.secondary" sx={{ mb: 2.5 }}>
+              {mode === 'login'
+                ? 'Welcome back. Continue building your next opportunity.'
+                : 'Create tailored career documents and tell your story with confidence.'}
             </Typography>
 
             {errorMessage && (
@@ -367,7 +357,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
               </Box>
             )}
 
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -480,7 +470,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 1 }}
+                    sx={{ mt: 1, minHeight: 46 }}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -526,7 +516,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                 </Button>
               )}
 
-              <Box sx={{ textAlign: 'right', mt: 1 }}>
+              <Box sx={{ textAlign: 'center', mt: 1 }}>
                 <Link component="button" variant="body2" onClick={toggleMode} type="button">
                   {mode === 'login'
                     ? "Don't have an account? Sign Up"
