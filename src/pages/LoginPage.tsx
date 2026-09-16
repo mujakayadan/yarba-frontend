@@ -1,8 +1,9 @@
 import React from 'react';
-import { Container, Typography, Box, AppBar, Toolbar } from '@mui/material';
+import { AppBar, Box, Toolbar } from '@mui/material';
 import FirebaseAuth from '../components/auth/auth';
 import { Link as RouterLink } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
+import { headerGradient } from '../theme/tokens';
 
 interface LoginPageProps {
   authMode?: 'login' | 'register';
@@ -10,77 +11,68 @@ interface LoginPageProps {
 
 const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: 'background.default',
+      }}
+    >
       <AppBar
-        position="fixed"
+        position="sticky"
         sx={{
-          width: '100%',
-          ml: 0,
-          backgroundImage: 'linear-gradient(to right,rgb(142, 92, 150),rgb(122, 172, 216))',
+          backgroundImage: headerGradient(),
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          boxShadow: 3,
-          height: {
-            xs: '56px',
-            sm: '56px',
-            md: '64px',
-          },
         }}
       >
         <Toolbar
           sx={{
             minHeight: { xs: 56, sm: 56, md: 64 },
-            py: { xs: 0, md: 0.5 },
-            px: { xs: 1, sm: 2 },
+            width: '100%',
+            maxWidth: 1200,
+            mx: 'auto',
+            px: { xs: 1.5, sm: 2.5 },
           }}
         >
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            <RouterLink
-              to="/"
-              style={{
-                textDecoration: 'none',
-                color: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <img src="/logo.svg" alt="YARBA" style={{ height: '50px', width: 'auto' }} />
-            </RouterLink>
-          </Typography>
+          <RouterLink
+            to="/"
+            aria-label="YARBA home"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <img src="/logo.svg" alt="YARBA" style={{ height: '46px', width: 'auto' }} />
+          </RouterLink>
         </Toolbar>
       </AppBar>
 
-      <Container component="main" maxWidth="sm" sx={{ mb: authMode === 'register' ? 6 : 3 }}>
-        <Box
-          sx={{
-            marginTop: 12, // Increased from 8 to account for the AppBar
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            component="h1"
-            variant="h3"
-            gutterBottom
-            sx={{
-              fontWeight: '700',
-              color: 'primary.main',
-            }}
-          >
-            Welcome to YARBA
-          </Typography>
-          {/* <Typography variant="h6" color="text.secondary" align="center" sx={{ fontWeight: 500, mb: 4 }}>
-            Your personal AI-powered resume and cover letter builder
-            <Box component="span" sx={{ display: 'block', fontSize: '0.8rem', mt: 1, fontStyle: 'italic', opacity: 0.8 }}>
-              (Yet Another Resume Builder App)
-            </Box>
-          </Typography> */}
-
-          <FirebaseAuth initialMode={authMode} />
-        </Box>
-      </Container>
+      <Box
+        component="main"
+        sx={{
+          position: 'relative',
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          px: {
+            xs: 'max(16px, env(safe-area-inset-left, 0px))',
+            sm: 3,
+            md: 4,
+          },
+          py: { xs: 3, sm: 5, md: 6 },
+          background: (theme) =>
+            theme.palette.mode === 'dark'
+              ? 'radial-gradient(circle at 15% 15%, rgba(94, 96, 206, 0.16), transparent 34%)'
+              : 'radial-gradient(circle at 15% 15%, rgba(122, 172, 216, 0.22), transparent 34%)',
+        }}
+      >
+        <FirebaseAuth initialMode={authMode} />
+      </Box>
       <Footer />
-    </>
+    </Box>
   );
 };
 
