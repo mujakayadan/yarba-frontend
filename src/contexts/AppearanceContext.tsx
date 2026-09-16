@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { createAppTheme } from '../theme/createAppTheme';
@@ -10,6 +10,7 @@ import {
   resolveAppearanceMode,
 } from '../theme/appearance';
 import { useUserProfile } from '../hooks/useUserProfile';
+import { applyNativeShell } from '../platform/nativeShell';
 
 interface AppearanceContextValue {
   appearance: AppearanceMode;
@@ -34,6 +35,10 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
   const paletteMode = getPaletteMode(appearance);
 
   const theme = useMemo(() => createAppTheme(paletteMode), [paletteMode]);
+
+  useEffect(() => {
+    void applyNativeShell(paletteMode);
+  }, [paletteMode]);
 
   const contextValue = useMemo(() => ({ appearance, navVariant }), [appearance, navVariant]);
 

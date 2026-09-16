@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   CircularProgress,
@@ -10,7 +9,6 @@ import {
   Link,
   Paper,
   TextField,
-  Toolbar,
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -18,8 +16,8 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import Grid from '../mui/Grid';
+import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
 import { resetPassword } from '../services/authService';
-import { headerGradient } from '../theme/tokens';
 import { extractApiErrorMessage } from '../utils/apiErrors';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../utils/passwordPolicy';
 
@@ -104,23 +102,7 @@ const ResetPasswordPage: React.FC = () => {
         flexDirection: 'column',
       }}
     >
-      <AppBar
-        position="sticky"
-        sx={{
-          backgroundImage: headerGradient(),
-          boxShadow: 3,
-        }}
-      >
-        <Toolbar sx={{ minHeight: { xs: 56, md: 64 }, px: { xs: 1.5, sm: 2 } }}>
-          <RouterLink
-            to="/"
-            aria-label="YARBA home"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <img src="/logo.svg" alt="YARBA" style={{ height: 44, width: 'auto' }} />
-          </RouterLink>
-        </Toolbar>
-      </AppBar>
+      <BrandedAuthAppBar />
 
       <Box
         component="main"

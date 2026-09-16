@@ -1,9 +1,9 @@
 import React from 'react';
-import { AppBar, Box, Toolbar } from '@mui/material';
+import { Box } from '@mui/material';
 import FirebaseAuth from '../components/auth/auth';
-import { Link as RouterLink } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
-import { headerGradient } from '../theme/tokens';
+import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
+import { SAFE_AREA } from '../theme/safeArea';
 
 interface LoginPageProps {
   authMode?: 'login' | 'register';
@@ -19,34 +19,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
         bgcolor: 'background.default',
       }}
     >
-      <AppBar
-        position="sticky"
-        sx={{
-          backgroundImage: headerGradient(),
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-      >
-        <Toolbar
-          sx={{
-            minHeight: { xs: 56, sm: 56, md: 64 },
-            width: '100%',
-            maxWidth: 1200,
-            mx: 'auto',
-            px: { xs: 1.5, sm: 2.5 },
-          }}
-        >
-          <RouterLink
-            to="/"
-            aria-label="YARBA home"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <img src="/logo.svg" alt="YARBA" style={{ height: '46px', width: 'auto' }} />
-          </RouterLink>
-        </Toolbar>
-      </AppBar>
+      <BrandedAuthAppBar />
 
       <Box
         component="main"
@@ -58,7 +31,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
           justifyContent: 'center',
           overflow: 'hidden',
           px: {
-            xs: 'max(16px, env(safe-area-inset-left, 0px))',
+            xs: `max(16px, ${SAFE_AREA.left})`,
             sm: 3,
             md: 4,
           },

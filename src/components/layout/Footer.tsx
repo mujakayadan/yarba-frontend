@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { LEGAL_NAV_ITEMS } from '../../content/legalDocuments';
+import { SAFE_AREA } from '../../theme/safeArea';
 
 const Footer: React.FC = () => {
   return (
@@ -9,9 +10,9 @@ const Footer: React.FC = () => {
       component="footer"
       sx={{
         pt: 2,
-        pb: 'max(16px, env(safe-area-inset-bottom, 0px))',
-        pl: 'max(24px, env(safe-area-inset-left, 0px))',
-        pr: 'max(24px, env(safe-area-inset-right, 0px))',
+        pb: `max(16px, ${SAFE_AREA.bottom})`,
+        pl: `max(24px, ${SAFE_AREA.left})`,
+        pr: `max(24px, ${SAFE_AREA.right})`,
         mt: 'auto',
         backgroundColor: 'background.default',
         borderTop: 1,

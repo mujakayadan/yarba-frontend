@@ -1,17 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  AppBar,
-  Box,
-  Button,
-  Container,
-  Link,
-  Paper,
-  TextField,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, Container, Link, Paper, TextField, Typography } from '@mui/material';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
 import { confirmEmailVerification, requestEmailVerification } from '../services/authService';
 import { extractApiErrorMessage } from '../utils/apiErrors';
 
@@ -83,20 +73,10 @@ const VerifyEmailPage: React.FC = () => {
   };
 
   return (
-    <>
-      <AppBar position="fixed">
-        <Toolbar>
-          <RouterLink
-            to="/"
-            aria-label="YARBA home"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <img src="/logo.svg" alt="YARBA" style={{ height: 50, width: 'auto' }} />
-          </RouterLink>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ minHeight: '100dvh', bgcolor: 'background.default' }}>
+      <BrandedAuthAppBar />
       <Container component="main" maxWidth="sm">
-        <Box sx={{ mt: 14 }}>
+        <Box sx={{ mt: { xs: 4, md: 6 }, px: 1 }}>
           <Paper component="section" elevation={3} sx={{ p: 4 }}>
             <Typography component="h1" variant="h4" gutterBottom>
               Verify your email
@@ -167,7 +147,7 @@ const VerifyEmailPage: React.FC = () => {
           </Paper>
         </Box>
       </Container>
-    </>
+    </Box>
   );
 };
 
