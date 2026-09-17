@@ -1,13 +1,26 @@
 const CHUNK_RELOAD_SESSION_KEY = 'yarba:chunk-reload';
 
+const errorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return `${error.message} ${error.name}`;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+  return '';
+};
+
 /** True when a lazy route chunk failed to load (often after a new deploy). */
 export function isChunkLoadError(error: unknown): boolean {
-  const message =
-    error instanceof Error
-      ? `${error.message} ${error.name}`
-      : typeof error === 'string'
-        ? error
-        : '';
+  const message = errorMessage(error);
 
   return (
     message.includes('Failed to fetch dynamically imported module') ||
@@ -18,7 +31,7 @@ export function isChunkLoadError(error: unknown): boolean {
   );
 }
 
-function attemptChunkReload(): void {
+export function attemptChunkReload(): void {
   if (sessionStorage.getItem(CHUNK_RELOAD_SESSION_KEY)) {
     return;
   }

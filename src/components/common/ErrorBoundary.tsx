@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, Box, Button, Typography } from '@mui/material';
-import { isChunkLoadError } from '../../utils/chunkLoadRecovery';
+import { hideNativeSplash } from '../../platform/nativeShell';
+import { attemptChunkReload, isChunkLoadError } from '../../utils/chunkLoadRecovery';
 import { createDebugger } from '../../utils/debug';
 
 const debug = createDebugger('ErrorBoundary');
@@ -22,15 +23,19 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    void hideNativeSplash();
     debug.error(
       `Unhandled application error: ${error.message}\n${error.stack ?? ''}\n${
         errorInfo.componentStack ?? ''
       }`
     );
+    if (isChunkLoadError(error)) {
+      attemptChunkReload();
+    }
   }
 
   handleRetry = (): void => {
-    if (isChunkLoadError({ message: this.state.message })) {
+    if (isChunkLoadError(this.state.message)) {
       window.location.reload();
       return;
     }
@@ -39,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render(): ReactNode {
     if (this.state.hasError) {
-      const chunkStale = isChunkLoadError({ message: this.state.message });
+      const chunkStale = isChunkLoadError(this.state.message);
 
       return (
         <Box

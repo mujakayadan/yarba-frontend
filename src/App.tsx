@@ -8,6 +8,7 @@ import { AppThemeProvider } from './contexts/AppearanceContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import AppRoutes from './routes/AppRoutes';
 import { isDev } from './config/env';
+import { NativeLifecycle } from './platform/NativeLifecycle';
 import { NativeUrlHandlers } from './platform/NativeUrlHandlers';
 import { isNativeRuntime } from './platform/nativeRuntime';
 import {
@@ -52,6 +53,7 @@ const App: React.FC = () => {
       <AppQueryProvider>
         <ToastProvider>
           <AuthProvider>
+            <NativeLifecycle />
             <UserPrivacyPreferences>
               <ProfileProvider>
                 <AppThemeProvider>

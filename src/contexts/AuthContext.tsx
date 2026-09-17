@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import type { User as FirebaseUser } from 'firebase/auth';
 import api from '../services/api';
 import {
@@ -23,6 +23,12 @@ import { clearAuthenticatedUserCache } from '../lib/clearUserQueryCache';
 import { env } from '../config/env';
 import { flushAuthStorage, getToken, hydrateAuthToken, removeToken } from '../utils/auth';
 import { exchangeAppleIdToken, exchangeGoogleIdToken } from '../services/oauthService';
+import { subscribeToAppResume } from '../platform/appLifecycle';
+import {
+  getOnlineStatus,
+  isCurrentlyOnline,
+  subscribeToOnlineStatus,
+} from '../platform/networkStatus';
 
 const debug = createDebugger('AuthContext');
 
@@ -84,6 +90,7 @@ export interface AuthContextState {
   updateProfile: (profileData: Record<string, unknown>) => Promise<void>;
   updateUserSetupProgress: (data: UpdateSetupProgressRequest) => Promise<void>;
   getRedirectPathForUser: () => string;
+  refreshConnectivity: () => Promise<void>;
 }
 
 export interface ProviderSignInResult {
@@ -111,6 +118,7 @@ const AuthContext = createContext<AuthContextState>({
   updateProfile: async () => {},
   updateUserSetupProgress: async () => {},
   getRedirectPathForUser: () => '/dashboard',
+  refreshConnectivity: async () => {},
 });
 
 // Custom hook to use the auth context
@@ -126,10 +134,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
   const [setupStep, setSetupStep] = useState<UserSetupStep>(UserSetupStep.NONE);
   const [setupRoute, setSetupRoute] = useState<string | null>(null);
+  const sessionReadyRef = useRef(false);
 
   // Function to detect if we're offline
   const checkNetworkConnectivity = () => {
-    const isOffline = !navigator.onLine;
+    const isOffline = !isCurrentlyOnline();
     debug.log(`Network connectivity check: ${isOffline ? 'OFFLINE' : 'ONLINE'}`);
     setIsOfflineMode(isOffline);
     return isOffline;
@@ -176,23 +185,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Function to fetch current user data from backend
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = async (options?: { silent?: boolean }) => {
     debug.log('Fetching current user data from backend');
     const token = getToken();
+    const silent = options?.silent === true;
 
     if (!token) {
       debug.warn('No auth token found in storage');
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
       return;
     }
 
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
 
       // Check if we're offline before making API calls
       if (checkNetworkConnectivity()) {
         debug.warn('Device appears to be offline, skipping API call');
-        setLoading(false);
+        if (!silent) {
+          setLoading(false);
+        }
         return;
       }
 
@@ -225,22 +241,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const fetchCurrentUserRef = useRef(fetchCurrentUser);
+  fetchCurrentUserRef.current = fetchCurrentUser;
+
+  const refreshConnectivity = async () => {
+    const online = await getOnlineStatus();
+    setIsOfflineMode(!online);
+    if (online) {
+      await fetchCurrentUser({ silent: true });
+    }
+  };
+
   useEffect(() => {
     debug.log('Setting up auth bootstrap');
 
-    // Set up online/offline event listeners
-    const handleOnline = () => {
-      debug.log('Device is now ONLINE');
-      setIsOfflineMode(false);
-    };
+    const unsubscribeNetwork = subscribeToOnlineStatus((online) => {
+      debug.log(online ? 'Device is now ONLINE' : 'Device is now OFFLINE');
+      setIsOfflineMode(!online);
+      if (online && sessionReadyRef.current) {
+        void fetchCurrentUserRef.current({ silent: true });
+      }
+    });
 
-    const handleOffline = () => {
-      debug.log('Device is now OFFLINE');
-      setIsOfflineMode(true);
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const unsubscribeResume = subscribeToAppResume(() => {
+      if (!sessionReadyRef.current || !isCurrentlyOnline()) {
+        return;
+      }
+      void fetchCurrentUserRef.current({ silent: true });
+    });
 
     const handleUnauthorized = () => {
       debug.warn('Unauthorized API response received');
@@ -256,6 +284,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const initializeAuth = async () => {
       try {
         await hydrateAuthToken();
+        await getOnlineStatus();
         const isOffline = checkNetworkConnectivity();
         if (isOffline) {
           debug.warn('Device is offline, skipping auth bootstrap');
@@ -295,12 +324,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
 
-    void initializeAuth();
+    void initializeAuth().finally(() => {
+      sessionReadyRef.current = true;
+    });
 
-    // Clean up event listeners
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      unsubscribeNetwork();
+      unsubscribeResume();
       window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
     };
   }, []);
@@ -618,6 +648,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateProfile,
     updateUserSetupProgress,
     getRedirectPathForUser,
+    refreshConnectivity,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

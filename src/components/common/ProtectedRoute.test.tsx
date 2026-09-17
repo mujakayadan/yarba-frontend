@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   getStatus: vi.fn(),
   isOfflineMode: false,
   setupRoute: null as string | null,
+  refreshConnectivity: vi.fn(),
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({
@@ -20,6 +21,7 @@ vi.mock('../../contexts/AuthContext', () => ({
     get setupRoute() {
       return mocks.setupRoute;
     },
+    refreshConnectivity: mocks.refreshConnectivity,
   }),
 }));
 
@@ -95,5 +97,15 @@ describe('ProtectedRoute legal acceptance', () => {
 
     expect(screen.getByText('Connection required')).toBeInTheDocument();
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument();
+  });
+
+  it('retries connectivity from the authenticated offline screen', () => {
+    mocks.isOfflineMode = true;
+    mocks.refreshConnectivity.mockResolvedValue(undefined);
+
+    renderProtectedRoute();
+    screen.getByRole('button', { name: 'Try again' }).click();
+
+    expect(mocks.refreshConnectivity).toHaveBeenCalledTimes(1);
   });
 });

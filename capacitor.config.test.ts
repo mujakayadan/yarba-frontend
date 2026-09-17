@@ -15,7 +15,8 @@ describe('capacitor config', () => {
     expect(config.plugins?.CapacitorHttp).toEqual({ enabled: true });
     expect(config.plugins?.SplashScreen).toMatchObject({
       backgroundColor: '#E05B49',
-      launchAutoHide: true,
+      launchAutoHide: false,
+      launchShowDuration: 0,
       androidSplashResourceName: 'splash',
     });
     expect(config.plugins?.SystemBars).toMatchObject({
@@ -78,6 +79,7 @@ describe('capacitor config', () => {
     expect(settings).toContain("include ':capacitor-app'");
     expect(settings).toContain("include ':capacitor-app-launcher'");
     expect(settings).toContain("include ':capacitor-browser'");
+    expect(settings).toContain("include ':capacitor-network'");
     expect(gradle).toContain("implementation project(':capacitor-splash-screen')");
     expect(gradle).toContain('aparajita-capacitor-secure-storage');
     expect(gradle).toContain("implementation project(':capacitor-filesystem')");
@@ -86,6 +88,7 @@ describe('capacitor config', () => {
     expect(gradle).toContain("implementation project(':capacitor-app')");
     expect(gradle).toContain("implementation project(':capacitor-app-launcher')");
     expect(gradle).toContain("implementation project(':capacitor-browser')");
+    expect(gradle).toContain("implementation project(':capacitor-network')");
     expect(spm).toContain('CapacitorSplashScreen');
     expect(spm).toContain('AparajitaCapacitorSecureStorage');
     expect(spm).toContain('CapacitorFilesystem');
@@ -94,5 +97,6 @@ describe('capacitor config', () => {
     expect(spm).toContain('CapacitorApp');
     expect(spm).toContain('CapacitorAppLauncher');
     expect(spm).toContain('CapacitorBrowser');
+    expect(spm).toContain('CapacitorNetwork');
   });
 });
