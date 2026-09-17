@@ -1,6 +1,6 @@
 # App Store and Google Play review notes
 
-Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in, file picking, or deep links until those issues land.
+Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in or deep links until those issues land.
 
 Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab.
 
@@ -22,7 +22,7 @@ Provide a reviewer account with a completed portfolio and at least one resume. U
 | Native Google sign-in and Sign in with Apple             | Not in this build | #22   | Blocked on Apple Developer enrollment and Firebase cutover                                           |
 | Secure native session storage                            | Shipped           | #23   | JWT lives in Keychain / Keystore; leftover WebView `auth_token` is migrated once                     |
 | PDF preview, export, and system share sheet              | Shipped           | #24   | Resume and cover-letter PDFs preview in-app; Share PDF opens the system sheet                        |
-| Document and profile-image picking                       | Not in this build | #25   | Uploads still use the WebView file input                                                             |
+| Document and profile-image picking                       | Shipped           | #25   | Onboarding and profile uploads open the system document/photo picker; no camera permission           |
 | System browser, OAuth callbacks, and deep links          | Not in this build | #26   | OAuth still follows the web redirect path                                                            |
 
 v1 must ship the five App Review 4.2 integrations (#22–#26) before store submit. #29 is the branded shell those plugins sit in.

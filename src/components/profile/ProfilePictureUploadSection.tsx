@@ -1,7 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Avatar, Box, Button, CircularProgress, Typography } from '@mui/material';
 import { Delete as DeleteIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
 import { env } from '../../config/env';
+import { pickProfileImage } from '../../platform/nativeFilePicker';
+import { isNativeRuntime } from '../../platform/nativeRuntime';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
+import { validateImageFile } from '../../utils/uploadFiles';
 
 interface ProfilePictureUploadSectionProps {
   profilePictureKey?: string;
@@ -13,6 +17,7 @@ interface ProfilePictureUploadSectionProps {
   removing?: boolean;
   onUpload: (file: File) => void;
   onRemove: () => void;
+  onError?: (message: string) => void;
 }
 
 export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionProps> = ({
@@ -25,18 +30,48 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
   removing = false,
   onUpload,
   onRemove,
+  onError,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isBusy = disabled || uploading || removing;
+  const [picking, setPicking] = useState(false);
+  const isBusy = disabled || uploading || removing || picking;
   const avatarInitial =
     displayName?.trim().charAt(0)?.toUpperCase() || userEmail?.charAt(0)?.toUpperCase() || '?';
+
+  const applySelectedFile = (file: File) => {
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      onError?.(validationError);
+      return;
+    }
+    onUpload(file);
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onUpload(file);
+      applySelectedFile(file);
     }
     event.target.value = '';
+  };
+
+  const handleChoosePicture = async () => {
+    if (!isNativeRuntime()) {
+      fileInputRef.current?.click();
+      return;
+    }
+
+    setPicking(true);
+    try {
+      const file = await pickProfileImage();
+      if (file) {
+        applySelectedFile(file);
+      }
+    } catch (error: unknown) {
+      onError?.(extractApiErrorMessage(error, 'Could not open that photo. Please try again.'));
+    } finally {
+      setPicking(false);
+    }
   };
 
   return (
@@ -61,7 +96,8 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
           maxWidth: 420,
         }}
       >
-        Shown in the app navigation and on your profile. You can skip this and add one later.
+        Shown in the app navigation and on your profile. You can skip this and add one later. JPG,
+        PNG, WEBP, or GIF, up to 5 MB.
       </Typography>
 
       {profilePictureKey ? (
@@ -78,7 +114,7 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
 
       <input
         ref={fileInputRef}
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/gif"
         type="file"
         hidden
         onChange={handleFileChange}
@@ -89,12 +125,25 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
         <Button
           variant="contained"
           startIcon={
-            uploading ? <CircularProgress size={20} color="inherit" /> : <PhotoCameraIcon />
+            uploading || picking ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              <PhotoCameraIcon />
+            )
           }
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            void handleChoosePicture();
+          }}
           disabled={isBusy}
+          sx={{ minHeight: 44 }}
         >
-          {uploading ? 'Uploading...' : profilePictureKey ? 'Change Picture' : 'Upload Picture'}
+          {picking
+            ? 'Opening photos…'
+            : uploading
+              ? 'Uploading…'
+              : profilePictureKey
+                ? 'Change Picture'
+                : 'Upload Picture'}
         </Button>
 
         {profilePictureKey && (
@@ -104,6 +153,7 @@ export const ProfilePictureUploadSection: React.FC<ProfilePictureUploadSectionPr
             startIcon={removing ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
             onClick={onRemove}
             disabled={isBusy}
+            sx={{ minHeight: 44 }}
           >
             {removing ? 'Removing...' : 'Remove'}
           </Button>

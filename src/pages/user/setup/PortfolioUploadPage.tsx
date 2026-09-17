@@ -10,12 +10,17 @@ import {
   Paper,
   styled,
   Divider,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { CloudUpload as CloudUploadIcon, InsertDriveFile as FileIcon } from '@mui/icons-material';
 import { useAuth } from '../../../contexts/AuthContext';
+import { pickPortfolioDocument } from '../../../platform/nativeFilePicker';
+import { isNativeRuntime } from '../../../platform/nativeRuntime';
 import { parsePortfolioDocument } from '../../../services/portfolioService';
 import { extractApiErrorMessage } from '../../../utils/apiErrors';
 import { storeParsedPortfolioDraft } from '../../../utils/onboardingDraft';
+import { validateDocumentFile } from '../../../utils/uploadFiles';
 import {
   SetupStepHeader,
   setupActionBarSx,
@@ -42,26 +47,32 @@ const HiddenInput = styled('input')({
 const PortfolioUploadPage: React.FC = () => {
   const navigate = useNavigate();
   const { updateUserSetupProgress } = useAuth();
+  const theme = useTheme();
+  const isNarrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+  const isCompactUpload = isNativeRuntime() || isNarrowViewport;
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [picking, setPicking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isBusy = uploading || picking;
+
+  const applySelectedFile = (file: File | null) => {
+    if (!file) {
+      return;
+    }
+    const validationError = validateDocumentFile(file);
+    if (validationError) {
+      setError(validationError);
+      setSelectedFile(null);
+      return;
+    }
+    setSelectedFile(file);
+    setError(null);
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      // Check if file is PDF or DOCX
-      const fileType = file.type;
-      if (
-        fileType === 'application/pdf' ||
-        fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        setSelectedFile(file);
-        setError(null);
-      } else {
-        setError('Please upload a PDF or DOCX file.');
-        setSelectedFile(null);
-      }
-    }
+    applySelectedFile(event.target.files?.[0] ?? null);
+    event.target.value = '';
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -70,20 +81,22 @@ const PortfolioUploadPage: React.FC = () => {
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
-    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
-      const file = event.dataTransfer.files[0];
-      // Check if file is PDF or DOCX
-      const fileType = file.type;
-      if (
-        fileType === 'application/pdf' ||
-        fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        setSelectedFile(file);
-        setError(null);
-      } else {
-        setError('Please upload a PDF or DOCX file.');
-        setSelectedFile(null);
-      }
+    applySelectedFile(event.dataTransfer.files?.[0] ?? null);
+  };
+
+  const handleChooseFile = async () => {
+    if (!isNativeRuntime()) {
+      return;
+    }
+    setPicking(true);
+    setError(null);
+    try {
+      applySelectedFile(await pickPortfolioDocument());
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Could not open that file. Please try again.'));
+      setSelectedFile(null);
+    } finally {
+      setPicking(false);
     }
   };
 
@@ -152,17 +165,33 @@ const PortfolioUploadPage: React.FC = () => {
         )}
 
         <Box sx={{ my: 4 }}>
-          <HiddenInput
-            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            id="file-upload"
-            type="file"
-            onChange={handleFileSelect}
-          />
-          <label htmlFor="file-upload">
-            <UploadBox onDragOver={handleDragOver} onDrop={handleDrop}>
-              <CloudUploadIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
+          {isNativeRuntime() ? (
+            <UploadBox
+              role="button"
+              tabIndex={0}
+              aria-label="Choose a PDF or DOCX file"
+              onClick={() => {
+                if (!isBusy) {
+                  void handleChooseFile();
+                }
+              }}
+              onKeyDown={(event) => {
+                if (isBusy) {
+                  return;
+                }
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  void handleChooseFile();
+                }
+              }}
+            >
+              {picking ? (
+                <CircularProgress sx={{ mb: 1 }} />
+              ) : (
+                <CloudUploadIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
+              )}
               <Typography variant="h6" gutterBottom>
-                Drag & Drop or Click to Upload
+                {picking ? 'Opening your files…' : 'Tap to choose a PDF or DOCX'}
               </Typography>
               <Typography
                 variant="body2"
@@ -170,13 +199,52 @@ const PortfolioUploadPage: React.FC = () => {
                   color: 'text.secondary',
                 }}
               >
-                Accepted formats: PDF, DOCX
+                Accepted formats: PDF, DOCX. Maximum size 10 MB.
               </Typography>
-              <Button variant="contained" component="span" sx={{ mt: 2 }}>
-                Browse Files
+              <Button variant="contained" disabled={isBusy} sx={{ mt: 2, minHeight: 44 }}>
+                {picking ? 'Opening…' : 'Choose file'}
               </Button>
             </UploadBox>
-          </label>
+          ) : (
+            <>
+              <HiddenInput
+                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                id="file-upload"
+                type="file"
+                onChange={handleFileSelect}
+                disabled={isBusy}
+              />
+              <label htmlFor="file-upload">
+                <UploadBox
+                  onDragOver={isCompactUpload ? undefined : handleDragOver}
+                  onDrop={isCompactUpload ? undefined : handleDrop}
+                >
+                  <CloudUploadIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
+                  <Typography variant="h6" gutterBottom>
+                    {isCompactUpload
+                      ? 'Tap to choose a PDF or DOCX'
+                      : 'Drag and drop or click to upload'}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Accepted formats: PDF, DOCX. Maximum size 10 MB.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    component="span"
+                    disabled={isBusy}
+                    sx={{ mt: 2, minHeight: 44 }}
+                  >
+                    Choose file
+                  </Button>
+                </UploadBox>
+              </label>
+            </>
+          )}
         </Box>
 
         {selectedFile && (
@@ -201,7 +269,7 @@ const PortfolioUploadPage: React.FC = () => {
         <Divider sx={{ my: 3 }} />
 
         <Box sx={setupActionBarSx}>
-          <Button variant="outlined" onClick={handleBack} disabled={uploading}>
+          <Button variant="outlined" onClick={handleBack} disabled={isBusy}>
             Back
           </Button>
           <Box
@@ -211,16 +279,16 @@ const PortfolioUploadPage: React.FC = () => {
               gap: 1.5,
             }}
           >
-            <Button variant="outlined" onClick={handleSkip} disabled={uploading}>
+            <Button variant="outlined" onClick={handleSkip} disabled={isBusy}>
               Skip for now
             </Button>
             <Button
               variant="contained"
               onClick={handleUpload}
-              disabled={!selectedFile || uploading}
+              disabled={!selectedFile || isBusy}
               startIcon={uploading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {uploading ? 'Uploading...' : 'Upload & Continue'}
+              {uploading ? 'Reading document…' : 'Upload & Continue'}
             </Button>
           </Box>
         </Box>

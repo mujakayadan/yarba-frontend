@@ -102,7 +102,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                   |
 | Secure native token storage                        | Pass   | #23 — Keychain / Keystore; iOS Simulator still needs a Mac                                     |
 | Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                     |
-| Native file/image picking                          | Fail   | #25                                                                                            |
+| Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac |
 | Deep links + system browser                        | Fail   | #26                                                                                            |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                               |
 | Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                            |
