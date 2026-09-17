@@ -15,6 +15,10 @@ import {
   Typography,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import { pickProfileImage } from '../../platform/nativeFilePicker';
+import { isNativeRuntime } from '../../platform/nativeRuntime';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
+import { validateImageFile } from '../../utils/uploadFiles';
 import { Profile } from '../../types/models';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDeferredTabs } from '../../hooks/useDeferredTabs';
@@ -34,7 +38,6 @@ import {
 } from '../../utils/profileFormSeed';
 import { buildAppearanceFeaturesPatch } from '../../theme/appearance';
 import { parseTabIndex, tabSearchParam } from '../../utils/tabUrl';
-import { extractApiErrorMessage } from '../../utils/apiErrors';
 import { createDebugger } from '../../utils/debug';
 import type { ProfilePersonalInfoForm } from '../../types/profileEdit';
 
@@ -78,6 +81,7 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
   const [uploadType, setUploadType] = useState<'profile' | 'signature' | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [pickingImage, setPickingImage] = useState(false);
   const [imageVersion, setImageVersion] = useState<number>(Date.now());
   const [isDirty, setIsDirty] = useState(false);
   const [pendingMediaDelete, setPendingMediaDelete] = useState<'profile' | 'signature' | null>(
@@ -162,9 +166,38 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
     setSelectedFile(null);
   };
 
+  const applySelectedImage = (file: File | null) => {
+    if (!file) {
+      return;
+    }
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setMediaError(validationError);
+      setSelectedFile(null);
+      return;
+    }
+    setMediaError(null);
+    setSelectedFile(file);
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+    applySelectedImage(event.target.files?.[0] ?? null);
+    event.target.value = '';
+  };
+
+  const handleChooseImage = async () => {
+    if (!isNativeRuntime()) {
+      return;
+    }
+    setPickingImage(true);
+    setMediaError(null);
+    try {
+      applySelectedImage(await pickProfileImage());
+    } catch (error: unknown) {
+      setMediaError(extractApiErrorMessage(error, 'Could not open that photo. Please try again.'));
+      setSelectedFile(null);
+    } finally {
+      setPickingImage(false);
     }
   };
 
@@ -510,18 +543,31 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="profile-file-upload"
-              type="file"
-              onChange={handleFileChange}
-            />
-            <label htmlFor="profile-file-upload">
-              <Button variant="outlined" component="span">
-                Choose File
+            {isNativeRuntime() ? (
+              <Button
+                variant="outlined"
+                onClick={() => void handleChooseImage()}
+                disabled={pickingImage || uploading}
+                sx={{ minHeight: 44 }}
+              >
+                {pickingImage ? 'Opening photos…' : 'Choose File'}
               </Button>
-            </label>
+            ) : (
+              <>
+                <input
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: 'none' }}
+                  id="profile-file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+                <label htmlFor="profile-file-upload">
+                  <Button variant="outlined" component="span" sx={{ minHeight: 44 }}>
+                    Choose File
+                  </Button>
+                </label>
+              </>
+            )}
             {selectedFile && (
               <Typography variant="body2" sx={{ ml: 2, display: 'inline' }}>
                 {selectedFile.name}

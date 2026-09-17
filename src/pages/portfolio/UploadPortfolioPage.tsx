@@ -3,6 +3,10 @@ import { parsePortfolioDocument } from '../../services/portfolioService';
 import { ParsedPortfolioData } from '../../types/portfolio';
 import { ParsedPortfolioDisplay } from '../../components/portfolio/parsed_data_display';
 import { Button, Box, CircularProgress, Alert, Paper, Typography, Stack } from '@mui/material';
+import { pickPortfolioDocument } from '../../platform/nativeFilePicker';
+import { isNativeRuntime } from '../../platform/nativeRuntime';
+import { extractApiErrorMessage } from '../../utils/apiErrors';
+import { validateDocumentFile } from '../../utils/uploadFiles';
 
 const UploadPortfolioPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -12,11 +16,35 @@ const UploadPortfolioPage: React.FC = () => {
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    const validationError = validateDocumentFile(file);
+    if (validationError) {
+      setError(validationError);
+      setSelectedFile(null);
+      return;
+    }
+    setSelectedFile(file);
+    setParsedData(null);
+    setError(null);
+    setIsConfirmed(false);
+  };
+
+  const handleNativePick = async () => {
+    setError(null);
+    try {
+      const file = await pickPortfolioDocument();
+      if (!file) {
+        return;
+      }
+      setSelectedFile(file);
       setParsedData(null);
-      setError(null);
       setIsConfirmed(false);
+    } catch (err: unknown) {
+      setError(extractApiErrorMessage(err, 'Could not open that file. Please try again.'));
     }
   };
 
@@ -36,9 +64,8 @@ const UploadPortfolioPage: React.FC = () => {
       try {
         const data = await parsePortfolioDocument(selectedFile);
         setParsedData(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to parse document. Please try again.');
-        console.error('Upload error:', err);
+      } catch (err: unknown) {
+        setError(extractApiErrorMessage(err, 'Failed to parse document. Please try again.'));
       } finally {
         setIsLoading(false);
       }
@@ -76,17 +103,33 @@ const UploadPortfolioPage: React.FC = () => {
               marginBottom: '16px',
             }}
           >
-            Upload a PDF or DOCX file. We'll parse it and you can review the extracted information.
+            Upload a PDF or DOCX file up to 10 MB. We will parse it and you can review the extracted
+            information.
           </Typography>
           <Box sx={{ mb: 2 }}>
-            <input
-              id="portfolio-file-input"
-              type="file"
-              accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              onChange={handleFileChange}
-              disabled={isLoading}
-              style={{ display: 'block', marginBottom: '10px' }}
-            />
+            {isNativeRuntime() ? (
+              <Button
+                variant="outlined"
+                onClick={() => void handleNativePick()}
+                disabled={isLoading}
+              >
+                Choose file
+              </Button>
+            ) : (
+              <input
+                id="portfolio-file-input"
+                type="file"
+                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleFileChange}
+                disabled={isLoading}
+                style={{ display: 'block', marginBottom: '10px' }}
+              />
+            )}
+            {selectedFile ? (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {selectedFile.name}
+              </Typography>
+            ) : null}
           </Box>
           <Button type="submit" variant="contained" disabled={isLoading || !selectedFile}>
             {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Parse Document'}

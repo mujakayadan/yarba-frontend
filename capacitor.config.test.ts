@@ -48,7 +48,12 @@ describe('capacitor config', () => {
     expect(styles).toContain('windowSplashScreenBackground');
     expect(styles).toContain('@drawable/splash_icon');
     expect(manifest).toContain('android:screenOrientation="portrait"');
+    expect(manifest).not.toContain('CAMERA');
+    expect(manifest).not.toContain('READ_MEDIA');
+    expect(manifest).not.toContain('READ_EXTERNAL_STORAGE');
     expect(plist).toContain('UIStatusBarStyleLightContent');
+    expect(plist).not.toContain('NSCameraUsageDescription');
+    expect(plist).not.toContain('NSPhotoLibraryUsageDescription');
     expect(plist).toMatch(
       /<key>UISupportedInterfaceOrientations<\/key>\s*<array>\s*<string>UIInterfaceOrientationPortrait<\/string>\s*<\/array>/
     );
@@ -63,13 +68,16 @@ describe('capacitor config', () => {
     expect(settings).toContain('aparajita-capacitor-secure-storage');
     expect(settings).toContain("include ':capacitor-filesystem'");
     expect(settings).toContain("include ':capacitor-share'");
+    expect(settings).toContain('capawesome-capacitor-file-picker');
     expect(gradle).toContain("implementation project(':capacitor-splash-screen')");
     expect(gradle).toContain('aparajita-capacitor-secure-storage');
     expect(gradle).toContain("implementation project(':capacitor-filesystem')");
     expect(gradle).toContain("implementation project(':capacitor-share')");
+    expect(gradle).toContain('capawesome-capacitor-file-picker');
     expect(spm).toContain('CapacitorSplashScreen');
     expect(spm).toContain('AparajitaCapacitorSecureStorage');
     expect(spm).toContain('CapacitorFilesystem');
     expect(spm).toContain('CapacitorShare');
+    expect(spm).toContain('CapawesomeCapacitorFilePicker');
   });
 });

@@ -276,6 +276,7 @@ const PersonalInfoSetupPage: React.FC = () => {
                 removing={deletePicture.isPending}
                 onUpload={handleProfilePictureUpload}
                 onRemove={handleProfilePictureRemove}
+                onError={setError}
               />
             </Grid>
           </Grid>
