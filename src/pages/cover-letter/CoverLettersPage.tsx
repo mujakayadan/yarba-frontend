@@ -55,7 +55,7 @@ import { getResumeById } from '../../services/resumeService';
 import { useCoverLetters } from '../../hooks/useCoverLetters';
 import { coverLetterKeys } from '../../lib/queryKeys';
 import { queryClient } from '../../providers/QueryProvider';
-import { triggerBlobDownload } from '../../utils/pdfDownload';
+import { exportPdfBlob, pdfExportActionLabel, resolvePdfBlob } from '../../utils/pdfDownload';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { MobileRecordCard, MoreOptionsButton, ResponsiveRecordList } from '../../components/common';
@@ -245,7 +245,7 @@ const CoverLettersPage: React.FC = () => {
       const filename = coverLetter
         ? `${getCoverLetterTitle(coverLetter)}.pdf`
         : `cover-letter-${coverLetterId}.pdf`;
-      triggerBlobDownload(blob, filename);
+      await exportPdfBlob(blob, filename);
     } catch (error: any) {
       console.error('Failed to download PDF:', error);
       let errorMsg = 'Failed to generate PDF';
@@ -284,11 +284,9 @@ const CoverLettersPage: React.FC = () => {
         setSelectedCoverLetterName(getCoverLetterTitle(coverLetter));
       }
 
-      const pdfResponse = await getCoverLetterPdf(coverLetterId);
-
-      // Fetch the PDF from the URL
-      const response = await fetch(pdfResponse.pdf_url);
-      const blob = await response.blob();
+      const blob = await resolvePdfBlob(await getCoverLetterPdf(coverLetterId), () =>
+        downloadCoverLetterPdf(coverLetterId)
+      );
       pdfPreview.openPreviewFromBlob(blob);
       setSelectedCoverLetterId(coverLetterId);
     } catch (error: any) {
@@ -680,7 +678,7 @@ const CoverLettersPage: React.FC = () => {
           <ListItemIcon>
             <PdfIcon fontSize="small" />
           </ListItemIcon>
-          Download PDF
+          {pdfExportActionLabel()}
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
@@ -742,7 +740,7 @@ const CoverLettersPage: React.FC = () => {
               onClick={() => handleDownloadPdf(selectedCoverLetterId)}
               size="small"
             >
-              Download
+              {pdfExportActionLabel(true)}
             </Button>
           ) : undefined
         }
