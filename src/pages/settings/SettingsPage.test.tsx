@@ -22,6 +22,10 @@ vi.mock('../user/UserPage', () => ({
   default: () => <div>Account security settings</div>,
 }));
 
+vi.mock('../../components/settings/DataPrivacySettings', () => ({
+  default: () => <div>Data privacy settings</div>,
+}));
+
 import SettingsPage from './SettingsPage';
 
 const renderSettings = (path: string) =>
@@ -48,6 +52,14 @@ describe('SettingsPage', () => {
     fireEvent.click(screen.getByText('Account & security'));
 
     expect(screen.getByText('Account security settings')).toBeInTheDocument();
+  });
+
+  it('opens Data & privacy from the settings categories', () => {
+    renderSettings('/settings/personal');
+
+    fireEvent.click(screen.getByText('Data & privacy'));
+
+    expect(screen.getByText('Data privacy settings')).toBeInTheDocument();
   });
 
   it('warns before discarding an edited settings section', () => {

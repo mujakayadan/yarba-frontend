@@ -15,6 +15,8 @@ import {
   Switch,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { Download, DeleteForever, Undo } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
@@ -31,12 +33,27 @@ import { usePrivacyPreferences } from '../../contexts/PrivacyPreferencesContext'
 import { extractApiErrorMessage } from '../../utils/apiErrors';
 import { useAuth } from '../../contexts/AuthContext';
 import { env } from '../../config/env';
+import { LEGAL_NAV_ITEMS } from '../../content/legalDocuments';
+import { openUrl } from '../../utils/openUrl';
+import { SAFE_AREA } from '../../theme/safeArea';
+
+const SETTINGS_LEGAL_LINKS = LEGAL_NAV_ITEMS.filter(
+  (item) =>
+    item.key === 'terms' ||
+    item.key === 'privacy' ||
+    item.key === 'acceptable-use' ||
+    item.key === 'ai-data-use'
+);
+
+const ACTION_BUTTON_SX = { minHeight: 44 };
 
 const formatDate = (value?: string): string =>
   value ? new Date(value).toLocaleString() : 'Not available';
 
 const DataPrivacySettings: React.FC = () => {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const compact = useMediaQuery(theme.breakpoints.down('sm'));
   const { analyticsEnabled, setAnalyticsEnabled } = usePrivacyPreferences();
   const { user, signOut } = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -131,11 +148,8 @@ const DataPrivacySettings: React.FC = () => {
           label="Allow optional product analytics"
         />
         <Typography variant="body2" sx={{ mt: 1 }}>
-          Read the{' '}
-          <Link component={RouterLink} to="/privacy">
-            Privacy Policy
-          </Link>{' '}
-          for data categories, providers, retention, and rights.
+          Optional analytics stay off unless you enable them here. Native builds never load Vercel
+          Analytics.
         </Typography>
       </Paper>
 
@@ -168,10 +182,14 @@ const DataPrivacySettings: React.FC = () => {
             }}
           >
             <Button
-              component="a"
-              href={exportStatus.data.download_url}
               variant="contained"
               startIcon={<Download />}
+              onClick={() => {
+                if (exportStatus.data?.download_url) {
+                  void openUrl(exportStatus.data.download_url);
+                }
+              }}
+              sx={ACTION_BUTTON_SX}
             >
               Download archive
             </Button>
@@ -193,6 +211,7 @@ const DataPrivacySettings: React.FC = () => {
               exportStatus.data?.status === 'pending' ||
               exportStatus.data?.status === 'processing'
             }
+            sx={ACTION_BUTTON_SX}
             startIcon={
               exportMutation.isPending ||
               exportStatus.data?.status === 'pending' ||
@@ -210,7 +229,7 @@ const DataPrivacySettings: React.FC = () => {
         )}
       </Paper>
 
-      <Paper variant="outlined" sx={{ p: 3, borderColor: 'error.main' }}>
+      <Paper id="account-deletion" variant="outlined" sx={{ p: 3, borderColor: 'error.main' }}>
         <Typography
           variant="h6"
           sx={{
@@ -249,6 +268,7 @@ const DataPrivacySettings: React.FC = () => {
                   startIcon={<Undo />}
                   onClick={() => cancelMutation.mutate()}
                   disabled={cancelMutation.isPending}
+                  sx={ACTION_BUTTON_SX}
                 >
                   Cancel deletion
                 </Button>
@@ -263,18 +283,53 @@ const DataPrivacySettings: React.FC = () => {
             variant="outlined"
             startIcon={<DeleteForever />}
             onClick={() => setDeleteDialogOpen(true)}
+            sx={ACTION_BUTTON_SX}
           >
             Request account deletion
           </Button>
         )}
       </Paper>
 
+      <Paper variant="outlined" sx={{ p: 3 }}>
+        <Typography variant="h6">Policies</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
+          Terms, privacy, and related notices stay available in the app, including before you sign
+          in.
+        </Typography>
+        <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+          {SETTINGS_LEGAL_LINKS.map((item) => (
+            <Link key={item.key} component={RouterLink} to={item.path}>
+              {item.label}
+            </Link>
+          ))}
+        </Stack>
+      </Paper>
+
       <Dialog
         open={deleteDialogOpen}
         onClose={() => (deleteMutation.isPending ? undefined : setDeleteDialogOpen(false))}
         fullWidth
+        fullScreen={compact}
         maxWidth="sm"
         aria-labelledby="delete-account-title"
+        slotProps={{
+          paper: {
+            sx: compact
+              ? {
+                  pt: SAFE_AREA.top,
+                  pl: SAFE_AREA.left,
+                  pr: SAFE_AREA.right,
+                  pb: `calc(${SAFE_AREA.bottom} + var(--keyboard-inset, 0px))`,
+                }
+              : undefined,
+          },
+        }}
       >
         <DialogTitle id="delete-account-title">Request permanent account deletion?</DialogTitle>
         <DialogContent>
@@ -308,8 +363,12 @@ const DataPrivacySettings: React.FC = () => {
           ) : null}
         </DialogContent>
         <Divider />
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            disabled={deleteMutation.isPending}
+            sx={ACTION_BUTTON_SX}
+          >
             Keep account
           </Button>
           <Button
@@ -317,6 +376,7 @@ const DataPrivacySettings: React.FC = () => {
             variant="contained"
             onClick={handleDeletionRequest}
             disabled={deleteMutation.isPending}
+            sx={ACTION_BUTTON_SX}
             startIcon={
               deleteMutation.isPending ? <CircularProgress size={18} color="inherit" /> : undefined
             }

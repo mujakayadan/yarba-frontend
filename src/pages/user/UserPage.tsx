@@ -19,6 +19,7 @@ import {
   Key as KeyIcon,
   Save as SaveIcon,
   VpnKey as TokenIcon,
+  DeleteForever,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -295,7 +296,7 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
               <Typography variant="body1">{user?.username || 'Not available'}</Typography>
             </Box>
 
-            <Box>
+            <Box sx={{ mb: 2 }}>
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -308,6 +309,17 @@ const UserPage: React.FC<UserPageProps> = ({ embedded = false }) => {
                 {user?.last_login ? new Date(user.last_login).toLocaleString() : 'Not available'}
               </Typography>
             </Box>
+
+            <Button
+              color="error"
+              variant="outlined"
+              component={RouterLink}
+              to="/settings/data-privacy"
+              startIcon={<DeleteForever />}
+              sx={{ minHeight: 44 }}
+            >
+              Delete account
+            </Button>
           </Paper>
         </Grid>
       </Grid>
