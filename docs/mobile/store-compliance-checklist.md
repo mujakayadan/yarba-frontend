@@ -89,25 +89,25 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 
 ## Release-requirement scorecard
 
-| Requirement                                        | Result | Owner                                                                                          |
-| -------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
-| Versioned legal pages and acceptance               | Pass   | Frontend #45 / backend #46 software (counsel review still external)                            |
-| In-app account deletion API + Settings UI          | Pass   | Existing `/account/deletion`                                                                   |
-| Public abuse report                                | Pass   | `/report`                                                                                      |
-| Privacy / Data safety inventory drafted            | Pass   | This document                                                                                  |
-| Sign in with Apple approach documented             | Pass   | This document                                                                                  |
-| Apple Developer Program enrolled                   | Fail   | Operator — enroll before #22/#33/#34                                                           |
-| Google Play Console enrolled                       | Fail   | Operator — $25; personal accounts also need a 12-tester / 14-day closed test before production |
-| Capacitor iOS + Android projects                   | Pass   | #20                                                                                            |
-| Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                   |
-| Secure native token storage                        | Pass   | #23 — Keychain / Keystore; iOS Simulator still needs a Mac                                     |
-| Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                     |
-| Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac |
-| Deep links + system browser                        | Fail   | #26                                                                                            |
-| App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                               |
-| Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                            |
-| Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                     |
-| Store listings and review notes                    | Fail   | #34                                                                                            |
+| Requirement                                        | Result | Owner                                                                                                                                  |
+| -------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Versioned legal pages and acceptance               | Pass   | Frontend #45 / backend #46 software (counsel review still external)                                                                    |
+| In-app account deletion API + Settings UI          | Pass   | Existing `/account/deletion`                                                                                                           |
+| Public abuse report                                | Pass   | `/report`                                                                                                                              |
+| Privacy / Data safety inventory drafted            | Pass   | This document                                                                                                                          |
+| Sign in with Apple approach documented             | Pass   | This document                                                                                                                          |
+| Apple Developer Program enrolled                   | Fail   | Operator — enroll before #22/#33/#34                                                                                                   |
+| Google Play Console enrolled                       | Fail   | Operator — $25; personal accounts also need a 12-tester / 14-day closed test before production                                         |
+| Capacitor iOS + Android projects                   | Pass   | #20                                                                                                                                    |
+| Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                                                           |
+| Secure native token storage                        | Pass   | #23 — Keychain / Keystore; iOS Simulator still needs a Mac                                                                             |
+| Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                                                             |
+| Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac                                         |
+| Deep links + system browser                        | Pass   | #26 — Custom Tabs / system browser, mailto, `com.yarba.app://` routes; OAuth token exchange still #22; iOS Simulator still needs a Mac |
+| App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
+| Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                                                                    |
+| Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
+| Store listings and review notes                    | Fail   | #34                                                                                                                                    |
 
 ## External links
 

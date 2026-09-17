@@ -8,6 +8,7 @@ import { AppThemeProvider } from './contexts/AppearanceContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import AppRoutes from './routes/AppRoutes';
 import { isDev } from './config/env';
+import { NativeUrlHandlers } from './platform/NativeUrlHandlers';
 import { isNativeRuntime } from './platform/nativeRuntime';
 import {
   PrivacyPreferencesProvider,
@@ -55,6 +56,7 @@ const App: React.FC = () => {
               <ProfileProvider>
                 <AppThemeProvider>
                   <BrowserRouter>
+                    <NativeUrlHandlers />
                     <AppRoutes />
                   </BrowserRouter>
                   <OptionalAnalytics />

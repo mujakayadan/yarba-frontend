@@ -63,6 +63,7 @@ npx cap run android
 - Native JWTs use `@aparajita/capacitor-secure-storage` (iOS Keychain / Android Keystore). Cold start hydrates into memory before the first API call. A leftover WebView `auth_token` is migrated once and then deleted. The website still uses `localStorage`. After adding this plugin, run `npx cap update android` (and `ios` on a Mac).
 - Native PDF export writes the file to app cache and opens the system share sheet (`@capacitor/filesystem` + `@capacitor/share`). The website still downloads with an `<a download>` click. After adding these plugins, run `npx cap update android` (and `ios` on a Mac).
 - Native document and profile-image picking uses `@capawesome/capacitor-file-picker` (system document picker and photo picker). The website still uses `<input type="file">`. No camera or broad storage permission is requested. After adding this plugin, run `npx cap update android` (and `ios` on a Mac).
+- Native external links open in the system browser (`@capacitor/browser`). `mailto:` and `tel:` use `@capacitor/app-launcher`. Custom scheme `com.yarba.app://` deep links restore in-app routes, including after login. The website still uses normal `<a>` navigation. Universal/app links are a follow-up. After adding these plugins, run `npx cap update android` (and `ios` on a Mac).
 - Phones launch in portrait. After adding `@capacitor/splash-screen` or changing `capacitor.config.ts`, run `npx cap update android` (and `ios` on a Mac).
 - Do not commit signing keystores, `android/local.properties`, or Apple certificates.
 

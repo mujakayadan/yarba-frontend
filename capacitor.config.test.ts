@@ -52,8 +52,14 @@ describe('capacitor config', () => {
     expect(manifest).not.toContain('READ_MEDIA');
     expect(manifest).not.toContain('READ_EXTERNAL_STORAGE');
     expect(plist).toContain('UIStatusBarStyleLightContent');
+    expect(plist).toContain('com.yarba.app');
+    expect(plist).toContain('CFBundleURLSchemes');
+    expect(plist).toContain('LSApplicationQueriesSchemes');
+    expect(plist).toContain('mailto');
     expect(plist).not.toContain('NSCameraUsageDescription');
     expect(plist).not.toContain('NSPhotoLibraryUsageDescription');
+    expect(manifest).toContain('android:scheme="com.yarba.app"');
+    expect(manifest).toContain('android.intent.action.SENDTO');
     expect(plist).toMatch(
       /<key>UISupportedInterfaceOrientations<\/key>\s*<array>\s*<string>UIInterfaceOrientationPortrait<\/string>\s*<\/array>/
     );
@@ -69,15 +75,24 @@ describe('capacitor config', () => {
     expect(settings).toContain("include ':capacitor-filesystem'");
     expect(settings).toContain("include ':capacitor-share'");
     expect(settings).toContain('capawesome-capacitor-file-picker');
+    expect(settings).toContain("include ':capacitor-app'");
+    expect(settings).toContain("include ':capacitor-app-launcher'");
+    expect(settings).toContain("include ':capacitor-browser'");
     expect(gradle).toContain("implementation project(':capacitor-splash-screen')");
     expect(gradle).toContain('aparajita-capacitor-secure-storage');
     expect(gradle).toContain("implementation project(':capacitor-filesystem')");
     expect(gradle).toContain("implementation project(':capacitor-share')");
     expect(gradle).toContain('capawesome-capacitor-file-picker');
+    expect(gradle).toContain("implementation project(':capacitor-app')");
+    expect(gradle).toContain("implementation project(':capacitor-app-launcher')");
+    expect(gradle).toContain("implementation project(':capacitor-browser')");
     expect(spm).toContain('CapacitorSplashScreen');
     expect(spm).toContain('AparajitaCapacitorSecureStorage');
     expect(spm).toContain('CapacitorFilesystem');
     expect(spm).toContain('CapacitorShare');
     expect(spm).toContain('CapawesomeCapacitorFilePicker');
+    expect(spm).toContain('CapacitorApp');
+    expect(spm).toContain('CapacitorAppLauncher');
+    expect(spm).toContain('CapacitorBrowser');
   });
 });

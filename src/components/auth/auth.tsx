@@ -22,6 +22,7 @@ import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorH
 import { createDebugger } from '../../utils/debug';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { env } from '../../config/env';
+import { locationToPath, resolvePostAuthPath } from '../../utils/openUrl';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
 import NativeOAuthButtons from './NativeOAuthButtons';
 import LegalAgreementFields from '../legal/LegalAgreementFields';
@@ -59,6 +60,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     setError,
     isOfflineMode,
     isAuthenticated,
+    setupRoute,
     getRedirectPathForUser,
   } = useAuth();
 
@@ -67,14 +69,14 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
 
   // Get offline state from location if passed
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/dashboard';
+  const intendedPath = locationToPath(location.state?.from);
   const isOffline = isOfflineMode || (location.state && location.state.offline);
   const nativeOAuthEnabled = env.nativeAuth && env.nativeOAuth;
 
   // Effect to redirect when authentication state changes
   useEffect(() => {
     debug.log('Auth state check - isAuthenticated:', isAuthenticated);
-    debug.log('Auth state check - from location:', from);
+    debug.log('Auth state check - from location:', intendedPath);
     debug.log('Auth state check - initialMode:', initialMode);
     debug.log('Auth state check - current path:', location.pathname);
 
@@ -82,14 +84,26 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
       // Only redirect from login page, not the register page
       // This allows users to register a new account even if already authenticated
       if (initialMode === 'login') {
-        const redirectPath = getRedirectPathForUser();
+        const redirectPath = resolvePostAuthPath({
+          setupRoute,
+          intendedPath,
+          fallback: getRedirectPathForUser(),
+        });
         debug.log('User is authenticated on login page. Redirecting to:', redirectPath);
         navigate(redirectPath, { replace: true });
       } else {
         debug.log('User is authenticated but on register page. No automatic redirect.');
       }
     }
-  }, [isAuthenticated, navigate, from, initialMode, location.pathname, getRedirectPathForUser]);
+  }, [
+    isAuthenticated,
+    navigate,
+    intendedPath,
+    initialMode,
+    location.pathname,
+    setupRoute,
+    getRedirectPathForUser,
+  ]);
 
   // Effect to update mode when initialMode prop changes
   useEffect(() => {
@@ -155,7 +169,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         debug.log('Login successful');
 
         // Navigate to the appropriate route based on user state
-        const redirectPath = getRedirectPathForUser();
+        const redirectPath = resolvePostAuthPath({
+          setupRoute,
+          intendedPath,
+          fallback: getRedirectPathForUser(),
+        });
         debug.log(`Navigating to ${redirectPath} after login`);
         navigate(redirectPath, { replace: true });
       } else {
@@ -212,7 +230,11 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
       debug.log('Google sign-in successful. isNewUser:', isNewUser);
 
       // Navigate to the appropriate route
-      const navigateTo = setupRoute || getRedirectPathForUser();
+      const navigateTo = resolvePostAuthPath({
+        setupRoute,
+        intendedPath,
+        fallback: getRedirectPathForUser(),
+      });
       debug.log(`Navigating to ${navigateTo} after Google sign-in`);
       navigate(navigateTo, { replace: true });
     } catch (error: unknown) {
@@ -225,7 +247,14 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   };
 
   const handleNativeProviderAuthenticated = (result: ProviderSignInResult) => {
-    navigate(result.setupRoute, { replace: true });
+    navigate(
+      resolvePostAuthPath({
+        setupRoute: result.setupRoute,
+        intendedPath,
+        fallback: getRedirectPathForUser(),
+      }),
+      { replace: true }
+    );
   };
 
   // Toggle between login and register modes
