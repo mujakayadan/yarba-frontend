@@ -44,6 +44,7 @@ Map each collected category before filling Apple privacy labels and Google Data 
 | Application preferences, optional demographics, encrypted apply credentials | Yes                          | Autofill / apply      | Yes                | User-entered                |
 | Public-site content, visitor chat, abuse reports                            | Yes                          | Hosting and safety    | Mixed              | Publisher + visitors        |
 | IP, device/browser, logs, session tokens                                    | Yes                          | Security, rate limits | Yes                | Automatic                   |
+| Device network connected/not connected                                      | Yes, on native               | Offline UI            | No                 | Capacitor Network plugin    |
 | Optional product analytics (Vercel Analytics)                               | Yes, opt-in                  | Product usage         | No sale / no ads   | Settings preference         |
 | Firebase Analytics                                                          | No unless separately enabled | —                     | —                  | Not used by default         |
 
@@ -75,7 +76,7 @@ A thin website wrapper fails [App Store Guideline 4.2](https://developer.apple.c
 4. Document and profile-image picking (#25)
 5. System browser, OAuth callbacks, and deep links (#26)
 
-Also required before submit, but not counted in the five: branded splash/safe areas (#29; draft review notes in `docs/mobile/app-review-notes.md`), in-app deletion reachability (#30), and a written billing decision (#31).
+Also required before submit, but not counted in the five: branded splash/safe areas (#29), in-app deletion reachability (#30), and a written billing decision (#31).
 
 ## Supported-device matrix (v1)
 
@@ -105,6 +106,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac                                         |
 | Deep links + system browser                        | Pass   | #26 — Custom Tabs / system browser, mailto, `com.yarba.app://` routes; OAuth token exchange still #22; iOS Simulator still needs a Mac |
 | Lifecycle + connectivity                           | Pass   | #27 — Network plugin, resume refresh, splash until React is ready; iOS Simulator still needs a Mac                                     |
+| In-app account deletion                            | Pass   | #30 — Settings → Data & privacy; Account & security also links there; iOS Simulator still needs a Mac                                  |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
 | Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                                                                    |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |

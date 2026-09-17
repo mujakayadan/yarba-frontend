@@ -100,4 +100,17 @@ describe('UserPage password changes', () => {
     expect(mocks.showSuccess).toHaveBeenCalledWith('Password changed successfully');
     expect(mocks.signOut).not.toHaveBeenCalled();
   });
+
+  it('links account deletion to Data & privacy settings', () => {
+    render(
+      <MemoryRouter>
+        <UserPage embedded />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('link', { name: 'Delete account' })).toHaveAttribute(
+      'href',
+      '/settings/data-privacy'
+    );
+  });
 });
