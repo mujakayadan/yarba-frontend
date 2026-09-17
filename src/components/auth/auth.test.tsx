@@ -40,6 +40,7 @@ vi.mock('../../contexts/AuthContext', () => ({
     setError: vi.fn(),
     isOfflineMode: false,
     isAuthenticated: false,
+    setupRoute: null,
     getRedirectPathForUser: () => '/dashboard',
   }),
 }));

@@ -12,6 +12,7 @@ const PortfolioEditLegacyRedirect = () => {
 };
 
 const LoginPage = lazy(() => import('../pages/LoginPage'));
+const OAuthCallbackPage = lazy(() => import('../pages/auth/OAuthCallbackPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('../pages/VerifyEmailPage'));
@@ -81,6 +82,7 @@ const AppRoutes: React.FC = () => (
     <Routes>
       <Route path="/" element={<RootRoute />} />
       <Route path="/login" element={<LoginPage authMode="login" />} />
+      <Route path="/auth/callback" element={<OAuthCallbackPage />} />
       <Route path="/register" element={<LoginPage authMode="register" />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
