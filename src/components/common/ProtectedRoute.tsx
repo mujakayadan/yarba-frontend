@@ -14,7 +14,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, loading, isOfflineMode, setupRoute } = useAuth();
+  const { isAuthenticated, loading, isOfflineMode, setupRoute, refreshConnectivity } = useAuth();
   const location = useLocation();
   const isLegalAccessExempt = location.pathname === '/settings/data-privacy';
   const legalAcceptance = useQuery({
@@ -78,6 +78,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
               Reconnect before opening protected Yarba data. This lets us verify your account and
               current policy status.
             </Typography>
+            <Button variant="contained" sx={{ mt: 2 }} onClick={() => void refreshConnectivity()}>
+              Try again
+            </Button>
           </>
         )}
       </Box>

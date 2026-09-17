@@ -27,7 +27,13 @@ vi.mock('@capacitor/splash-screen', () => ({
   },
 }));
 
-import { applyNativeShell, NATIVE_SHELL_CLASS, navigationBarStyleForPalette } from './nativeShell';
+import {
+  applyNativeShell,
+  hideNativeSplash,
+  NATIVE_SHELL_CLASS,
+  navigationBarStyleForPalette,
+  scheduleNativeSplashFallback,
+} from './nativeShell';
 
 describe('nativeShell', () => {
   beforeEach(() => {
@@ -35,6 +41,7 @@ describe('nativeShell', () => {
     mocks.setStyle.mockClear();
     mocks.hide.mockClear();
     document.documentElement.classList.remove(NATIVE_SHELL_CLASS);
+    vi.useRealTimers();
   });
 
   it('uses light navigation-bar content on a dark palette', () => {
@@ -49,7 +56,7 @@ describe('nativeShell', () => {
     expect(document.documentElement.classList.contains(NATIVE_SHELL_CLASS)).toBe(false);
   });
 
-  it('hides splash and styles system bars on native', async () => {
+  it('styles system bars on native without hiding splash', async () => {
     mocks.native = true;
     await applyNativeShell('light');
 
@@ -62,6 +69,21 @@ describe('nativeShell', () => {
       style: SystemBarsStyle.Light,
       bar: SystemBarType.NavigationBar,
     });
+    expect(mocks.hide).not.toHaveBeenCalled();
+  });
+
+  it('hides splash on native after the UI is ready', async () => {
+    mocks.native = true;
+    await hideNativeSplash();
     expect(mocks.hide).toHaveBeenCalledWith({ fadeOutDuration: 200 });
+  });
+
+  it('hides splash from the fallback timer when React never becomes ready', async () => {
+    mocks.native = true;
+    vi.useFakeTimers();
+    scheduleNativeSplashFallback(25);
+    await vi.advanceTimersByTimeAsync(25);
+    expect(mocks.hide).toHaveBeenCalledWith({ fadeOutDuration: 200 });
+    vi.useRealTimers();
   });
 });

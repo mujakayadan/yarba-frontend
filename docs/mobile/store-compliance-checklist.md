@@ -104,6 +104,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                                                             |
 | Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac                                         |
 | Deep links + system browser                        | Pass   | #26 — Custom Tabs / system browser, mailto, `com.yarba.app://` routes; OAuth token exchange still #22; iOS Simulator still needs a Mac |
+| Lifecycle + connectivity                           | Pass   | #27 — Network plugin, resume refresh, splash until React is ready; iOS Simulator still needs a Mac                                     |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
 | Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                                                                    |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
