@@ -35,7 +35,7 @@ Create native apps that match Capacitor `appId` `com.yarba.app`:
 - Authorized domains / redirect URIs for Google and Apple when #22 starts
 - SHA-1 / SHA-256 of the Play signing cert for Google sign-in on Android
 
-Keep using the existing Firebase **web** app config in `VITE_FIREBASE_*` until native auth lands. Native Google/Apple token exchange is still #22.
+Keep using the existing Firebase **web** app config in `VITE_FIREBASE_*` until Firebase is removed. **Web** Google sign-in uses backend-native OAuth when `VITE_NATIVE_AUTH=true` and `VITE_GOOGLE_CLIENT_ID` matches `OAUTH_GOOGLE_WEB_AUDIENCES`. Capacitor still uses Firebase Google until [#22](https://github.com/mujakayadan/yarba-frontend/issues/22); do not set `VITE_NATIVE_OAUTH=true` on native bundles yet.
 
 ## Analytics
 

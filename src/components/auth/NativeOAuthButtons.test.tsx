@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   googleClientId: 'google-client-id',
   appleServiceId: 'apple-service-id',
   appleRedirectUri: 'https://example.com/login',
+  nativeOAuth: true,
   issueNonce: vi.fn(),
   signInWithApple: vi.fn(),
 }));
@@ -14,6 +15,9 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../../config/env', () => ({
   isDev: false,
   env: {
+    get nativeOAuth() {
+      return mocks.nativeOAuth;
+    },
     oauth: {
       get googleClientId() {
         return mocks.googleClientId || undefined;
@@ -87,6 +91,14 @@ describe('NativeOAuthButtons', () => {
     mocks.googleClientId = 'google-client-id';
     mocks.appleServiceId = 'apple-service-id';
     mocks.appleRedirectUri = 'https://example.com/login';
+    mocks.nativeOAuth = true;
+  });
+
+  it('hides Apple while the mobile OAuth flag is off', () => {
+    mocks.nativeOAuth = false;
+    render(<NativeOAuthButtons {...defaultProps()} />);
+
+    expect(screen.queryByRole('button', { name: /apple/i })).not.toBeInTheDocument();
   });
 
   it('shows configuration guidance and hides Apple when providers are not configured', () => {

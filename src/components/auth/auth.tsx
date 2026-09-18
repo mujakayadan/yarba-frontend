@@ -21,7 +21,8 @@ import { type ProviderSignInResult, useAuth } from '../../contexts/AuthContext';
 import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorHandler';
 import { createDebugger } from '../../utils/debug';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { env } from '../../config/env';
+import { env, shouldUseNativeOAuth } from '../../config/env';
+import { isNativeRuntime } from '../../platform/nativeRuntime';
 import { locationToPath, resolvePostAuthPath } from '../../utils/openUrl';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
 import NativeOAuthButtons from './NativeOAuthButtons';
@@ -71,7 +72,14 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const location = useLocation();
   const intendedPath = locationToPath(location.state?.from);
   const isOffline = isOfflineMode || (location.state && location.state.offline);
-  const nativeOAuthEnabled = env.nativeAuth && env.nativeOAuth;
+  const nativeOAuthEnabled = shouldUseNativeOAuth({
+    nativeAuth: env.nativeAuth,
+    nativeOAuth: env.nativeOAuth,
+    nativeRuntime: isNativeRuntime(),
+    googleClientId: env.oauth.googleClientId,
+    appleServiceId: env.oauth.appleServiceId,
+    appleRedirectUri: env.oauth.appleRedirectUri,
+  });
 
   // Effect to redirect when authentication state changes
   useEffect(() => {

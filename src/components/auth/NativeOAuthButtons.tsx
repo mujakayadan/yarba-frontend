@@ -51,7 +51,9 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   const operationInFlight = useRef(false);
 
   const googleConfigured = Boolean(env.oauth.googleClientId);
-  const appleConfigured = Boolean(env.oauth.appleServiceId && env.oauth.appleRedirectUri);
+  const appleConfigured = Boolean(
+    env.nativeOAuth && env.oauth.appleServiceId && env.oauth.appleRedirectUri
+  );
   const isBusy = disabled || activeProvider !== null;
 
   useEffect(() => {
