@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ACCOUNT_RECOVERY_TEXT } from '../content/accountRecovery';
 import { forgotPassword } from '../services/authService';
 import ForgotPasswordPage from './ForgotPasswordPage';
 
@@ -23,6 +24,8 @@ describe('ForgotPasswordPage', () => {
         <ForgotPasswordPage />
       </MemoryRouter>
     );
+
+    expect(screen.getByText(ACCOUNT_RECOVERY_TEXT.forgotNotice)).toBeInTheDocument();
 
     await user.type(
       screen.getByRole('textbox', { name: /email address/i }),

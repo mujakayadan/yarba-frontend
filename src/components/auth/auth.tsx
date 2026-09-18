@@ -25,7 +25,9 @@ import { env, shouldUseNativeOAuth } from '../../config/env';
 import { isNativeRuntime } from '../../platform/nativeRuntime';
 import { locationToPath, resolvePostAuthPath } from '../../utils/openUrl';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
+import { ACCOUNT_RECOVERY_TEXT } from '../../content/accountRecovery';
 import NativeOAuthButtons from './NativeOAuthButtons';
+import AccountRecoveryHelp from './AccountRecoveryHelp';
 import LegalAgreementFields from '../legal/LegalAgreementFields';
 import { buildLegalAcceptance } from '../../services/legalService';
 import AuthDocumentPreview from './AuthDocumentPreview';
@@ -375,6 +377,12 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                 : 'Create tailored career documents and tell your story with confidence.'}
             </Typography>
 
+            {mode === 'login' ? (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                {ACCOUNT_RECOVERY_TEXT.returningUserNotice}
+              </Alert>
+            ) : null}
+
             {errorMessage && (
               <Box sx={{ mb: 2, width: '100%' }}>
                 <Alert
@@ -571,11 +579,16 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                       onClick={() => navigate('/forgot-password')}
                       type="button"
                     >
-                      Forgot your password?
+                      {ACCOUNT_RECOVERY_TEXT.requestNewPassword}
                     </Link>
                   </Box>
                 )}
               </Box>
+              {mode === 'login' ? (
+                <Box sx={{ mt: 2 }}>
+                  <AccountRecoveryHelp />
+                </Box>
+              ) : null}
             </Box>
           </Paper>
         </Box>

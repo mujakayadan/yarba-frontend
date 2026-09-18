@@ -30,4 +30,23 @@ describe('oauth auth error mapping', () => {
       AUTH_ERROR_MESSAGES.account_linking_required
     );
   });
+
+  it('maps expired reset tokens without exposing the raw backend message', () => {
+    const axiosError = new AxiosError('Bad Request', 'ERR_BAD_REQUEST', undefined, undefined, {
+      data: {
+        error_code: 'bad_request',
+        message: 'Invalid or expired action token',
+      },
+      status: 400,
+      statusText: 'Bad Request',
+      headers: {},
+      config: {} as never,
+    });
+    const error = normalizeAuthRequestError(axiosError, 'Unable to reset your password.');
+
+    expect(error.message).toBe(AUTH_ERROR_MESSAGES.invalid_or_expired_action_token);
+    expect(extractApiErrorMessage(axiosError, 'fallback')).toBe(
+      AUTH_ERROR_MESSAGES.invalid_or_expired_action_token
+    );
+  });
 });

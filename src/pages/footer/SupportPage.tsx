@@ -1,5 +1,6 @@
 import React from 'react';
 import EmailIcon from '@mui/icons-material/Email';
+import LockResetIcon from '@mui/icons-material/LockReset';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import {
   Box,
@@ -12,8 +13,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-
-const SUPPORT_EMAIL = 'admin@yarba.app';
+import {
+  ACCOUNT_RECOVERY_TEXT,
+  SUPPORT_EMAIL,
+  buildAccessSupportMailto,
+  buildAccessSupportReference,
+} from '../../content/accountRecovery';
 
 const SupportPage: React.FC = () => {
   return (
@@ -35,6 +40,40 @@ const SupportPage: React.FC = () => {
       </Box>
 
       <Stack spacing={3}>
+        <Card>
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <LockResetIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
+            <Typography variant="h5" component="h2" gutterBottom>
+              {ACCOUNT_RECOVERY_TEXT.supportTitle}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                marginBottom: '16px',
+              }}
+            >
+              {ACCOUNT_RECOVERY_TEXT.supportBody} {ACCOUNT_RECOVERY_TEXT.supportHint}{' '}
+              {buildAccessSupportReference()}.
+            </Typography>
+            <Button
+              component={RouterLink}
+              to="/forgot-password"
+              variant="contained"
+              sx={{ mr: 1.5, mb: 1, minHeight: 44 }}
+            >
+              {ACCOUNT_RECOVERY_TEXT.requestNewPassword}
+            </Button>
+            <Button
+              component="a"
+              href={buildAccessSupportMailto()}
+              variant="outlined"
+              sx={{ mb: 1, minHeight: 44 }}
+            >
+              Email Support
+            </Button>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent sx={{ p: { xs: 3, md: 4 } }}>
             <QuestionAnswerIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
