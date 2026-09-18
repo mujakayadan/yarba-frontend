@@ -2,7 +2,7 @@
 
 Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in until #22 lands.
 
-Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab.
+Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab. This build is free; there are no in-app purchases.
 
 ## Demo account
 

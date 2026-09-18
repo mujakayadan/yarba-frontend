@@ -110,7 +110,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | In-app account deletion                            | Pass   | #30 — Settings → Data & privacy; Account & security also links there; iOS Simulator still needs a Mac                                  |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
 | Phone UX for core flows                            | Pass   | #28 — cards on lists, keyboard inset, stacked view actions, 44px targets; iOS Simulator still needs a Mac                              |
-| Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                                                                    |
+| Billing decision recorded                          | Pass   | #31 — v1 is free; no StoreKit/Play Billing; paid unlocks would be a later epic                                                         |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
 | Store listings and review notes                    | Fail   | #34                                                                                                                                    |
 
