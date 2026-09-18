@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { MobileRecordCard } from './MobileRecordCard';
+import { MobileRecordCard, MoreOptionsButton } from './MobileRecordCard';
 import { ResponsiveRecordList } from './ResponsiveRecordList';
 
 describe('MobileRecordCard', () => {
@@ -28,6 +28,19 @@ describe('MobileRecordCard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View' }));
     expect(onView).toHaveBeenCalledOnce();
     expect(onOpen).toHaveBeenCalledOnce();
+  });
+
+  it('gives overflow menus a 44px minimum hit area', () => {
+    render(
+      <MoreOptionsButton label="More resume options" onClick={() => undefined}>
+        ···
+      </MoreOptionsButton>
+    );
+
+    expect(screen.getByRole('button', { name: 'More resume options' })).toHaveStyle({
+      minHeight: '44px',
+      minWidth: '44px',
+    });
   });
 });
 

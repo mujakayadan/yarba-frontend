@@ -44,6 +44,7 @@ export const IconTabBar: React.FC<IconTabBarProps> = ({
               label={tab.label}
               id={`${idPrefix}-tab-${index}`}
               aria-controls={`${idPrefix}-tabpanel-${index}`}
+              sx={{ minHeight: 48, minWidth: 72, px: 1.5 }}
             />
           );
         })}

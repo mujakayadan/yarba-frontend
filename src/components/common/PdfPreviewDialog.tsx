@@ -16,6 +16,7 @@ import { useTheme } from '@mui/material/styles';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { ensurePdfWorkerConfigured } from '../../utils/pdfConfig';
 import { SAFE_AREA } from '../../theme/safeArea';
+import { touchTargetSx } from '../../theme/mobileUi';
 
 interface PdfPreviewDialogProps {
   open: boolean;
@@ -120,7 +121,7 @@ export const PdfPreviewDialog: React.FC<PdfPreviewDialogProps> = ({
     >
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">{title}</Typography>
-        <IconButton onClick={onClose} size="small" aria-label="Close PDF preview">
+        <IconButton onClick={onClose} aria-label="Close PDF preview" sx={touchTargetSx}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>

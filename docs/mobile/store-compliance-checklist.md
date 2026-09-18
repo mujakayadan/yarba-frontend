@@ -108,6 +108,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Lifecycle + connectivity                           | Pass   | #27 — Network plugin, resume refresh, splash until React is ready; iOS Simulator still needs a Mac                                     |
 | In-app account deletion                            | Pass   | #30 — Settings → Data & privacy; Account & security also links there; iOS Simulator still needs a Mac                                  |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
+| Phone UX for core flows                            | Pass   | #28 — cards on lists, keyboard inset, stacked view actions, 44px targets; iOS Simulator still needs a Mac                              |
 | Billing decision recorded                          | Fail   | #31 — decide before adding payments                                                                                                    |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
 | Store listings and review notes                    | Fail   | #34                                                                                                                                    |

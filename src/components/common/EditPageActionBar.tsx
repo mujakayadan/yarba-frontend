@@ -34,7 +34,7 @@ export const EditPageActionBar: React.FC<EditPageActionBarProps> = ({
       flexWrap: 'wrap',
     }}
   >
-    <Button startIcon={<ArrowBackIcon />} onClick={onBack}>
+    <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ minHeight: 44 }}>
       {backLabel}
     </Button>
     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>

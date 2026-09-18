@@ -58,6 +58,7 @@ import {
 } from '../../services/resumeService';
 import { Resume } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { exportPdfBlob, pdfExportActionLabel, resolvePdfBlob } from '../../utils/pdfDownload';
@@ -79,6 +80,7 @@ const ViewResumePage: React.FC = () => {
   const [generationErrorDialogOpen, setGenerationErrorDialogOpen] = useState(false);
   const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
   const pdfPreview = usePdfPreview();
+  const compactDialog = useCompactDialogProps();
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -1528,13 +1530,17 @@ const ViewResumePage: React.FC = () => {
         </Box>
 
         <Stack
-          direction={{ xs: 'row', sm: 'row' }}
+          direction={{ xs: 'column', sm: 'row' }}
           spacing={1}
           sx={{
             flexWrap: 'wrap',
             gap: 1,
             width: { xs: '100%', md: 'auto' },
-            justifyContent: { xs: 'flex-start', md: 'flex-end' },
+            justifyContent: { xs: 'stretch', md: 'flex-end' },
+            '& .MuiButton-root': {
+              minHeight: 44,
+              width: { xs: '100%', sm: 'auto' },
+            },
           }}
         >
           <Button
@@ -1731,7 +1737,7 @@ const ViewResumePage: React.FC = () => {
       </Box>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+      <Dialog {...compactDialog} open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Resume</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -1779,7 +1785,11 @@ const ViewResumePage: React.FC = () => {
       />
 
       {/* PDF Generation Error Dialog */}
-      <Dialog open={generationErrorDialogOpen} onClose={() => setGenerationErrorDialogOpen(false)}>
+      <Dialog
+        {...compactDialog}
+        open={generationErrorDialogOpen}
+        onClose={() => setGenerationErrorDialogOpen(false)}
+      >
         <DialogTitle>Resume Generation Error</DialogTitle>
         <DialogContent>
           <DialogContentText>

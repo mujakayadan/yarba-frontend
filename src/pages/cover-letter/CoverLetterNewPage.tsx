@@ -34,9 +34,12 @@ import {
   Search as SearchIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
+import { touchTargetSx } from '../../theme/mobileUi';
 
 const CoverLetterNewPage: React.FC = () => {
   const navigate = useNavigate();
+  const compactDialog = useCompactDialogProps();
 
   // State
   const [loading, setLoading] = useState(false);
@@ -257,7 +260,12 @@ const CoverLetterNewPage: React.FC = () => {
               >
                 {selectedResume ? selectedResume.resume_name : 'None selected'}
               </Typography>
-              <Button variant="outlined" onClick={() => setIsModalOpen(true)} size="small">
+              <Button
+                variant="outlined"
+                onClick={() => setIsModalOpen(true)}
+                size="small"
+                sx={{ minHeight: 44, width: { xs: '100%', sm: 'auto' } }}
+              >
                 Select Resume
               </Button>
             </Box>
@@ -289,15 +297,20 @@ const CoverLetterNewPage: React.FC = () => {
       </Paper>
 
       {/* Resume Selection Modal */}
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        {...compactDialog}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="sm"
+      >
         <DialogTitle
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
           Select Resume
           <IconButton
             onClick={() => setIsModalOpen(false)}
-            size="small"
             aria-label="Close resume selection"
+            sx={touchTargetSx}
           >
             <CloseIcon />
           </IconButton>

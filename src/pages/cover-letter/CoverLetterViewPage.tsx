@@ -36,6 +36,7 @@ import {
 } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common/PdfPreviewDialog';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { useCoverLetter } from '../../hooks/useCoverLetter';
 import { useUserProfile } from '../../hooks/useUserProfile';
@@ -68,6 +69,7 @@ const CoverLetterViewPage: React.FC = () => {
   const [pdfError, setPdfError] = useState<string | null>(null);
 
   const pdfPreview = usePdfPreview();
+  const compactDialog = useCompactDialogProps();
 
   const error =
     isError && coverLetterError
@@ -262,13 +264,17 @@ const CoverLetterViewPage: React.FC = () => {
         </Box>
 
         <Stack
-          direction="row"
+          direction={{ xs: 'column', sm: 'row' }}
           spacing={1}
           sx={{
             flexWrap: 'wrap',
             gap: 1,
             width: { xs: '100%', md: 'auto' },
-            justifyContent: { xs: 'flex-start', md: 'flex-end' },
+            justifyContent: { xs: 'stretch', md: 'flex-end' },
+            '& .MuiButton-root': {
+              minHeight: 44,
+              width: { xs: '100%', sm: 'auto' },
+            },
           }}
         >
           {/* Add Back button similar to ViewResumePage */}
@@ -573,7 +579,7 @@ const CoverLetterViewPage: React.FC = () => {
       </Box>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
+      <Dialog {...compactDialog} open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
