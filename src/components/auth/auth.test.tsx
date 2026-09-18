@@ -9,24 +9,33 @@ import { buildLegalAcceptance } from '../../services/legalService';
 const mocks = vi.hoisted(() => ({
   nativeAuth: true,
   nativeOAuth: false,
+  nativeRuntime: false,
   register: vi.fn(),
 }));
 
-vi.mock('../../config/env', () => ({
-  isDev: false,
-  env: {
-    get nativeAuth() {
-      return mocks.nativeAuth;
+vi.mock('../../config/env', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../config/env')>();
+  return {
+    ...original,
+    env: {
+      get nativeAuth() {
+        return mocks.nativeAuth;
+      },
+      get nativeOAuth() {
+        return mocks.nativeOAuth;
+      },
+      oauth: {
+        googleClientId: 'google-client-id',
+        appleServiceId: 'apple-service-id',
+        appleRedirectUri: 'https://example.com/login',
+      },
     },
-    get nativeOAuth() {
-      return mocks.nativeOAuth;
-    },
-    oauth: {
-      googleClientId: 'google-client-id',
-      appleServiceId: 'apple-service-id',
-      appleRedirectUri: 'https://example.com/login',
-    },
-  },
+  };
+});
+
+vi.mock('../../platform/nativeRuntime', () => ({
+  isNativeRuntime: () => mocks.nativeRuntime,
+  getNativePlatform: () => (mocks.nativeRuntime ? 'ios' : 'web'),
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({
@@ -66,10 +75,23 @@ describe('registration password policy', () => {
     vi.clearAllMocks();
     mocks.nativeAuth = true;
     mocks.nativeOAuth = false;
+    mocks.nativeRuntime = false;
     mocks.register.mockResolvedValue({ setupRoute: '/dashboard' });
   });
 
-  it('keeps Firebase Google while the separate OAuth rollout flag is disabled', () => {
+  it('uses backend Google on web when native auth is on', () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <FirebaseAuth initialMode="login" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Direct provider authentication')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /continue with google/i })).not.toBeInTheDocument();
+  });
+
+  it('keeps Firebase Google on Capacitor while the mobile OAuth flag is off', () => {
+    mocks.nativeRuntime = true;
     render(
       <MemoryRouter initialEntries={['/login']}>
         <FirebaseAuth initialMode="login" />

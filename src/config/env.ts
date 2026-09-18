@@ -27,6 +27,34 @@ export const resolveNativeApiUrl = (
   }
 };
 
+export const shouldUseNativeOAuth = ({
+  nativeAuth,
+  nativeOAuth,
+  nativeRuntime,
+  googleClientId,
+  appleServiceId,
+  appleRedirectUri,
+}: {
+  nativeAuth: boolean;
+  nativeOAuth: boolean;
+  nativeRuntime: boolean;
+  googleClientId?: string;
+  appleServiceId?: string;
+  appleRedirectUri?: string;
+}): boolean => {
+  if (!nativeAuth) {
+    return false;
+  }
+
+  const googleConfigured = Boolean(googleClientId);
+  const appleConfigured = Boolean(appleServiceId && appleRedirectUri);
+  if (nativeOAuth) {
+    return googleConfigured || appleConfigured;
+  }
+
+  return !nativeRuntime && googleConfigured;
+};
+
 export const env = {
   apiUrl: resolveNativeApiUrl(readEnv('VITE_API_URL')),
   cloudfrontUrl: readEnv('VITE_CLOUDFRONT_URL'),

@@ -14,6 +14,14 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   account_exists_use_login:
     'An account with this email already exists. Sign in with Google or your social provider.',
   firebase_registration_failed: 'Registration failed. Please try again later.',
+  account_linking_required:
+    'This Google account does not match an existing Yarba login. Sign in with email instead.',
+  invalid_oauth_nonce: 'Google sign-in expired. Please try again.',
+  invalid_provider_token: 'Google sign-in could not be verified. Please try again.',
+  oauth_not_configured: 'Google sign-in is unavailable right now. Use email instead.',
+  legal_acceptance_required: 'Please confirm the legal terms before creating an account.',
+  provider_profile_incomplete:
+    'Google did not share a verified email. Allow email access and try again.',
 };
 
 export class ApiRequestError extends Error {
@@ -116,6 +124,10 @@ const formatValidationDetail = (detail: unknown): string | null => {
 };
 
 export const extractApiErrorMessage = (err: unknown, fallback: string): string => {
+  if (err instanceof ApiRequestError) {
+    return err.message || fallback;
+  }
+
   const error = err as { response?: { data?: ApiErrorResponse }; message?: string };
   const body = extractApiErrorBody(error.response?.data);
 
