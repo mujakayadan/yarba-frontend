@@ -86,7 +86,7 @@ Also required before submit, but not counted in the five: branded splash/safe ar
 | iOS      | 16.0+                               | iPhone SE (3rd gen) through current Pro Max | iPad is not a v1 target. Needs a Mac to run.               |
 | Web      | Current Chromium / Safari / Firefox | Desktop + same phone widths                 | Production remains Vercel                                  |
 
-Release QA (#32) should cover login, onboarding, resume generate/edit, PDF preview/share, settings export/delete, and logout on one Android emulator and one iOS simulator.
+Release QA (#32) should cover login, onboarding, resume generate/edit, PDF preview/share, settings export/delete, and logout on one Android emulator and one iOS simulator. Live results: [qa-matrix.md](./qa-matrix.md).
 
 ## Release-requirement scorecard
 
@@ -111,6 +111,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
 | Phone UX for core flows                            | Pass   | #28 — cards on lists, keyboard inset, stacked view actions, 44px targets; iOS Simulator still needs a Mac                              |
 | Billing decision recorded                          | Pass   | #31 — v1 is free; no StoreKit/Play Billing; paid unlocks would be a later epic                                                         |
+| QA matrix + adapter tests                          | Fail   | #32 — Vitest adapters Pass; Android prior-PR evidence recorded; iOS, TalkBack/VoiceOver, and native Google/Apple still open            |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
 | Store listings and review notes                    | Fail   | #34                                                                                                                                    |
 
