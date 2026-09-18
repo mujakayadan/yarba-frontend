@@ -14,7 +14,6 @@ vi.mock('./services/authService', () => ({
   loginWithGoogle: vi.fn(),
   logout: vi.fn(),
   exchangeFirebaseTokenForJWT: vi.fn(),
-  getCurrentFirebaseUser: vi.fn(async () => null),
   completeFirebaseEmailRegistration: vi.fn(),
   refreshPasswordSession: vi.fn(),
 }));
