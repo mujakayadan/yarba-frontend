@@ -74,4 +74,4 @@ npx cap run android
 
 ## Out of scope here
 
-Native plugins still later under [#18](https://github.com/mujakayadan/yarba-frontend/issues/18): social login, store listing, and signed release builds. v1 billing is recorded as free in [billing-decision.md](./billing-decision.md).
+Native plugins still later under [#18](https://github.com/mujakayadan/yarba-frontend/issues/18): social login, store listing, and signed release builds. v1 billing is recorded as free in [billing-decision.md](./billing-decision.md). Device QA log: [qa-matrix.md](./qa-matrix.md).

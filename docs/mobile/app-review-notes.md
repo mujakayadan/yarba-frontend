@@ -42,4 +42,4 @@ v1 must ship the five App Review 4.2 integrations (#22–#26) before store submi
 8. Open a resume on a phone-width screen: actions should stack, not overflow. Delete confirmation should fill the screen.
 9. Open the nav drawer from the header; the menu control should be easy to tap.
 
-iOS Simulator verification still needs a Mac (#32).
+iOS Simulator verification still needs a Mac (#32). Device pass/fail log: [qa-matrix.md](./qa-matrix.md).
