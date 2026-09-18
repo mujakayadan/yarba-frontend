@@ -8,7 +8,6 @@ const mocks = vi.hoisted(() => ({
   loginWithEmail: vi.fn(),
   registerWithEmail: vi.fn(),
   completeFirebaseRegistration: vi.fn(),
-  getFirebaseUser: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
   googleExchange: vi.fn(),
@@ -34,7 +33,6 @@ vi.mock('../services/api', () => ({
 
 vi.mock('../services/authService', () => ({
   completeFirebaseEmailRegistration: mocks.completeFirebaseRegistration,
-  getCurrentFirebaseUser: mocks.getFirebaseUser,
   loginWithEmail: mocks.loginWithEmail,
   loginWithGoogle: vi.fn(),
   logout: mocks.logout,
@@ -69,7 +67,6 @@ const authResponse = {
 
 const AuthHarness = () => {
   const {
-    firebaseUser,
     isAuthenticated,
     loading,
     login,
@@ -81,7 +78,6 @@ const AuthHarness = () => {
   return (
     <div>
       <span>{loading ? 'loading' : isAuthenticated ? 'authenticated' : 'signed-out'}</span>
-      <span>{firebaseUser ? 'firebase-user' : 'no-firebase-user'}</span>
       <button onClick={() => void login('user@example.com', 'password')}>Log in</button>
       <button
         onClick={() =>
@@ -125,7 +121,6 @@ describe('AuthProvider password adapter selection', () => {
     mocks.refresh.mockRejectedValue(new Error('No refresh session'));
     mocks.loginWithEmail.mockResolvedValue(authResponse);
     mocks.registerWithEmail.mockResolvedValue(authResponse);
-    mocks.getFirebaseUser.mockResolvedValue(null);
     mocks.googleExchange.mockResolvedValue(authResponse);
     mocks.appleExchange.mockResolvedValue(authResponse);
     mocks.logout.mockResolvedValue(undefined);
@@ -152,7 +147,6 @@ describe('AuthProvider password adapter selection', () => {
       legal_acceptance: buildLegalAcceptance('password_registration'),
     });
     expect(mocks.completeFirebaseRegistration).not.toHaveBeenCalled();
-    expect(mocks.getFirebaseUser).not.toHaveBeenCalled();
   });
 
   it('uses backend user state for native login', async () => {
@@ -168,7 +162,6 @@ describe('AuthProvider password adapter selection', () => {
 
     await screen.findByText('authenticated');
     expect(mocks.loginWithEmail).toHaveBeenCalledWith('user@example.com', 'password');
-    expect(mocks.getFirebaseUser).not.toHaveBeenCalled();
   });
 
   it('preserves the Firebase post-registration sign-in in fallback mode', async () => {
@@ -185,7 +178,6 @@ describe('AuthProvider password adapter selection', () => {
 
     await screen.findByText('authenticated');
     expect(mocks.completeFirebaseRegistration).toHaveBeenCalledWith('user@example.com', 'password');
-    expect(mocks.getFirebaseUser).toHaveBeenCalledTimes(1);
   });
 
   it('clears native local state even when logout cleanup rejects', async () => {
@@ -210,7 +202,7 @@ describe('AuthProvider password adapter selection', () => {
     expect(mocks.apiCommonHeaders.Authorization).toBeUndefined();
   });
 
-  it('completes direct provider tokens with backend state and no Firebase user', async () => {
+  it('completes direct provider tokens with backend state', async () => {
     const user = userEvent.setup();
     render(
       <AuthProvider>
@@ -222,7 +214,6 @@ describe('AuthProvider password adapter selection', () => {
     await user.click(screen.getByRole('button', { name: 'Direct Google' }));
 
     await screen.findByText('authenticated');
-    expect(screen.getByText('no-firebase-user')).toBeInTheDocument();
     expect(mocks.googleExchange).toHaveBeenCalledWith(
       'google-id-token',
       buildLegalAcceptance('google_oauth')

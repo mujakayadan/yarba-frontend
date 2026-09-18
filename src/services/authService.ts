@@ -24,6 +24,7 @@ import {
 import axios from 'axios';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { env } from '../config/env';
+import { isNativeRuntime } from '../platform/nativeRuntime';
 import { createDebugger } from '../utils/debug';
 import {
   changeFirebasePassword,
@@ -319,8 +320,11 @@ export const logout = async (): Promise<void> => {
       const backendLogout = Promise.resolve().then(() =>
         api.post<AuthActionResponse>('/auth/password/logout')
       );
-      const firebaseLogout = Promise.resolve().then(() => signOutFirebase());
-      const cleanupResults = await Promise.allSettled([backendLogout, firebaseLogout]);
+      const cleanupTasks: Promise<unknown>[] = [backendLogout];
+      if (isNativeRuntime()) {
+        cleanupTasks.push(Promise.resolve().then(() => signOutFirebase()));
+      }
+      const cleanupResults = await Promise.allSettled(cleanupTasks);
       for (const result of cleanupResults) {
         if (result.status === 'rejected') {
           const message =

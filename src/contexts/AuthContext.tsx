@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
-import type { User as FirebaseUser } from 'firebase/auth';
 import api from '../services/api';
 import {
   loginWithEmail,
   registerWithEmail,
   loginWithGoogle as loginWithGoogleService,
   logout,
-  getCurrentFirebaseUser,
   completeFirebaseEmailRegistration,
   refreshPasswordSession,
 } from '../services/authService';
@@ -60,7 +58,6 @@ export const setupStepToRoute: Record<UserSetupStep, string | null> = {
 // Define the shape of our auth context state with more accurate typing
 export interface AuthContextState {
   user: User | null;
-  firebaseUser: FirebaseUser | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -101,7 +98,6 @@ export interface ProviderSignInResult {
 // Create the context with a default value
 const AuthContext = createContext<AuthContextState>({
   user: null,
-  firebaseUser: null,
   isAuthenticated: false,
   loading: false,
   error: null,
@@ -127,7 +123,6 @@ export const useAuth = () => useContext(AuthContext);
 // Provider component that wraps app and provides auth context
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -353,14 +348,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const result = await loginWithEmail(email, password);
-      if (env.nativeAuth) {
-        setFirebaseUser(null);
-        debug.log('Native password login successful');
-      } else {
-        const fbUser = await getCurrentFirebaseUser();
-        setFirebaseUser(fbUser);
-        debug.log('Firebase login successful');
-      }
+      debug.log(env.nativeAuth ? 'Native password login successful' : 'Firebase login successful');
       setIsAuthenticated(true);
 
       if (result.user) {
@@ -406,12 +394,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         legal_acceptance: legalAcceptance,
       });
 
-      if (env.nativeAuth) {
-        setFirebaseUser(null);
-      } else {
+      if (!env.nativeAuth) {
         await completeFirebaseEmailRegistration(email, password);
-        const fbUser = await getCurrentFirebaseUser();
-        setFirebaseUser(fbUser);
       }
       debug.log(
         result.registration_resumed
@@ -463,8 +447,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const result = await loginWithGoogleService(legalAcceptance);
       debug.log('Google sign-in flow completed with result:', result);
 
-      const fbUser = await getCurrentFirebaseUser();
-      setFirebaseUser(fbUser);
       setIsAuthenticated(true);
 
       if (result.user) {
@@ -491,7 +473,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const applyNativeProviderSession = (result: PasswordAuthResponse): ProviderSignInResult => {
-    setFirebaseUser(null);
     setIsAuthenticated(true);
     setUser({ ...result.user, current_setup_step: result.current_setup_step });
     updateSetupState(result.current_setup_step);
@@ -548,7 +529,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       delete api.defaults.headers.common['Authorization'];
 
       setUser(null);
-      setFirebaseUser(null);
       setIsAuthenticated(false);
       setSetupStep(UserSetupStep.NONE);
       setSetupRoute(null);
@@ -563,7 +543,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await flushAuthStorage();
         delete api.defaults.headers.common['Authorization'];
         setUser(null);
-        setFirebaseUser(null);
         setIsAuthenticated(false);
         setSetupStep(UserSetupStep.NONE);
         setSetupRoute(null);
@@ -631,7 +610,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Provide the auth context value
   const value: AuthContextState = {
     user,
-    firebaseUser,
     isAuthenticated,
     loading,
     error,

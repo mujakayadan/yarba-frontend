@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
   nativeAuth: false,
+  nativeRuntime: false,
   refresh: vi.fn(),
   firebaseEmailLogin: vi.fn(),
   firebaseGoogleLogin: vi.fn(),
@@ -19,6 +20,10 @@ vi.mock('../config/env', () => ({
       return mocks.nativeAuth;
     },
   },
+}));
+
+vi.mock('../platform/nativeRuntime', () => ({
+  isNativeRuntime: () => mocks.nativeRuntime,
 }));
 
 vi.mock('./api', () => ({
@@ -78,6 +83,7 @@ describe('authService authentication adapters', () => {
     vi.clearAllMocks();
     localStorage.clear();
     mocks.nativeAuth = false;
+    mocks.nativeRuntime = false;
   });
 
   it('selects native password login and registration without Firebase', async () => {
@@ -150,11 +156,35 @@ describe('authService authentication adapters', () => {
     expect(mocks.refresh).toHaveBeenCalledTimes(1);
     expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
     expect(mocks.firebaseChangePassword).not.toHaveBeenCalled();
+    expect(mocks.firebaseLogout).not.toHaveBeenCalled();
+  });
+
+  it('signs Firebase out on native logout only in Capacitor', async () => {
+    mocks.nativeAuth = true;
+    mocks.nativeRuntime = true;
+    mocks.apiPost.mockResolvedValue({ data: { message: 'ok' } });
+
+    await logout();
+
+    expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
     expect(mocks.firebaseLogout).toHaveBeenCalledTimes(1);
   });
 
-  it('completes native local logout when backend and Firebase cleanup fail', async () => {
+  it('completes native local logout when backend cleanup fails', async () => {
     mocks.nativeAuth = true;
+    localStorage.setItem('auth_token', 'access-token');
+    mocks.apiPost.mockRejectedValue(new Error('Backend unavailable'));
+
+    await expect(logout()).resolves.toBeUndefined();
+
+    expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
+    expect(mocks.firebaseLogout).not.toHaveBeenCalled();
+    expect(localStorage.getItem('auth_token')).toBeNull();
+  });
+
+  it('completes Capacitor local logout when backend and Firebase cleanup fail', async () => {
+    mocks.nativeAuth = true;
+    mocks.nativeRuntime = true;
     localStorage.setItem('auth_token', 'access-token');
     mocks.apiPost.mockRejectedValue(new Error('Backend unavailable'));
     mocks.firebaseLogout.mockRejectedValue(new Error('Firebase unavailable'));
