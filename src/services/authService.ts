@@ -16,6 +16,7 @@ import type {
   User,
 } from '../types/models';
 import {
+  AUTH_ERROR_MESSAGES,
   ApiRequestError,
   extractApiErrorBody,
   normalizeAuthRequestError,
@@ -163,7 +164,11 @@ export const forgotPassword = async (email: string): Promise<void> => {
 
 export const resetPassword = async (token: string, newPassword: string): Promise<void> => {
   const request: ResetPasswordRequest = { token, new_password: newPassword };
-  await api.post<AuthActionResponse>('/auth/password/reset-password', request);
+  try {
+    await api.post<AuthActionResponse>('/auth/password/reset-password', request);
+  } catch (error: unknown) {
+    throw normalizeAuthRequestError(error, AUTH_ERROR_MESSAGES.invalid_or_expired_action_token);
+  }
 };
 
 export const requestEmailVerification = async (email: string): Promise<void> => {

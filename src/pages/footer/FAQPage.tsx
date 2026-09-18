@@ -10,6 +10,7 @@ import {
   Paper,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ACCOUNT_RECOVERY_TEXT } from '../../content/accountRecovery';
 
 const FAQPage: React.FC = () => {
   const faqItems = [
@@ -51,6 +52,10 @@ const FAQPage: React.FC = () => {
       question: 'How do I get started with YARBA?',
       answer:
         'Simply create an account, input your information, and follow the guided steps to create your first resume. The process is intuitive and designed to help you showcase your skills effectively.',
+    },
+    {
+      question: ACCOUNT_RECOVERY_TEXT.faqQuestion,
+      answer: ACCOUNT_RECOVERY_TEXT.faqAnswer,
     },
     {
       question: 'What if I need help using YARBA?',

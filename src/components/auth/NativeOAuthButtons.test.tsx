@@ -69,7 +69,9 @@ vi.mock('@react-oauth/google', () => ({
 
 import NativeOAuthButtons from './NativeOAuthButtons';
 import { ProviderPopupCancelledError } from '../../services/appleOAuthAdapter';
+import { ACCOUNT_RECOVERY_TEXT } from '../../content/accountRecovery';
 import { buildLegalAcceptance } from '../../services/legalService';
+import { ApiRequestError } from '../../utils/apiErrors';
 
 const defaultProps = () => ({
   disabled: false,
@@ -176,6 +178,29 @@ describe('NativeOAuthButtons', () => {
       isNewUser: false,
       setupRoute: '/dashboard',
     });
+  });
+
+  it('shows account-linking recovery instead of creating a second account', async () => {
+    const user = userEvent.setup();
+    const props = defaultProps();
+    props.onGoogleToken.mockRejectedValue(
+      new ApiRequestError(ACCOUNT_RECOVERY_TEXT.linkingRequired, {
+        errorCode: 'account_linking_required',
+        status: 409,
+      })
+    );
+    mocks.issueNonce.mockResolvedValue({ nonce: 'google-nonce', expires_in: 300 });
+
+    render(<NativeOAuthButtons {...props} />);
+    await user.click(await screen.findByRole('button', { name: 'Official Google' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      ACCOUNT_RECOVERY_TEXT.linkingRequired
+    );
+    expect(
+      screen.getByRole('link', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
+    ).toHaveAttribute('href', '/forgot-password');
+    expect(props.onAuthenticated).not.toHaveBeenCalled();
   });
 
   it('does not submit a new acceptance for a returning provider login', async () => {

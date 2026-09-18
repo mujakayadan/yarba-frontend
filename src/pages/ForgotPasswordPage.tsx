@@ -14,12 +14,15 @@ import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import Grid from '../mui/Grid';
 import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
+import AccountRecoveryHelp from '../components/auth/AccountRecoveryHelp';
+import { ACCOUNT_RECOVERY_TEXT } from '../content/accountRecovery';
 import { forgotPassword } from '../services/authService';
 import { extractApiErrorMessage } from '../utils/apiErrors';
 
 const PAGE_TEXT = {
   title: 'Forgot password?',
-  description: 'We’ll email reset instructions if that address has a YARBA account.',
+  description: ACCOUNT_RECOVERY_TEXT.forgotDescription,
+  notice: ACCOUNT_RECOVERY_TEXT.forgotNotice,
   emailLabel: 'Email address',
   emailRequired: 'Enter your email address.',
   submit: 'Send reset instructions',
@@ -188,6 +191,9 @@ const ForgotPasswordPage: React.FC = () => {
                 </>
               ) : (
                 <>
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    {PAGE_TEXT.notice}
+                  </Alert>
                   {error && !emailFieldError ? (
                     <Alert severity="error" sx={{ mb: 2 }}>
                       {error}
@@ -242,6 +248,9 @@ const ForgotPasswordPage: React.FC = () => {
                     <Link component={RouterLink} to="/login" variant="body2">
                       {PAGE_TEXT.backToSignIn}
                     </Link>
+                  </Box>
+                  <Box sx={{ mt: 2 }}>
+                    <AccountRecoveryHelp />
                   </Box>
                 </>
               )}

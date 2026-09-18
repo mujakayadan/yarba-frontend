@@ -8,7 +8,8 @@ import { ProviderPopupCancelledError, signInWithApple } from '../../services/app
 import { issueOAuthNonce } from '../../services/oauthService';
 import { buildLegalAcceptance } from '../../services/legalService';
 import type { LegalAcceptanceRequest } from '../../types/models';
-import { extractApiErrorMessage } from '../../utils/apiErrors';
+import { ApiRequestError, extractApiErrorMessage } from '../../utils/apiErrors';
+import AccountRecoveryHelp from './AccountRecoveryHelp';
 
 const OAUTH_UI_TEXT = {
   appleButton: 'Continue with Apple',
@@ -48,6 +49,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   const [googleNonceEpoch, setGoogleNonceEpoch] = useState(0);
   const [activeProvider, setActiveProvider] = useState<'google' | 'apple' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [linkingRequired, setLinkingRequired] = useState(false);
   const operationInFlight = useRef(false);
 
   const googleConfigured = Boolean(env.oauth.googleClientId);
@@ -78,6 +80,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
           return;
         }
         setGoogleNonce(null);
+        setLinkingRequired(false);
         setError(extractApiErrorMessage(nonceError, OAUTH_UI_TEXT.providerFailure));
       } finally {
         if (!cancelled) {
@@ -97,6 +100,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
       return;
     }
     setError(null);
+    setLinkingRequired(false);
     setGoogleNonceEpoch((current) => current + 1);
   };
 
@@ -106,6 +110,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     }
     if (!response.credential) {
       setGoogleNonce(null);
+      setLinkingRequired(false);
       setError(OAUTH_UI_TEXT.googleFailure);
       return;
     }
@@ -113,6 +118,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     operationInFlight.current = true;
     setActiveProvider('google');
     setError(null);
+    setLinkingRequired(false);
     try {
       const result = await onGoogleToken(
         response.credential,
@@ -122,6 +128,10 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
       onAuthenticated(result);
     } catch (exchangeError: unknown) {
       setGoogleNonce(null);
+      setLinkingRequired(
+        exchangeError instanceof ApiRequestError &&
+          exchangeError.errorCode === 'account_linking_required'
+      );
       setError(extractApiErrorMessage(exchangeError, OAUTH_UI_TEXT.providerFailure));
     } finally {
       operationInFlight.current = false;
@@ -131,6 +141,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
 
   const handleGoogleError = () => {
     setGoogleNonce(null);
+    setLinkingRequired(false);
     setError(OAUTH_UI_TEXT.googleFailure);
   };
 
@@ -147,6 +158,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     operationInFlight.current = true;
     setActiveProvider('apple');
     setError(null);
+    setLinkingRequired(false);
     try {
       const nonceResponse = await issueOAuthNonce('apple');
       const appleResult = await signInWithApple({
@@ -165,6 +177,10 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
         providerError instanceof ProviderPopupCancelledError
           ? OAUTH_UI_TEXT.appleCancelled
           : extractApiErrorMessage(providerError, OAUTH_UI_TEXT.appleFailure);
+      setLinkingRequired(
+        providerError instanceof ApiRequestError &&
+          providerError.errorCode === 'account_linking_required'
+      );
       setError(message);
     } finally {
       operationInFlight.current = false;
@@ -181,6 +197,11 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
       {error ? (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
+          {linkingRequired ? (
+            <Box sx={{ mt: 1.5 }}>
+              <AccountRecoveryHelp includeForgotPassword />
+            </Box>
+          ) : null}
         </Alert>
       ) : null}
       <Stack

@@ -8,6 +8,8 @@ import {
   requestEmailVerification,
   resetPassword,
 } from '../services/authService';
+import { ACCOUNT_RECOVERY_TEXT } from '../content/accountRecovery';
+import { ApiRequestError } from '../utils/apiErrors';
 import ResetPasswordPage from './ResetPasswordPage';
 import VerifyEmailPage from './VerifyEmailPage';
 
@@ -45,6 +47,46 @@ describe('password authentication landing pages', () => {
 
     expect(resetPassword).toHaveBeenCalledWith('reset-token', 'NewPassword1');
     expect(await screen.findByText(/password has been reset/i)).toBeInTheDocument();
+  });
+
+  it('offers a safe resend path when the reset token is missing', async () => {
+    render(
+      <MemoryRouter initialEntries={['/reset-password']}>
+        <ResetPasswordPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(ACCOUNT_RECOVERY_TEXT.resetMissing);
+    expect(
+      screen.getByRole('link', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
+    ).toHaveAttribute('href', '/forgot-password');
+    expect(screen.queryByLabelText(/^new password/i)).not.toBeInTheDocument();
+  });
+
+  it('replaces the form with recovery copy when the reset token is expired', async () => {
+    const user = userEvent.setup();
+    vi.mocked(resetPassword).mockRejectedValue(
+      new ApiRequestError(ACCOUNT_RECOVERY_TEXT.resetExpired, {
+        errorCode: 'invalid_or_expired_action_token',
+        status: 400,
+      })
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/reset-password?token=reset-token']}>
+        <ResetPasswordPage />
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText(/^new password/i), 'NewPassword1');
+    await user.type(screen.getByLabelText(/^confirm new password/i), 'NewPassword1');
+    await user.click(screen.getByRole('button', { name: /^reset password$/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(ACCOUNT_RECOVERY_TEXT.resetExpired);
+    expect(
+      screen.getByRole('link', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^new password/i)).not.toBeInTheDocument();
   });
 
   it('rejects reset passwords outside the native backend policy', async () => {
