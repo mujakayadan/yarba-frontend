@@ -59,7 +59,7 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Mobile (Capacitor)
 
-The same Vite build can be packaged for Android and iOS. App ID is `com.yarba.app`. See [docs/mobile/development.md](./docs/mobile/development.md) for the local workflow, [docs/mobile/environments.md](./docs/mobile/environments.md) for staging/production native env, [docs/mobile/billing-decision.md](./docs/mobile/billing-decision.md) for v1 billing, [docs/mobile/qa-matrix.md](./docs/mobile/qa-matrix.md) for release QA, and [docs/mobile/store-compliance-checklist.md](./docs/mobile/store-compliance-checklist.md) for store requirements.
+The same Vite build can be packaged for Android and iOS. App ID is `com.yarba.app`. See [docs/mobile/development.md](./docs/mobile/development.md) for the local workflow, [docs/mobile/environments.md](./docs/mobile/environments.md) for staging/production native env, [docs/mobile/billing-decision.md](./docs/mobile/billing-decision.md) for v1 billing, [docs/mobile/qa-matrix.md](./docs/mobile/qa-matrix.md) for release QA, [docs/mobile/release-runbook.md](./docs/mobile/release-runbook.md) for versioning and the debug APK workflow, and [docs/mobile/store-compliance-checklist.md](./docs/mobile/store-compliance-checklist.md) for store requirements.
 
 Android Studio is enough to run an emulator on Windows. A Mac is required for the iOS simulator. Apple Developer and Google Play accounts are not required for local runs; they are required before Sign in with Apple, signed builds, and store submission.
 
