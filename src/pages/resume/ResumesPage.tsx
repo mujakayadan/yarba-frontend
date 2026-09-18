@@ -52,6 +52,7 @@ import {
 } from '../../services/resumeService';
 import { Portfolio } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { useResumes } from '../../hooks/useResumes';
@@ -123,6 +124,7 @@ const ResumesPage: React.FC = () => {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
   const [updatingResume, setUpdatingResume] = useState(false);
   const pdfPreview = usePdfPreview();
+  const compactDialog = useCompactDialogProps();
   const [selectedResumeName, setSelectedResumeName] = useState<string>('');
   const generatingPdf = pdfOperation !== null;
   const isPdfPreviewLoading = (resumeId: string) =>
@@ -823,7 +825,7 @@ const ResumesPage: React.FC = () => {
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+      <Dialog {...compactDialog} open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Resume</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -847,10 +849,10 @@ const ResumesPage: React.FC = () => {
 
       {/* Portfolio Selection Dialog */}
       <Dialog
+        {...compactDialog}
         open={portfolioDialogOpen}
         onClose={() => setPortfolioDialogOpen(false)}
         maxWidth="sm"
-        fullWidth
       >
         <DialogTitle>Attach Portfolio to Resume</DialogTitle>
         <DialogContent>

@@ -49,6 +49,7 @@ import {
 } from '../../services/coverLetterService';
 import { CoverLetter } from '../../types/models';
 import { PdfPreviewDialog } from '../../components/common';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
 import { useToast } from '../../contexts/ToastContext';
 import { usePdfPreview } from '../../hooks/usePdfPreview';
 import { getResumeById } from '../../services/resumeService';
@@ -77,6 +78,7 @@ const CoverLettersPage: React.FC = () => {
   const [deletingCoverLetter, setDeletingCoverLetter] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const pdfPreview = usePdfPreview();
+  const compactDialog = useCompactDialogProps();
   const [selectedCoverLetterName, setSelectedCoverLetterName] = useState<string>('');
   const [resumeTitles, setResumeTitles] = useState<Record<string, string>>({});
 
@@ -691,6 +693,7 @@ const CoverLettersPage: React.FC = () => {
 
       {/* Delete confirmation dialog */}
       <Dialog
+        {...compactDialog}
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
         aria-labelledby="alert-dialog-title"

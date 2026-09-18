@@ -19,6 +19,7 @@ Provide a reviewer account with a completed portfolio and at least one resume. U
 | Native HTTP to the Yarba API                             | Shipped           | #21   | Authenticated API calls use Capacitor HTTP, not WebView CORS                                                                                                       |
 | Branded launch, icons, system bars, portrait, safe areas | Shipped           | #29   | Coral splash with the Yarba mark; header sits under the status bar; footer clears the home indicator                                                               |
 | On-screen keyboard inset                                 | Shipped           | #28   | Focused fields stay above the keyboard on long forms                                                                                                               |
+| Phone layouts, 44px targets, compact dialogs             | Shipped           | #28   | Resume/cover-letter actions stack on phones; delete dialogs go full-screen; drawer and overflow menus meet 44px targets                                            |
 | Native Google sign-in and Sign in with Apple             | Not in this build | #22   | Blocked on Apple Developer enrollment and Firebase cutover                                                                                                         |
 | Secure native session storage                            | Shipped           | #23   | JWT lives in Keychain / Keystore; leftover WebView `auth_token` is migrated once                                                                                   |
 | PDF preview, export, and system share sheet              | Shipped           | #24   | Resume and cover-letter PDFs preview in-app; Share PDF opens the system sheet                                                                                      |
@@ -38,5 +39,7 @@ v1 must ship the five App Review 4.2 integrations (#22–#26) before store submi
 5. Background the app, then return: an expired session should restore or sign out without a stuck spinner.
 6. Toggle airplane mode on a signed-in session: protected pages show Connection required with Try again. Reconnect and continue.
 7. Open Settings → Data & privacy (or Account & security → Delete account). Request deletion, type DELETE, and confirm the scheduled date. Cancel during the grace period if needed.
+8. Open a resume on a phone-width screen: actions should stack, not overflow. Delete confirmation should fill the screen.
+9. Open the nav drawer from the header; the menu control should be easy to tap.
 
 iOS Simulator verification still needs a Mac (#32).

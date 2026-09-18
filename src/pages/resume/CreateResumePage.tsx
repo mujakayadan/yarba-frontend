@@ -205,6 +205,10 @@ const CreateResumePage: React.FC = () => {
             onChange={handleTabChange}
             aria-label="resume creation tabs"
             variant="fullWidth"
+            sx={{
+              minHeight: 48,
+              '& .MuiTab-root': { minHeight: 48, minWidth: 0, px: 1 },
+            }}
           >
             <Tab label="Job Description" id="resume-creation-tab-0" />
             <Tab label="Job URL" id="resume-creation-tab-1" />

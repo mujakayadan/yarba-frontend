@@ -44,6 +44,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { DISPLAY_FONT_FAMILY } from '../../theme/fonts';
 import { headerGradient } from '../../theme/tokens';
 import { brandedAppBarHeight, SAFE_AREA } from '../../theme/safeArea';
+import { touchTargetSx } from '../../theme/mobileUi';
 import Footer from './Footer';
 import { ProfileMenuAppearance } from './ProfileMenuAppearance';
 import {
@@ -270,7 +271,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, hideDrawer = false })
               aria-label="open drawer"
               edge="start"
               onClick={toggleDrawer}
-              sx={{ mr: 2, display: !user ? 'none' : { sm: 'block', md: 'none' } }}
+              sx={{
+                mr: 2,
+                display: !user ? 'none' : { sm: 'block', md: 'none' },
+                ...touchTargetSx,
+              }}
             >
               <MenuIcon />
             </IconButton>

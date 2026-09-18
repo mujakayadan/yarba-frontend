@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, ButtonBase, IconButton, Paper, Typography } from '@mui/material';
+import { touchTargetSx } from '../../theme/mobileUi';
 
 const CardCopy: React.FC<{
   title: string;
@@ -108,7 +109,7 @@ export const MoreOptionsButton: React.FC<MoreOptionsButtonProps> = ({
   onClick,
   children,
 }) => (
-  <IconButton aria-label={label} onClick={onClick} size="small">
+  <IconButton aria-label={label} onClick={onClick} sx={touchTargetSx}>
     {children}
   </IconButton>
 );

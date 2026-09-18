@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ViewPageHeader } from '../../components/common/ViewPageHeader';
+import { useCompactDialogProps } from '../../components/common/useCompactDialog';
 import ProfileEditPage from '../profile/ProfileEditPage';
 import UserPage from '../user/UserPage';
 import DataPrivacySettings from '../../components/settings/DataPrivacySettings';
@@ -125,6 +126,7 @@ const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const compactDialog = useCompactDialogProps();
   const section = getSection(sectionSlug);
   const [settingsDirty, setSettingsDirty] = useState(false);
   const [pendingSection, setPendingSection] = useState<string | null>(null);
@@ -319,7 +321,11 @@ const SettingsPage: React.FC = () => {
         </Box>
       </Paper>
 
-      <Dialog open={pendingSection !== null} onClose={() => setPendingSection(null)}>
+      <Dialog
+        {...compactDialog}
+        open={pendingSection !== null}
+        onClose={() => setPendingSection(null)}
+      >
         <DialogTitle>Discard unsaved changes?</DialogTitle>
         <DialogContent>
           Changes in this settings section have not been saved. Stay here to save them, or discard
