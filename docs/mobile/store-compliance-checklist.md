@@ -112,7 +112,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Phone UX for core flows                            | Pass   | #28 — cards on lists, keyboard inset, stacked view actions, 44px targets; iOS Simulator still needs a Mac                              |
 | Billing decision recorded                          | Pass   | #31 — v1 is free; no StoreKit/Play Billing; paid unlocks would be a later epic                                                         |
 | QA matrix + adapter tests                          | Fail   | #32 — Vitest adapters Pass; Android prior-PR evidence recorded; iOS, TalkBack/VoiceOver, and native Google/Apple still open            |
-| Signed TestFlight / Play testing builds            | Fail   | #33 — needs store accounts                                                                                                             |
+| Signed TestFlight / Play testing builds            | Fail   | #33 — debug APK workflow + runbook on main; signed AAB/TestFlight still need store accounts                                            |
 | Store listings and review notes                    | Fail   | #34                                                                                                                                    |
 
 ## External links
