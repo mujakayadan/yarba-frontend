@@ -16,6 +16,8 @@ npm run format:check
 npm run build
 npm test
 npm run cap:sync
+npm run cap:sync:staging
+npm run cap:sync:production
 ```
 
 ## Conventions

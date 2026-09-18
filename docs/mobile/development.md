@@ -27,14 +27,16 @@ Yarba packages the existing Vite/React app with Capacitor 8. The web app on Verc
 
 ## Commands
 
-| Command               | Description                                               |
-| --------------------- | --------------------------------------------------------- |
-| `npm run build`       | Type-check and compile web assets into `build/`           |
-| `npm run cap:sync`    | Copy `build/` into the native projects and update plugins |
-| `npm run cap:android` | Build, sync, and open Android Studio                      |
-| `npm run cap:ios`     | Build, sync, and open Xcode (macOS)                       |
-| `npx cap run android` | Sync and launch on a running emulator/device              |
-| `npx cap run ios`     | Sync and launch on a simulator (macOS)                    |
+| Command                       | Description                                                 |
+| ----------------------------- | ----------------------------------------------------------- |
+| `npm run build`               | Type-check and compile web assets into `build/`             |
+| `npm run cap:sync`            | Copy `build/` into the native projects (bakes `.env.local`) |
+| `npm run cap:sync:staging`    | Same, using `.env.native-staging.local`                     |
+| `npm run cap:sync:production` | Same, using `.env.native-production.local`                  |
+| `npm run cap:android`         | Build, sync, and open Android Studio                        |
+| `npm run cap:ios`             | Build, sync, and open Xcode (macOS)                         |
+| `npx cap run android`         | Sync and launch on a running emulator/device                |
+| `npx cap run ios`             | Sync and launch on a simulator (macOS)                      |
 
 Typical Android loop on Windows:
 
@@ -49,7 +51,7 @@ npx cap run android
 ## Configuration
 
 - `capacitor.config.ts` — app ID, display name, `webDir`. `CapacitorHttp` is enabled so native builds call the API through the Android/iOS stack and skip WebView CORS.
-- Web env still uses `VITE_*` via `src/config/env.ts`. Native builds bake the env from the machine that ran `npm run build` (this repo’s production build uses the hosted API, not `localhost:8000`).
+- Staging vs production native env: [environments.md](./environments.md). Local emulator still uses `npm run cap:sync` with `.env.local`. Device/store builds use `cap:sync:staging` or `cap:sync:production` so localhost web env cannot leak into the bundle.
 - On Android, `http://localhost` / `127.0.0.1` in `VITE_API_URL` is rewritten to `http://10.0.2.2` (the host machine from the emulator). That rewrite only applies when the baked URL is actually localhost.
 - Capacitor’s WebView origin is `https://localhost`. If you disable `CapacitorHttp`, the API must allow that origin (`API_CORS_ORIGINS` should include `https://localhost` and `capacitor://localhost`).
 - `index.html` uses `viewport-fit=cover` so notch and home-indicator insets (`env(safe-area-inset-*)`) apply to the header, drawer, and footer.
