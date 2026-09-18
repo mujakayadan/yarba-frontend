@@ -100,6 +100,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Apple Developer Program enrolled                   | Fail   | Operator — enroll before #22/#33/#34                                                                                                   |
 | Google Play Console enrolled                       | Fail   | Operator — $25; personal accounts also need a 12-tester / 14-day closed test before production                                         |
 | Capacitor iOS + Android projects                   | Pass   | #20                                                                                                                                    |
+| Staging/production native env documented           | Pass   | #21 — `cap:sync:staging` / `cap:sync:production`; Firebase Console apps and iOS connectivity still operator/Mac                        |
 | Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                                                           |
 | Secure native token storage                        | Pass   | #23 — Keychain / Keystore; iOS Simulator still needs a Mac                                                                             |
 | Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                                                             |

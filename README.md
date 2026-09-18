@@ -59,24 +59,26 @@ See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
 
 ## Mobile (Capacitor)
 
-The same Vite build can be packaged for Android and iOS. App ID is `com.yarba.app`. See [docs/mobile/development.md](./docs/mobile/development.md) for the local workflow and [docs/mobile/store-compliance-checklist.md](./docs/mobile/store-compliance-checklist.md) for store requirements.
+The same Vite build can be packaged for Android and iOS. App ID is `com.yarba.app`. See [docs/mobile/development.md](./docs/mobile/development.md) for the local workflow, [docs/mobile/environments.md](./docs/mobile/environments.md) for staging/production native env, and [docs/mobile/store-compliance-checklist.md](./docs/mobile/store-compliance-checklist.md) for store requirements.
 
 Android Studio is enough to run an emulator on Windows. A Mac is required for the iOS simulator. Apple Developer and Google Play accounts are not required for local runs; they are required before Sign in with Apple, signed builds, and store submission.
 
 ## Scripts
 
-| Command                     | Description                                       |
-| --------------------------- | ------------------------------------------------- |
-| `npm start` / `npm run dev` | Vite dev server (port 3000)                       |
-| `npm run build`             | Type-check + production build                     |
-| `npm run preview`           | Preview production build locally                  |
-| `npm test`                  | Run Vitest tests                                  |
-| `npm run lint`              | ESLint                                            |
-| `npm run format`            | Prettier (write)                                  |
-| `npm run format:check`      | Prettier (check only)                             |
-| `npm run cap:sync`          | Copy `build/` into Capacitor iOS/Android projects |
-| `npm run cap:android`       | Build, sync, and open Android Studio              |
-| `npm run cap:ios`           | Build, sync, and open Xcode (macOS)               |
+| Command                       | Description                                                      |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `npm start` / `npm run dev`   | Vite dev server (port 3000)                                      |
+| `npm run build`               | Type-check + production build                                    |
+| `npm run preview`             | Preview production build locally                                 |
+| `npm test`                    | Run Vitest tests                                                 |
+| `npm run lint`                | ESLint                                                           |
+| `npm run format`              | Prettier (write)                                                 |
+| `npm run format:check`        | Prettier (check only)                                            |
+| `npm run cap:sync`            | Copy `build/` into Capacitor iOS/Android projects (`.env.local`) |
+| `npm run cap:sync:staging`    | Native sync using `.env.native-staging.local`                    |
+| `npm run cap:sync:production` | Native sync using `.env.native-production.local`                 |
+| `npm run cap:android`         | Build, sync, and open Android Studio                             |
+| `npm run cap:ios`             | Build, sync, and open Xcode (macOS)                              |
 
 ## Stack
 

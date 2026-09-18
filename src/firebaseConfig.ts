@@ -2,9 +2,13 @@ import type { FirebaseApp } from 'firebase/app';
 import type { Analytics } from 'firebase/analytics';
 import type { Auth } from 'firebase/auth';
 import { env } from './config/env';
+import { isNativeRuntime } from './platform/nativeRuntime';
 import { createDebugger } from './utils/debug';
 
 const debug = createDebugger('Firebase');
+
+export const shouldEnableFirebaseAnalytics = (supported: boolean, native: boolean): boolean =>
+  supported && !native;
 
 type FirebaseBundle = {
   app: FirebaseApp;
@@ -70,7 +74,7 @@ const initFirebase = async (): Promise<FirebaseBundle> => {
   let analytics: Analytics | null = null;
   isSupported()
     .then((supported) => {
-      if (supported) {
+      if (shouldEnableFirebaseAnalytics(supported, isNativeRuntime())) {
         analytics = getAnalytics(app);
         debug.log('Firebase Analytics initialized');
       } else {
