@@ -16,12 +16,13 @@ Owner: Muja Kayadan. Contact: `admin@yarba.app`.
 | Field            | Value                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
 | App name         | Yarba                                                                    |
+| Package name     | `com.yarba.app`                                                          |
 | Default language | English (United States)                                                  |
 | App or game      | App                                                                      |
 | Free or paid     | Free                                                                     |
 | Declarations     | Accept Play policies, US export laws, and the privacy-policy requirement |
 
-Package name when you upload: `com.yarba.app`.
+Type the package name exactly as `com.yarba.app`. It must match Android `applicationId` and Capacitor `appId`. Play locks it after the first AAB upload; do not invent a different id.
 
 Personal accounts must finish a **closed test with 12 testers for 14 days** before production. Start that as soon as a signed AAB exists. Do not wait for an LLC.
 
@@ -30,6 +31,7 @@ Personal accounts must finish a **closed test with 12 testers for 14 days** befo
 | Field                  | Value                                                               |
 | ---------------------- | ------------------------------------------------------------------- |
 | App name (30)          | `Yarba`                                                             |
+| Package name           | `com.yarba.app`                                                     |
 | Short description (80) | `Build AI-tailored resumes, cover letters, and a public portfolio.` |
 | Category               | Productivity                                                        |
 | Tags                   | resume, career, productivity                                        |
