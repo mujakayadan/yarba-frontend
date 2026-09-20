@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ACCOUNT_RECOVERY_TEXT } from '../content/accountRecovery';
 import type { ApiErrorResponse } from '../types/models';
 
 type ValidationErrorDetail = {
@@ -14,8 +15,8 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   account_exists_use_login:
     'An account with this email already exists. Sign in with Google or your social provider.',
   firebase_registration_failed: 'Registration failed. Please try again later.',
-  account_linking_required:
-    'This Google account does not match an existing Yarba login. Sign in with email instead.',
+  account_linking_required: ACCOUNT_RECOVERY_TEXT.linkingRequired,
+  invalid_or_expired_action_token: ACCOUNT_RECOVERY_TEXT.resetExpired,
   invalid_oauth_nonce: 'Google sign-in expired. Please try again.',
   invalid_provider_token: 'Google sign-in could not be verified. Please try again.',
   oauth_not_configured: 'Google sign-in is unavailable right now. Use email instead.',
@@ -43,6 +44,11 @@ export const extractApiErrorBody = (data: unknown): ApiErrorResponse | null => {
   return null;
 };
 
+const INVALID_ACTION_TOKEN_MESSAGE = /invalid or expired action token/i;
+
+export const isInvalidActionTokenMessage = (message: string | undefined): boolean =>
+  Boolean(message && INVALID_ACTION_TOKEN_MESSAGE.test(message));
+
 export const resolveAuthErrorMessage = (
   body: ApiErrorResponse | null,
   fallback: string
@@ -50,6 +56,13 @@ export const resolveAuthErrorMessage = (
   const errorCode = body?.error_code;
   if (errorCode && AUTH_ERROR_MESSAGES[errorCode]) {
     return { message: AUTH_ERROR_MESSAGES[errorCode], errorCode };
+  }
+
+  if (isInvalidActionTokenMessage(body?.message)) {
+    return {
+      message: AUTH_ERROR_MESSAGES.invalid_or_expired_action_token,
+      errorCode: errorCode ?? 'invalid_or_expired_action_token',
+    };
   }
 
   const detailMessage = formatValidationDetail(body?.detail);
@@ -130,6 +143,13 @@ export const extractApiErrorMessage = (err: unknown, fallback: string): string =
 
   const error = err as { response?: { data?: ApiErrorResponse }; message?: string };
   const body = extractApiErrorBody(error.response?.data);
+  const mappedCode = body?.error_code;
+  if (mappedCode && AUTH_ERROR_MESSAGES[mappedCode]) {
+    return AUTH_ERROR_MESSAGES[mappedCode];
+  }
+  if (isInvalidActionTokenMessage(body?.message) || isInvalidActionTokenMessage(error.message)) {
+    return AUTH_ERROR_MESSAGES.invalid_or_expired_action_token;
+  }
 
   if (body?.message) {
     return body.message;

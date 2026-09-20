@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ACCOUNT_RECOVERY_TEXT } from '../../content/accountRecovery';
 import { NATIVE_PASSWORD_POLICY_MESSAGE } from '../../utils/passwordPolicy';
 import { buildLegalAcceptance } from '../../services/legalService';
 
@@ -87,6 +88,10 @@ describe('registration password policy', () => {
     );
 
     expect(screen.getByText('Direct provider authentication')).toBeInTheDocument();
+    expect(screen.getByText(ACCOUNT_RECOVERY_TEXT.returningUserNotice)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
+    ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /continue with google/i })).not.toBeInTheDocument();
   });
 

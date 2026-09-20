@@ -17,12 +17,15 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import Grid from '../mui/Grid';
 import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
+import AccountRecoveryHelp from '../components/auth/AccountRecoveryHelp';
+import { ACCOUNT_RECOVERY_TEXT } from '../content/accountRecovery';
 import { resetPassword } from '../services/authService';
-import { extractApiErrorMessage } from '../utils/apiErrors';
+import { AUTH_ERROR_MESSAGES, extractApiErrorMessage } from '../utils/apiErrors';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../utils/passwordPolicy';
 
 const PAGE_TEXT = {
   title: 'Choose a new password',
+  recoveryTitle: 'Request a new reset link',
   description: 'Pick a password you have not used on YARBA before.',
   newPasswordLabel: 'New password',
   confirmPasswordLabel: 'Confirm new password',
@@ -32,10 +35,10 @@ const PAGE_TEXT = {
   submitting: 'Resetting…',
   success: 'Your password has been reset. You can now sign in.',
   continueToSignIn: 'Continue to sign in',
-  requestNewLink: 'Request a new reset link',
-  missingLink: 'This password reset link is invalid or incomplete.',
+  requestNewLink: ACCOUNT_RECOVERY_TEXT.requestNewPassword,
+  missingLink: ACCOUNT_RECOVERY_TEXT.resetMissing,
   mismatch: 'Passwords do not match.',
-  submitError: 'Unable to reset your password. The link may have expired.',
+  submitError: AUTH_ERROR_MESSAGES.invalid_or_expired_action_token,
 } as const;
 
 const ResetPasswordPage: React.FC = () => {
@@ -46,6 +49,7 @@ const ResetPasswordPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [linkUnusable, setLinkUnusable] = useState(!token);
   const [error, setError] = useState<string | null>(token ? null : PAGE_TEXT.missingLink);
 
   useEffect(() => {
@@ -83,7 +87,11 @@ const ResetPasswordPage: React.FC = () => {
       setNewPassword('');
       setConfirmPassword('');
     } catch (submitError: unknown) {
-      setError(extractApiErrorMessage(submitError, PAGE_TEXT.submitError));
+      const message = extractApiErrorMessage(submitError, PAGE_TEXT.submitError);
+      setError(message);
+      if (message === PAGE_TEXT.submitError || message === PAGE_TEXT.missingLink) {
+        setLinkUnusable(true);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -173,10 +181,12 @@ const ResetPasswordPage: React.FC = () => {
               }}
             >
               <Typography component="h1" variant="h4" sx={{ mb: 1 }}>
-                {PAGE_TEXT.title}
+                {success || !linkUnusable ? PAGE_TEXT.title : PAGE_TEXT.recoveryTitle}
               </Typography>
               <Typography sx={{ color: 'text.secondary', mb: 3 }}>
-                {PAGE_TEXT.description}
+                {success || !linkUnusable
+                  ? PAGE_TEXT.description
+                  : (error ?? PAGE_TEXT.missingLink)}
               </Typography>
 
               {success ? (
@@ -193,6 +203,24 @@ const ResetPasswordPage: React.FC = () => {
                   >
                     {PAGE_TEXT.continueToSignIn}
                   </Button>
+                </>
+              ) : linkUnusable ? (
+                <>
+                  <Alert severity="error" sx={{ mb: 2 }} role="alert">
+                    {error ?? PAGE_TEXT.missingLink}
+                  </Alert>
+                  <Button
+                    component={RouterLink}
+                    to="/forgot-password"
+                    variant="contained"
+                    fullWidth
+                    sx={{ minHeight: 44 }}
+                  >
+                    {PAGE_TEXT.requestNewLink}
+                  </Button>
+                  <Box sx={{ mt: 3 }}>
+                    <AccountRecoveryHelp />
+                  </Box>
                 </>
               ) : (
                 <>
