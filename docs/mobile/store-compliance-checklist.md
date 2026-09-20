@@ -4,9 +4,10 @@ Baseline recorded **9 September 2026** against current Apple and Google requirem
 Owner: Muja Kayadan. Re-check official sources before the first store submission.
 
 **Account status:** no Apple Developer Program and no Google Play Console account yet.
-Local Android work can proceed without them. iOS simulator builds need a Mac.
-Store listing, signing identities, TestFlight, Play testing, and Sign in with Apple
-capability stay blocked until those accounts exist.
+Ship Play first as an **individual** (no company). Local Android work can proceed
+without accounts. iOS simulator builds need a Mac. Play listing answers are filled
+in [play-console-answers.md](./play-console-answers.md). TestFlight and Sign in with
+Apple stay blocked until the Apple Developer Program exists.
 
 ## Sign in with Apple
 
@@ -95,10 +96,10 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Versioned legal pages and acceptance               | Pass   | Frontend #45 / backend #46 software (counsel review still external)                                                                    |
 | In-app account deletion API + Settings UI          | Pass   | Existing `/account/deletion`                                                                                                           |
 | Public abuse report                                | Pass   | `/report`                                                                                                                              |
-| Privacy / Data safety inventory drafted            | Pass   | This document                                                                                                                          |
+| Privacy / Data safety inventory drafted            | Pass   | This document + [play-console-answers.md](./play-console-answers.md)                                                                   |
 | Sign in with Apple approach documented             | Pass   | This document                                                                                                                          |
 | Apple Developer Program enrolled                   | Fail   | Operator — enroll before #22/#33/#34                                                                                                   |
-| Google Play Console enrolled                       | Fail   | Operator — $25; personal accounts also need a 12-tester / 14-day closed test before production                                         |
+| Google Play Console enrolled                       | Fail   | Operator — individual account, $25; then 12 testers / 14-day closed test. Form answers are ready to paste                              |
 | Capacitor iOS + Android projects                   | Pass   | #20                                                                                                                                    |
 | Staging/production native env documented           | Pass   | #21 — `cap:sync:staging` / `cap:sync:production`; Firebase Console apps and iOS connectivity still operator/Mac                        |
 | Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                                                           |
@@ -113,7 +114,7 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Billing decision recorded                          | Pass   | #31 — v1 is free; no StoreKit/Play Billing; paid unlocks would be a later epic                                                         |
 | QA matrix + adapter tests                          | Fail   | #32 — Vitest adapters Pass; Android prior-PR evidence recorded; iOS, TalkBack/VoiceOver, and native Google/Apple still open            |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — debug APK workflow + runbook on main; signed AAB/TestFlight still need store accounts                                            |
-| Store listings and review notes                    | Fail   | #34 — listing copy + launch checklist drafted; store records, screenshots, beta, and submit still need accounts                        |
+| Store listings and review notes                    | Pass   | #34 — Play answers filled; operator still enrolls, uploads screenshots/AAB, and runs closed testing                                    |
 
 ## External links
 

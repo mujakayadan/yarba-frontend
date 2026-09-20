@@ -1,6 +1,8 @@
 # App Store and Google Play review notes
 
-Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after the integrations marked **Shipped** match the build under review. Do not claim native Google/Apple sign-in until #22 lands. Listing copy: [store-listing-copy.md](./store-listing-copy.md). Launch steps: [launch-checklist.md](./launch-checklist.md).
+Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Play Console form answers: [play-console-answers.md](./play-console-answers.md). Listing copy: [store-listing-copy.md](./store-listing-copy.md). Launch steps: [launch-checklist.md](./launch-checklist.md).
+
+Paste into Play Console after the integrations marked **Shipped** match the Android build. Do not claim native Google/Apple sign-in until #22 lands. Android can go to closed testing without #22.
 
 Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab. This build is free; there are no in-app purchases.
 
@@ -28,7 +30,7 @@ Provide a reviewer account with a completed portfolio and at least one resume. U
 | Lifecycle, connectivity, and splash until ready          | Shipped           | #27   | Resume refreshes the session; airplane mode shows Connection required; splash hides after the first usable React frame                                                               |
 | Account deletion and privacy disclosures                 | Shipped           | #30   | Settings → Data & privacy → Request account deletion. Type `DELETE`. Password accounts also enter the current password. 7-day grace period can be cancelled in-app                   |
 
-v1 must ship the five App Review 4.2 integrations (#22–#26) before store submit. #29 is the branded shell those plugins sit in.
+Apple App Review 4.2 still wants native integrations #22–#26 before an iOS submit. Play does not require Sign in with Apple. #29 is the branded shell those plugins sit in.
 
 ## How to exercise the current shell
 
