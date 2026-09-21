@@ -2,21 +2,30 @@
 
 Operational path for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Owner: Muja Kayadan.
 
-Listing copy: [store-listing-copy.md](./store-listing-copy.md). Review notes: [app-review-notes.md](./app-review-notes.md). Signing: [release-runbook.md](./release-runbook.md). QA: [qa-matrix.md](./qa-matrix.md).
+Listing copy: [store-listing-copy.md](./store-listing-copy.md). Play Console paste pack: [play-console-answers.md](./play-console-answers.md). Review notes: [app-review-notes.md](./app-review-notes.md). Signing: [release-runbook.md](./release-runbook.md). QA: [qa-matrix.md](./qa-matrix.md).
 
-## Before first submit
+Ship **Google Play first** as an individual. Apple can wait.
+
+## Android first
+
+- [ ] Google Play Console enrolled as **Individual** ($25)
+- [ ] App record `com.yarba.app`; paste [play-console-answers.md](./play-console-answers.md)
+- [ ] Listing does **not** claim native Google / Sign in with Apple ([#22](https://github.com/mujakayadan/yarba-frontend/issues/22))
+- [ ] Data safety matches the Play answers (no native analytics, no ads, deletion in-app)
+- [ ] Feature graphic 1024×500, icon 512×512, phone screenshots of the production UI
+- [ ] Support, Privacy, and Terms URLs load
+- [ ] Reviewer account filled in [app-review-notes.md](./app-review-notes.md)
+- [ ] Signed AAB uploaded to **closed testing** ([#33](https://github.com/mujakayadan/yarba-frontend/issues/33))
+- [ ] 12 testers opted in for 14 days
+- [ ] Then apply for production
+
+## Before iOS submit (later)
 
 - [ ] Apple Developer Program enrolled
-- [ ] Google Play Console enrolled (personal accounts: 12 testers / 14-day closed test before production)
-- [ ] App records use `com.yarba.app`
 - [ ] [#22](https://github.com/mujakayadan/yarba-frontend/issues/22) native Google + Sign in with Apple, **or** listing copy still says they are not in the build
-- [ ] [#21](https://github.com/mujakayadan/yarba-frontend/issues/21) Firebase iOS/Android apps + iOS API proof
-- [ ] [#32](https://github.com/mujakayadan/yarba-frontend/issues/32) iOS Simulator, TalkBack, VoiceOver
-- [ ] [#33](https://github.com/mujakayadan/yarba-frontend/issues/33) signed AAB + TestFlight
-- [ ] Privacy / Data safety forms match the inventory
-- [ ] Screenshots are the production UI
-- [ ] Reviewer account filled in app-review-notes.md and can complete the exercise steps
-- [ ] Support, Privacy, and Terms URLs load
+- [ ] [#21](https://github.com/mujakayadan/yarba-frontend/issues/21) Firebase iOS app + iOS API proof
+- [ ] [#32](https://github.com/mujakayadan/yarba-frontend/issues/32) iOS Simulator, VoiceOver
+- [ ] TestFlight build
 
 ## Beta
 

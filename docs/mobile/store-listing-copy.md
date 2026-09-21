@@ -1,6 +1,8 @@
 # Store listing copy
 
-Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste into App Store Connect / Play Console only after store accounts exist and the build under review matches [app-review-notes.md](./app-review-notes.md). **v1 is free.** Do not mention in-app purchases or “buy on the website.”
+Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). **v1 is free.** Do not mention in-app purchases or “buy on the website.”
+
+Google Play answers (individual account, Data safety, IARC): [play-console-answers.md](./play-console-answers.md). Review notes: [app-review-notes.md](./app-review-notes.md).
 
 **Do not claim Sign in with Apple or native Google sign-in until [#22](https://github.com/mujakayadan/yarba-frontend/issues/22).**
 
@@ -11,6 +13,7 @@ Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Paste 
 | Name              | Yarba                                                                           |
 | Bundle / package  | `com.yarba.app`                                                                 |
 | Price             | Free                                                                            |
+| Play account      | Individual / personal (no company)                                              |
 | Developer contact | `admin@yarba.app`                                                               |
 | Support URL       | https://yarba.app/support                                                       |
 | Privacy URL       | https://yarba.app/privacy                                                       |
@@ -66,7 +69,7 @@ The app uses the internet to reach the Yarba API. It does not use the camera. Do
 
 ## Content rating / Data safety
 
-Use [store-compliance-checklist.md](./store-compliance-checklist.md) for the privacy inventory.
+Filled answers: [play-console-answers.md](./play-console-answers.md). Inventory: [store-compliance-checklist.md](./store-compliance-checklist.md).
 
 - User-generated public portfolios exist; abuse reports go to `/report`
 - No ads, no sale of personal information, no IAP
@@ -78,12 +81,13 @@ Use [store-compliance-checklist.md](./store-compliance-checklist.md) for the pri
 
 Capture the **production** UI on a phone, not a desktop browser window.
 
-Need at least: login, dashboard or resume list (cards), resume PDF preview, Settings → Data & privacy. iPhone SE-class and a current large iPhone; Play phone screenshots at the Console’s current required sizes. iPad is not a v1 target.
+Need at least: login, dashboard or resume list (cards), resume PDF preview, Settings → Data & privacy. Play phone screenshots at the Console’s current required sizes. iPhone shots wait on a Mac. iPad is not a v1 target.
 
-## Leftover (blocked)
+## Leftover (operator)
 
-- Create the App Store Connect and Play Console records
-- Upload screenshots and store artwork
+- Enroll Play Console as an individual and paste [play-console-answers.md](./play-console-answers.md)
+- Upload feature graphic, 512 icon, and phone screenshots
 - Reviewer demo account (fill [app-review-notes.md](./app-review-notes.md))
-- TestFlight / Play closed testing
+- Closed test: 12 testers / 14 days, then production
+- App Store Connect / TestFlight — separate, needs Apple Developer
 - Crash reporter — not in v1; do not add an SDK without updating privacy copy
