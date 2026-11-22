@@ -16,13 +16,13 @@ Copy `.env.native-staging.example` → `.env.native-staging.local` and `.env.nat
 
 ## Ownership
 
-| Concern                                                           | Owner          | Where                                                                                                                                           |
-| ----------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| API, CloudFront, Google web client ID, Apple web env | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
-| Capacitor HTTP (skips WebView CORS)                               | Frontend       | `capacitor.config.ts` `plugins.CapacitorHttp`                                                                                                   |
-| WebView CORS if Capacitor HTTP is ever disabled                   | Backend        | `API_CORS_ORIGINS` must include `https://localhost` and `capacitor://localhost` — [yarba-backend](https://github.com/mujakayadan/yarba-backend) |
-| Android Google OAuth client (`com.yarba.app` + SHA-1)             | Operator       | Google Cloud Console only. Not a `VITE_*` variable. Debug SHA-1 for local builds; Play signing SHA-1 for store builds                            |
-| TLS for API and CloudFront                                        | Backend / CDN  | Native WebViews must load HTTPS images and JSON with valid certificates                                                                         |
+| Concern                                               | Owner          | Where                                                                                                                                           |
+| ----------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| API, CloudFront, Google web client ID, Apple web env  | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
+| Capacitor HTTP (skips WebView CORS)                   | Frontend       | `capacitor.config.ts` `plugins.CapacitorHttp`                                                                                                   |
+| WebView CORS if Capacitor HTTP is ever disabled       | Backend        | `API_CORS_ORIGINS` must include `https://localhost` and `capacitor://localhost` — [yarba-backend](https://github.com/mujakayadan/yarba-backend) |
+| Android Google OAuth client (`com.yarba.app` + SHA-1) | Operator       | Google Cloud Console only. Not a `VITE_*` variable. Debug SHA-1 for local builds; Play signing SHA-1 for store builds                           |
+| TLS for API and CloudFront                            | Backend / CDN  | Native WebViews must load HTTPS images and JSON with valid certificates                                                                         |
 
 No backend CORS change is required while Capacitor HTTP stays enabled.
 
