@@ -6,16 +6,11 @@ import { ProviderPopupCancelledError } from './appleOAuthAdapter';
 let initializePromise: Promise<void> | null = null;
 
 const isGoogleCancellation = (error: unknown): boolean => {
-  if (typeof error !== 'object' || error === null) {
+  if (typeof error !== 'object' || error === null || !('code' in error)) {
     return false;
   }
-  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
-  const message = 'message' in error && typeof error.message === 'string' ? error.message : '';
-  return (
-    code === 'USER_CANCELLED' ||
-    code.toLowerCase().includes('cancel') ||
-    message.toLowerCase().includes('cancel')
-  );
+  const code = typeof error.code === 'string' ? error.code.toUpperCase() : '';
+  return code === 'USER_CANCELLED' || code.endsWith('_CANCELLED') || code.endsWith('_CANCELED');
 };
 
 const ensureGoogleInitialized = async (): Promise<void> => {
@@ -41,6 +36,9 @@ const ensureGoogleInitialized = async (): Promise<void> => {
 export const signInWithGoogleIdToken = async (rawNonce: string): Promise<string> => {
   if (!isNativeRuntime()) {
     throw new Error('Native Google sign-in is only available in the Capacitor app.');
+  }
+  if (!rawNonce.trim()) {
+    throw new Error('Google sign-in requires a backend nonce.');
   }
 
   await ensureGoogleInitialized();
