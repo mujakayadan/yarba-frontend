@@ -24,6 +24,14 @@ describe('capacitor config', () => {
       style: 'DARK',
       hidden: false,
     });
+    expect(config.plugins?.SocialLogin).toEqual({
+      providers: {
+        google: true,
+        facebook: false,
+        apple: false,
+        twitter: false,
+      },
+    });
   });
 
   it('uses the audited Android and iOS SDK floors', () => {

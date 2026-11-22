@@ -7,17 +7,15 @@ const mocks = vi.hoisted(() => ({
   googleClientId: 'google-client-id',
   appleServiceId: 'apple-service-id',
   appleRedirectUri: 'https://example.com/login',
-  nativeOAuth: true,
+  nativeRuntime: false,
   issueNonce: vi.fn(),
   signInWithApple: vi.fn(),
+  signInWithGoogleIdToken: vi.fn(),
 }));
 
 vi.mock('../../config/env', () => ({
   isDev: false,
   env: {
-    get nativeOAuth() {
-      return mocks.nativeOAuth;
-    },
     oauth: {
       get googleClientId() {
         return mocks.googleClientId || undefined;
@@ -32,6 +30,10 @@ vi.mock('../../config/env', () => ({
   },
 }));
 
+vi.mock('../../platform/nativeRuntime', () => ({
+  isNativeRuntime: () => mocks.nativeRuntime,
+}));
+
 vi.mock('../../services/oauthService', () => ({
   issueOAuthNonce: mocks.issueNonce,
 }));
@@ -43,6 +45,10 @@ vi.mock('../../services/appleOAuthAdapter', async (importOriginal) => {
     signInWithApple: mocks.signInWithApple,
   };
 });
+
+vi.mock('../../services/googleOAuthAdapter', () => ({
+  signInWithGoogleIdToken: mocks.signInWithGoogleIdToken,
+}));
 
 vi.mock('@react-oauth/google', () => ({
   GoogleOAuthProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -93,13 +99,14 @@ describe('NativeOAuthButtons', () => {
     mocks.googleClientId = 'google-client-id';
     mocks.appleServiceId = 'apple-service-id';
     mocks.appleRedirectUri = 'https://example.com/login';
-    mocks.nativeOAuth = true;
+    mocks.nativeRuntime = false;
   });
 
-  it('hides Apple while the mobile OAuth flag is off', () => {
-    mocks.nativeOAuth = false;
+  it('hides Apple on the native runtime', () => {
+    mocks.nativeRuntime = true;
     render(<NativeOAuthButtons {...defaultProps()} />);
 
+    expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /apple/i })).not.toBeInTheDocument();
   });
 
@@ -201,6 +208,44 @@ describe('NativeOAuthButtons', () => {
       screen.getByRole('link', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
     ).toHaveAttribute('href', '/forgot-password');
     expect(props.onAuthenticated).not.toHaveBeenCalled();
+  });
+
+  it('exchanges a raw Google nonce through Capgo on native', async () => {
+    const user = userEvent.setup();
+    const props = defaultProps();
+    mocks.nativeRuntime = true;
+    mocks.issueNonce.mockResolvedValue({ nonce: 'raw-google-nonce', expires_in: 300 });
+    mocks.signInWithGoogleIdToken.mockResolvedValue('native-google-id-token');
+
+    render(<NativeOAuthButtons {...props} />);
+    expect(mocks.issueNonce).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: /continue with google/i }));
+
+    await waitFor(() =>
+      expect(mocks.signInWithGoogleIdToken).toHaveBeenCalledWith('raw-google-nonce')
+    );
+    expect(mocks.issueNonce).toHaveBeenCalledWith('google');
+    expect(props.onGoogleToken).toHaveBeenCalledWith(
+      'native-google-id-token',
+      buildLegalAcceptance('google_oauth')
+    );
+    expect(props.onAuthenticated).toHaveBeenCalledWith({
+      isNewUser: false,
+      setupRoute: '/dashboard',
+    });
+  });
+
+  it('reports a cancelled native Google sign-in', async () => {
+    const user = userEvent.setup();
+    mocks.nativeRuntime = true;
+    mocks.issueNonce.mockResolvedValue({ nonce: 'raw-google-nonce', expires_in: 300 });
+    mocks.signInWithGoogleIdToken.mockRejectedValue(new ProviderPopupCancelledError('Google'));
+
+    render(<NativeOAuthButtons {...defaultProps()} />);
+    await user.click(screen.getByRole('button', { name: /continue with google/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Google sign-in was cancelled');
+    expect(mocks.signInWithGoogleIdToken).toHaveBeenCalledWith('raw-google-nonce');
   });
 
   it('does not submit a new acceptance for a returning provider login', async () => {

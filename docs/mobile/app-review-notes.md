@@ -2,7 +2,7 @@
 
 Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). Play Console form answers: [play-console-answers.md](./play-console-answers.md). Listing copy: [store-listing-copy.md](./store-listing-copy.md). Launch steps: [launch-checklist.md](./launch-checklist.md).
 
-Paste into Play Console after the integrations marked **Shipped** match the Android build. Do not claim native Google/Apple sign-in until #22 lands. Android can go to closed testing without #22.
+Paste into Play Console after the integrations marked **Shipped** match the Android build. Google sign-in on Android uses Credential Manager. Do not claim Sign in with Apple.
 
 Yarba is a career-document app: users import a portfolio, generate and edit resumes and cover letters, export PDFs, and optionally publish a public site. It is not a thin website wrapper. The Capacitor shell (`com.yarba.app`) loads a local web bundle (`https` scheme), not a remote Safari/Chrome tab. This build is free; there are no in-app purchases.
 
@@ -18,19 +18,20 @@ Provide a reviewer account with a completed portfolio and at least one resume. U
 
 | Integration                                              | Status            | Issue | What to look for                                                                                                                                                                     |
 | -------------------------------------------------------- | ----------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Native HTTP to the Yarba API                             | Shipped           | #21   | Authenticated API calls use Capacitor HTTP, not WebView CORS. Staging/production native bundles bake a dedicated `VITE_*` file. Firebase native apps and iOS proof still outstanding |
+| Native HTTP to the Yarba API                             | Shipped           | #21   | Authenticated API calls use Capacitor HTTP, not WebView CORS. Staging/production native bundles bake a dedicated `VITE_*` file. iOS proof still needs a Mac |
 | Branded launch, icons, system bars, portrait, safe areas | Shipped           | #29   | Coral splash with the Yarba mark; header sits under the status bar; footer clears the home indicator                                                                                 |
 | On-screen keyboard inset                                 | Shipped           | #28   | Focused fields stay above the keyboard on long forms                                                                                                                                 |
 | Phone layouts, 44px targets, compact dialogs             | Shipped           | #28   | Resume/cover-letter actions stack on phones; delete dialogs go full-screen; drawer and overflow menus meet 44px targets                                                              |
-| Native Google sign-in and Sign in with Apple             | Not in this build | #22   | Blocked on Apple Developer enrollment and Firebase cutover                                                                                                                           |
+| Native Google sign-in                                    | Shipped           | #22   | Capgo Social Login uses Android Credential Manager. `VITE_GOOGLE_CLIENT_ID` is the web client ID. The raw nonce is exchanged at `/auth/oauth/google`. The Android OAuth client (package `com.yarba.app` + SHA-1) is Google Cloud Console only |
+| Sign in with Apple                                       | Not in this build | #22   | iOS Sign in with Apple needs Apple Developer enrollment. The native app hides Apple. Web Apple JS is separate |
 | Secure native session storage                            | Shipped           | #23   | JWT lives in Keychain / Keystore; leftover WebView `auth_token` is migrated once                                                                                                     |
 | PDF preview, export, and system share sheet              | Shipped           | #24   | Resume and cover-letter PDFs preview in-app; Share PDF opens the system sheet                                                                                                        |
 | Document and profile-image picking                       | Shipped           | #25   | Onboarding and profile uploads open the system document/photo picker; no camera permission                                                                                           |
-| System browser, OAuth callbacks, and deep links          | Shipped           | #26   | Job, site, and support links leave the WebView; `mailto:` opens Mail; `com.yarba.app://` restores in-app routes. Native Google/Apple token exchange is still #22                     |
+| System browser, OAuth callbacks, and deep links          | Shipped           | #26   | Job, site, and support links leave the WebView; `mailto:` opens Mail; `com.yarba.app://` restores in-app routes. Google ID token exchange is in-app via Capgo |
 | Lifecycle, connectivity, and splash until ready          | Shipped           | #27   | Resume refreshes the session; airplane mode shows Connection required; splash hides after the first usable React frame                                                               |
 | Account deletion and privacy disclosures                 | Shipped           | #30   | Settings → Data & privacy → Request account deletion. Type `DELETE`. Password accounts also enter the current password. 7-day grace period can be cancelled in-app                   |
 
-Apple App Review 4.2 still wants native integrations #22–#26 before an iOS submit. Play does not require Sign in with Apple. #29 is the branded shell those plugins sit in.
+Apple App Review 4.2 still wants the native integrations before an iOS submit, including Sign in with Apple after enrollment. Play does not require Sign in with Apple. #29 is the branded shell those plugins sit in.
 
 ## How to exercise the current shell
 

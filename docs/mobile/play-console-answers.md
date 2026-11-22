@@ -89,7 +89,7 @@ Overview:
 
 | Question                                                              | Answer                                                                                                                                                                                         |
 | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Does the app collect or share any of the required user data types?    | **Yes, it collects** required data types. **It does not share** data with third parties for their own purposes. Hosting, email, object storage, and Firebase Auth process data only for Yarba. |
+| Does the app collect or share any of the required user data types?    | **Yes, it collects** required data types. **It does not share** data with third parties for their own purposes. Hosting, email, object storage, and Yarba authentication (password accounts and Google ID tokens) process data only for Yarba. |
 | Is all user data collected by your app encrypted in transit?          | **Yes** (HTTPS to `api.yarba.app`)                                                                                                                                                             |
 | Do you provide a way for users to request that their data is deleted? | **Yes** — Settings → Data & privacy, plus https://yarba.app/privacy                                                                                                                            |
 
@@ -190,6 +190,6 @@ Yarba is a career-document app (portfolio, AI resumes/cover letters, PDF export,
 
 Sign in with the demo account in the review notes. Core flows: Dashboard, Resumes, PDF preview, Share, Settings → Data & privacy (account deletion).
 
-This Android build does not include Sign in with Apple. Google sign-in uses the in-app web/Firebase path until native Play Google Sign-In ships.
+This Android build does not include Sign in with Apple. Google sign-in uses Android Credential Manager (Capgo) and exchanges the ID token with Yarba at `/auth/oauth/google`. The Android OAuth client is registered in Google Cloud Console for package `com.yarba.app` and the signing SHA-1.
 
 Internet permission only. No camera. Files and photos use the system picker. Account deletion: Settings → Data & privacy, type DELETE, 7-day cancel window.

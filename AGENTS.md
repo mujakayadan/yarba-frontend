@@ -2,7 +2,7 @@
 
 ## Stack
 
-- React 19, TypeScript 7, Vite, Material UI, Firebase, Vitest
+- React 19, TypeScript 7, Vite, Material UI, Vitest
 - Capacitor 8 for iOS/Android packaging (`docs/mobile/`)
 - Node.js 24 and npm
 

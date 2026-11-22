@@ -2,28 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
-  nativeAuth: false,
-  nativeRuntime: false,
   refresh: vi.fn(),
-  firebaseEmailLogin: vi.fn(),
-  firebaseGoogleLogin: vi.fn(),
-  firebaseLogout: vi.fn(),
-  firebaseReset: vi.fn(),
-  firebaseChangePassword: vi.fn(),
-  firebaseToken: vi.fn(),
-  firebaseUser: vi.fn(),
-}));
-
-vi.mock('../config/env', () => ({
-  env: {
-    get nativeAuth() {
-      return mocks.nativeAuth;
-    },
-  },
-}));
-
-vi.mock('../platform/nativeRuntime', () => ({
-  isNativeRuntime: () => mocks.nativeRuntime,
 }));
 
 vi.mock('./api', () => ({
@@ -35,16 +14,6 @@ vi.mock('./api', () => ({
 
 vi.mock('./nativeAuthSession', () => ({
   requestNativeSessionRefresh: mocks.refresh,
-}));
-
-vi.mock('./firebaseAuthAdapter', () => ({
-  changeFirebasePassword: mocks.firebaseChangePassword,
-  getFirebaseToken: mocks.firebaseToken,
-  getFirebaseUser: mocks.firebaseUser,
-  sendFirebasePasswordReset: mocks.firebaseReset,
-  signInWithFirebaseEmail: mocks.firebaseEmailLogin,
-  signInWithFirebaseGoogle: mocks.firebaseGoogleLogin,
-  signOutFirebase: mocks.firebaseLogout,
 }));
 
 import {
@@ -60,7 +29,7 @@ import {
 } from './authService';
 import { buildLegalAcceptance } from './legalService';
 
-const nativeResponse = {
+const passwordResponse = {
   user: {
     id: 'user-1',
     username: 'user',
@@ -78,17 +47,14 @@ const nativeResponse = {
   registration_resumed: false,
 };
 
-describe('authService authentication adapters', () => {
+describe('authService password authentication', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    mocks.nativeAuth = false;
-    mocks.nativeRuntime = false;
   });
 
-  it('selects native password login and registration without Firebase', async () => {
-    mocks.nativeAuth = true;
-    mocks.apiPost.mockResolvedValue({ data: nativeResponse });
+  it('logs in and registers through password routes', async () => {
+    mocks.apiPost.mockResolvedValue({ data: passwordResponse });
 
     await loginWithEmail('user@example.com', 'password');
     const legalAcceptance = buildLegalAcceptance('password_registration');
@@ -107,26 +73,12 @@ describe('authService authentication adapters', () => {
       password: 'password',
       legal_acceptance: legalAcceptance,
     });
-    expect(mocks.firebaseEmailLogin).not.toHaveBeenCalled();
     expect(localStorage.getItem('auth_token')).toBe('access-token');
   });
 
-  it('keeps Firebase email login and reset behavior when native auth is disabled', async () => {
-    mocks.firebaseToken.mockResolvedValue('firebase-token');
-    mocks.apiPost.mockResolvedValue({ data: nativeResponse });
-
-    await loginWithEmail('user@example.com', 'password');
-    await forgotPassword('user@example.com');
-
-    expect(mocks.firebaseEmailLogin).toHaveBeenCalledWith('user@example.com', 'password');
-    expect(mocks.apiPost).toHaveBeenCalledWith('/auth/login', { id_token: 'firebase-token' });
-    expect(mocks.firebaseReset).toHaveBeenCalledWith('user@example.com');
-  });
-
-  it('uses native forgot, reset, verification, change, refresh, and logout routes', async () => {
-    mocks.nativeAuth = true;
+  it('uses forgot, reset, verification, change, refresh, and logout routes', async () => {
     mocks.apiPost.mockResolvedValue({ data: { message: 'ok' } });
-    mocks.refresh.mockResolvedValue(nativeResponse);
+    mocks.refresh.mockResolvedValue(passwordResponse);
 
     await forgotPassword('user@example.com');
     await resetPassword('reset-token', 'new-password');
@@ -155,44 +107,15 @@ describe('authService authentication adapters', () => {
     });
     expect(mocks.refresh).toHaveBeenCalledTimes(1);
     expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
-    expect(mocks.firebaseChangePassword).not.toHaveBeenCalled();
-    expect(mocks.firebaseLogout).not.toHaveBeenCalled();
   });
 
-  it('signs Firebase out on native logout only in Capacitor', async () => {
-    mocks.nativeAuth = true;
-    mocks.nativeRuntime = true;
-    mocks.apiPost.mockResolvedValue({ data: { message: 'ok' } });
-
-    await logout();
-
-    expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
-    expect(mocks.firebaseLogout).toHaveBeenCalledTimes(1);
-  });
-
-  it('completes native local logout when backend cleanup fails', async () => {
-    mocks.nativeAuth = true;
+  it('completes local logout when backend cleanup fails', async () => {
     localStorage.setItem('auth_token', 'access-token');
     mocks.apiPost.mockRejectedValue(new Error('Backend unavailable'));
 
     await expect(logout()).resolves.toBeUndefined();
 
     expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
-    expect(mocks.firebaseLogout).not.toHaveBeenCalled();
-    expect(localStorage.getItem('auth_token')).toBeNull();
-  });
-
-  it('completes Capacitor local logout when backend and Firebase cleanup fail', async () => {
-    mocks.nativeAuth = true;
-    mocks.nativeRuntime = true;
-    localStorage.setItem('auth_token', 'access-token');
-    mocks.apiPost.mockRejectedValue(new Error('Backend unavailable'));
-    mocks.firebaseLogout.mockRejectedValue(new Error('Firebase unavailable'));
-
-    await expect(logout()).resolves.toBeUndefined();
-
-    expect(mocks.apiPost).toHaveBeenCalledWith('/auth/password/logout');
-    expect(mocks.firebaseLogout).toHaveBeenCalledTimes(1);
     expect(localStorage.getItem('auth_token')).toBeNull();
   });
 });

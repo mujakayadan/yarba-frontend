@@ -27,53 +27,32 @@ export const resolveNativeApiUrl = (
   }
 };
 
-export const shouldUseNativeOAuth = ({
-  nativeAuth,
-  nativeOAuth,
+export const shouldUseProviderOAuth = ({
   nativeRuntime,
   googleClientId,
   appleServiceId,
   appleRedirectUri,
 }: {
-  nativeAuth: boolean;
-  nativeOAuth: boolean;
   nativeRuntime: boolean;
   googleClientId?: string;
   appleServiceId?: string;
   appleRedirectUri?: string;
 }): boolean => {
-  if (!nativeAuth) {
-    return false;
+  if (googleClientId) {
+    return true;
   }
 
-  const googleConfigured = Boolean(googleClientId);
-  const appleConfigured = Boolean(appleServiceId && appleRedirectUri);
-  if (nativeOAuth) {
-    return googleConfigured || appleConfigured;
-  }
-
-  return !nativeRuntime && googleConfigured;
+  return Boolean(appleServiceId && appleRedirectUri) && !nativeRuntime;
 };
 
 export const env = {
   apiUrl: resolveNativeApiUrl(readEnv('VITE_API_URL')),
   cloudfrontUrl: readEnv('VITE_CLOUDFRONT_URL'),
   debug: import.meta.env.VITE_DEBUG === 'true',
-  nativeAuth: import.meta.env.VITE_NATIVE_AUTH === 'true',
-  nativeOAuth: import.meta.env.VITE_NATIVE_OAUTH === 'true',
   oauth: {
     googleClientId: readEnv('VITE_GOOGLE_CLIENT_ID'),
     appleServiceId: readEnv('VITE_APPLE_SERVICE_ID'),
     appleRedirectUri: readEnv('VITE_APPLE_REDIRECT_URI'),
-  },
-  firebase: {
-    apiKey: readEnv('VITE_FIREBASE_API_KEY'),
-    authDomain: readEnv('VITE_FIREBASE_AUTH_DOMAIN'),
-    projectId: readEnv('VITE_FIREBASE_PROJECT_ID'),
-    storageBucket: readEnv('VITE_FIREBASE_STORAGE_BUCKET'),
-    messagingSenderId: readEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-    appId: readEnv('VITE_FIREBASE_APP_ID'),
-    measurementId: readEnv('VITE_FIREBASE_MEASUREMENT_ID'),
   },
 } as const;
 

@@ -22,7 +22,7 @@ In scope:
 
 Out of scope:
 
-- Third-party services such as Firebase, Vercel, and the backend API
+- Third-party services such as Google, Apple, Vercel, and the backend API
 - Social engineering and physical attacks
 - Denial-of-service testing against production without prior agreement
 
@@ -39,16 +39,18 @@ This app reads configuration from `VITE_*` environment variables at build time.
 
 Use `.env.example` as a template. Copy it to `.env.local` and fill in your own values.
 
-## Firebase web config
+## OAuth client IDs
 
-Firebase client API keys are embedded in the frontend bundle by design. They identify your Firebase project but are not server-side secrets. Protect your project with:
+`VITE_GOOGLE_CLIENT_ID` is the Google **web** client ID. It is embedded in the frontend bundle and identifies the OAuth client; it is not a server secret. The same value is the Capgo `webClientId` for Capacitor Google (Credential Manager on Android).
 
-- Firebase **Authorized domains** (Authentication settings)
-- **Security rules** for Firestore, Storage, and other services
-- Backend validation of Firebase ID tokens
-- [Firebase App Check](https://firebase.google.com/docs/app-check) for production
+Protect the project with:
 
-For local development and contributions, use a dedicated Firebase project separate from production when possible.
+- Authorized JavaScript origins and redirect URIs on the web client
+- An Android OAuth client in Google Cloud Console for package `com.yarba.app` and the signing-certificate SHA-1 (not a `VITE_*` variable)
+- Backend verification of Google and Apple ID tokens, including the nonce hash
+- Apple Services ID and redirect URI only for web Apple JS
+
+Use a development Google Cloud project separate from production when possible. Do not commit populated `.env.local` files.
 
 ## Production deployment
 

@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { env, isDev } from '../config/env';
+import { env } from '../config/env';
 import { getToken, removeToken } from '../utils/auth';
 import { emitUnauthorized } from '../utils/authEvents';
 import { createDebugger } from '../utils/debug';
@@ -8,10 +8,6 @@ import { requestNativeSessionRefresh } from './nativeAuthSession';
 const debug = createDebugger('API');
 
 debug.log('API URL:', env.apiUrl);
-
-if (isDev) {
-  console.log('Creating API service with URL:', env.apiUrl);
-}
 
 const api: AxiosInstance = axios.create({
   baseURL: env.apiUrl,
@@ -94,7 +90,6 @@ api.interceptors.response.use(
 
       if (
         error.response.status === 401 &&
-        env.nativeAuth &&
         error.config &&
         !isNativeRefreshExcluded(error.config.url)
       ) {
@@ -102,7 +97,7 @@ api.interceptors.response.use(
 
         if (!requestConfig._nativeAuthRetry) {
           requestConfig._nativeAuthRetry = true;
-          debug.warn('Authentication error - refreshing native session');
+          debug.warn('Authentication error - refreshing session');
 
           try {
             await refreshNativeSessionOnce();
@@ -115,10 +110,6 @@ api.interceptors.response.use(
         }
 
         debug.warn('Authentication retry failed - clearing token');
-        removeToken();
-        emitUnauthorized();
-      } else if (error.response.status === 401 && !env.nativeAuth) {
-        debug.warn('Authentication error - clearing token');
         removeToken();
         emitUnauthorized();
       } else if (error.response.status === 404) {

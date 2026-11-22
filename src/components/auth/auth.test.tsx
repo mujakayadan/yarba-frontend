@@ -8,9 +8,10 @@ import { NATIVE_PASSWORD_POLICY_MESSAGE } from '../../utils/passwordPolicy';
 import { buildLegalAcceptance } from '../../services/legalService';
 
 const mocks = vi.hoisted(() => ({
-  nativeAuth: true,
-  nativeOAuth: false,
   nativeRuntime: false,
+  googleClientId: 'google-client-id' as string | undefined,
+  appleServiceId: 'apple-service-id' as string | undefined,
+  appleRedirectUri: 'https://example.com/login' as string | undefined,
   register: vi.fn(),
 }));
 
@@ -19,16 +20,16 @@ vi.mock('../../config/env', async (importOriginal) => {
   return {
     ...original,
     env: {
-      get nativeAuth() {
-        return mocks.nativeAuth;
-      },
-      get nativeOAuth() {
-        return mocks.nativeOAuth;
-      },
       oauth: {
-        googleClientId: 'google-client-id',
-        appleServiceId: 'apple-service-id',
-        appleRedirectUri: 'https://example.com/login',
+        get googleClientId() {
+          return mocks.googleClientId;
+        },
+        get appleServiceId() {
+          return mocks.appleServiceId;
+        },
+        get appleRedirectUri() {
+          return mocks.appleRedirectUri;
+        },
       },
     },
   };
@@ -36,14 +37,13 @@ vi.mock('../../config/env', async (importOriginal) => {
 
 vi.mock('../../platform/nativeRuntime', () => ({
   isNativeRuntime: () => mocks.nativeRuntime,
-  getNativePlatform: () => (mocks.nativeRuntime ? 'ios' : 'web'),
+  getNativePlatform: () => (mocks.nativeRuntime ? 'android' : 'web'),
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({
   useAuth: () => ({
     login: vi.fn(),
     register: mocks.register,
-    signInWithGoogleFlow: vi.fn(),
     completeGoogleProviderSignIn: vi.fn(),
     completeAppleProviderSignIn: vi.fn(),
     error: null,
@@ -59,7 +59,7 @@ vi.mock('./NativeOAuthButtons', () => ({
   default: () => <div>Direct provider authentication</div>,
 }));
 
-import FirebaseAuth from './auth';
+import AuthForm from './auth';
 
 const completeRegistration = async (password: string) => {
   const user = userEvent.setup();
@@ -74,16 +74,17 @@ const completeRegistration = async (password: string) => {
 describe('registration password policy', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.nativeAuth = true;
-    mocks.nativeOAuth = false;
     mocks.nativeRuntime = false;
+    mocks.googleClientId = 'google-client-id';
+    mocks.appleServiceId = 'apple-service-id';
+    mocks.appleRedirectUri = 'https://example.com/login';
     mocks.register.mockResolvedValue({ setupRoute: '/dashboard' });
   });
 
-  it('uses backend Google on web when native auth is on', () => {
+  it('uses provider buttons when Google is configured', () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
-        <FirebaseAuth initialMode="login" />
+        <AuthForm initialMode="login" />
       </MemoryRouter>
     );
 
@@ -92,37 +93,36 @@ describe('registration password policy', () => {
     expect(
       screen.getByRole('button', { name: ACCOUNT_RECOVERY_TEXT.requestNewPassword })
     ).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /continue with google/i })).not.toBeInTheDocument();
   });
 
-  it('keeps Firebase Google on Capacitor while the mobile OAuth flag is off', () => {
+  it('uses provider buttons on native when Google is configured', () => {
     mocks.nativeRuntime = true;
     render(
       <MemoryRouter initialEntries={['/login']}>
-        <FirebaseAuth initialMode="login" />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-    expect(screen.queryByText('Direct provider authentication')).not.toBeInTheDocument();
-  });
-
-  it('switches to direct providers only when both rollout flags are enabled', () => {
-    mocks.nativeOAuth = true;
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <FirebaseAuth initialMode="login" />
+        <AuthForm initialMode="login" />
       </MemoryRouter>
     );
 
     expect(screen.getByText('Direct provider authentication')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /continue with google/i })).not.toBeInTheDocument();
   });
 
-  it('blocks passwords outside the native backend policy', async () => {
+  it('hides provider buttons when Google and Apple are not configured', () => {
+    mocks.googleClientId = undefined;
+    mocks.appleServiceId = undefined;
+    mocks.appleRedirectUri = undefined;
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthForm initialMode="login" />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText('Direct provider authentication')).not.toBeInTheDocument();
+  });
+
+  it('blocks passwords outside the backend policy', async () => {
     render(
       <MemoryRouter initialEntries={['/register']}>
-        <FirebaseAuth initialMode="register" />
+        <AuthForm initialMode="register" />
       </MemoryRouter>
     );
 
@@ -132,20 +132,19 @@ describe('registration password policy', () => {
     expect(mocks.register).not.toHaveBeenCalled();
   });
 
-  it('preserves legacy Firebase registration validation', async () => {
-    mocks.nativeAuth = false;
+  it('registers with the password acceptance surface', async () => {
     render(
       <MemoryRouter initialEntries={['/register']}>
-        <FirebaseAuth initialMode="register" />
+        <AuthForm initialMode="register" />
       </MemoryRouter>
     );
 
-    await completeRegistration('abcdef');
+    await completeRegistration('Abcdefg1');
 
     expect(mocks.register).toHaveBeenCalledWith(
       'user@example.com',
-      'abcdef',
-      buildLegalAcceptance('firebase_registration')
+      'Abcdefg1',
+      buildLegalAcceptance('password_registration')
     );
   });
 });

@@ -6,19 +6,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NATIVE_PASSWORD_POLICY_MESSAGE } from '../../utils/passwordPolicy';
 
 const mocks = vi.hoisted(() => ({
-  nativeAuth: true,
   changePassword: vi.fn(),
   signOut: vi.fn(),
   showSuccess: vi.fn(),
   showError: vi.fn(),
-}));
-
-vi.mock('../../config/env', () => ({
-  env: {
-    get nativeAuth() {
-      return mocks.nativeAuth;
-    },
-  },
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({
@@ -52,12 +43,11 @@ const submitPasswordChange = async (newPassword: string) => {
 describe('UserPage password changes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.nativeAuth = true;
     mocks.changePassword.mockResolvedValue(undefined);
     mocks.signOut.mockResolvedValue(undefined);
   });
 
-  it('applies the native backend password policy', async () => {
+  it('applies the backend password policy', async () => {
     render(
       <MemoryRouter>
         <UserPage embedded />
@@ -70,7 +60,7 @@ describe('UserPage password changes', () => {
     expect(mocks.changePassword).not.toHaveBeenCalled();
   });
 
-  it('signs out after a successful native password change', async () => {
+  it('signs out after a successful password change', async () => {
     render(
       <MemoryRouter>
         <UserPage embedded />
@@ -84,21 +74,6 @@ describe('UserPage password changes', () => {
       'Password changed. For your security, sign in again.'
     );
     expect(mocks.signOut).toHaveBeenCalledTimes(1);
-  });
-
-  it('preserves legacy Firebase password behavior without signing out', async () => {
-    mocks.nativeAuth = false;
-    render(
-      <MemoryRouter>
-        <UserPage embedded />
-      </MemoryRouter>
-    );
-
-    await submitPasswordChange('abcdef');
-
-    expect(mocks.changePassword).toHaveBeenCalledWith('CurrentPassword1', 'abcdef');
-    expect(mocks.showSuccess).toHaveBeenCalledWith('Password changed successfully');
-    expect(mocks.signOut).not.toHaveBeenCalled();
   });
 
   it('links account deletion to Data & privacy settings', () => {

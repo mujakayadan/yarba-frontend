@@ -10,7 +10,7 @@ Ship **Google Play first** as an individual. Apple can wait.
 
 - [ ] Google Play Console enrolled as **Individual** ($25)
 - [ ] App record `com.yarba.app`; paste [play-console-answers.md](./play-console-answers.md)
-- [ ] Listing does **not** claim native Google / Sign in with Apple ([#22](https://github.com/mujakayadan/yarba-frontend/issues/22))
+- [ ] Listing describes Google sign-in via Credential Manager and does **not** claim Sign in with Apple
 - [ ] Data safety matches the Play answers (no native analytics, no ads, deletion in-app)
 - [ ] Feature graphic 1024×500, icon 512×512, phone screenshots of the production UI
 - [ ] Support, Privacy, and Terms URLs load
@@ -22,8 +22,8 @@ Ship **Google Play first** as an individual. Apple can wait.
 ## Before iOS submit (later)
 
 - [ ] Apple Developer Program enrolled
-- [ ] [#22](https://github.com/mujakayadan/yarba-frontend/issues/22) native Google + Sign in with Apple, **or** listing copy still says they are not in the build
-- [ ] [#21](https://github.com/mujakayadan/yarba-frontend/issues/21) Firebase iOS app + iOS API proof
+- [ ] iOS Sign in with Apple implemented against `/auth/oauth/apple`, **or** listing copy still says it is not in the build
+- [ ] iOS API proof on a Mac
 - [ ] [#32](https://github.com/mujakayadan/yarba-frontend/issues/32) iOS Simulator, VoiceOver
 - [ ] TestFlight build
 

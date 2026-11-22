@@ -3,9 +3,7 @@ import api from '../services/api';
 import {
   loginWithEmail,
   registerWithEmail,
-  loginWithGoogle as loginWithGoogleService,
   logout,
-  completeFirebaseEmailRegistration,
   refreshPasswordSession,
 } from '../services/authService';
 import { createDebugger } from '../utils/debug';
@@ -18,7 +16,6 @@ import {
 } from '../types/models';
 import { AUTH_UNAUTHORIZED_EVENT } from '../utils/authEvents';
 import { clearAuthenticatedUserCache } from '../lib/clearUserQueryCache';
-import { env } from '../config/env';
 import { flushAuthStorage, getToken, hydrateAuthToken, removeToken } from '../utils/auth';
 import { exchangeAppleIdToken, exchangeGoogleIdToken } from '../services/oauthService';
 import { subscribeToAppResume } from '../platform/appLifecycle';
@@ -70,9 +67,6 @@ export interface AuthContextState {
     password: string,
     legalAcceptance: LegalAcceptanceRequest
   ) => Promise<{ setupRoute: string }>;
-  signInWithGoogleFlow: (
-    legalAcceptance?: LegalAcceptanceRequest
-  ) => Promise<{ isNewUser?: boolean; setupRoute?: string }>;
   completeGoogleProviderSignIn: (
     idToken: string,
     legalAcceptance?: LegalAcceptanceRequest
@@ -106,7 +100,6 @@ const AuthContext = createContext<AuthContextState>({
   setupRoute: null,
   login: async () => {},
   register: async () => ({ setupRoute: '' }),
-  signInWithGoogleFlow: async () => ({ isNewUser: false }),
   completeGoogleProviderSignIn: async () => ({ isNewUser: false, setupRoute: '/dashboard' }),
   completeAppleProviderSignIn: async () => ({ isNewUser: false, setupRoute: '/dashboard' }),
   signOut: async () => {},
@@ -295,23 +288,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return;
         }
 
-        if (env.nativeAuth) {
-          debug.log('Restoring native session from refresh cookie');
-          try {
-            await refreshPasswordSession();
-            await fetchCurrentUser();
-          } catch {
-            removeToken();
-            setIsAuthenticated(false);
-            setUser(null);
-            setLoading(false);
-          }
-          return;
+        debug.log('Restoring session from refresh cookie');
+        try {
+          await refreshPasswordSession();
+          await fetchCurrentUser();
+        } catch {
+          removeToken();
+          setIsAuthenticated(false);
+          setUser(null);
+          setLoading(false);
         }
-
-        debug.log('No stored auth token, skipping Firebase bootstrap');
-        setLoading(false);
-        setIsAuthenticated(false);
       } catch (err: unknown) {
         debug.error('Error initializing auth:', err);
         setError(err instanceof Error ? err.message : 'Error during authentication');
@@ -348,7 +334,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const result = await loginWithEmail(email, password);
-      debug.log(env.nativeAuth ? 'Native password login successful' : 'Firebase login successful');
+      debug.log('Password login successful');
       setIsAuthenticated(true);
 
       if (result.user) {
@@ -394,9 +380,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         legal_acceptance: legalAcceptance,
       });
 
-      if (!env.nativeAuth) {
-        await completeFirebaseEmailRegistration(email, password);
-      }
       debug.log(
         result.registration_resumed
           ? 'Registration resumed for existing account'
@@ -418,53 +401,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (err: unknown) {
       debug.error('Registration error:', err);
       setError(getErrorMessage(err, 'Registration failed'));
-      setLoading(false);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Sign in with Google flow
-  const signInWithGoogleFlow = async (
-    legalAcceptance?: LegalAcceptanceRequest
-  ): Promise<{ isNewUser?: boolean; setupRoute?: string }> => {
-    try {
-      debug.log('Starting Google sign-in flow');
-      setLoading(true);
-      setError(null);
-      clearAuthenticatedUserCache();
-
-      if (checkNetworkConnectivity()) {
-        const errorMsg =
-          'Cannot sign in with Google while offline. Please check your internet connection.';
-        debug.error(errorMsg);
-        setError(errorMsg);
-        setLoading(false);
-        throw new Error(errorMsg);
-      }
-
-      const result = await loginWithGoogleService(legalAcceptance);
-      debug.log('Google sign-in flow completed with result:', result);
-
-      setIsAuthenticated(true);
-
-      if (result.user) {
-        setUser({ ...result.user, current_setup_step: result.current_setup_step });
-        updateSetupState(result.current_setup_step);
-      }
-
-      const step = result.current_setup_step;
-      const routeFromStep =
-        typeof step === 'number' ? setupStepToRoute[step as UserSetupStep] : null;
-
-      return {
-        isNewUser: result.is_new_user,
-        setupRoute: routeFromStep || '/dashboard',
-      };
-    } catch (err: unknown) {
-      debug.error('Google sign-in error:', err);
-      setError(getErrorMessage(err, 'Google sign-in failed'));
       setLoading(false);
       throw err;
     } finally {
@@ -537,16 +473,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (err: unknown) {
       debug.error('Sign out error:', err);
       setError(getErrorMessage(err, 'Sign out failed'));
-      if (env.nativeAuth) {
-        clearAuthenticatedUserCache();
-        removeToken();
-        await flushAuthStorage();
-        delete api.defaults.headers.common['Authorization'];
-        setUser(null);
-        setIsAuthenticated(false);
-        setSetupStep(UserSetupStep.NONE);
-        setSetupRoute(null);
-      }
+      clearAuthenticatedUserCache();
+      removeToken();
+      await flushAuthStorage();
+      delete api.defaults.headers.common['Authorization'];
+      setUser(null);
+      setIsAuthenticated(false);
+      setSetupStep(UserSetupStep.NONE);
+      setSetupRoute(null);
     } finally {
       setLoading(false);
     }
@@ -618,7 +552,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setupRoute,
     login,
     register,
-    signInWithGoogleFlow,
     completeGoogleProviderSignIn,
     completeAppleProviderSignIn,
     signOut,
