@@ -2,20 +2,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('./firebaseConfig', () => ({
-  getFirebaseAuth: vi.fn(async () => ({ tenantId: null, currentUser: null, app: { options: {} } })),
-  getFirebaseApp: vi.fn(async () => ({})),
-  getFirebaseAnalytics: vi.fn(async () => null),
-}));
-
 vi.mock('./services/authService', () => ({
   loginWithEmail: vi.fn(),
   registerWithEmail: vi.fn(),
-  loginWithGoogle: vi.fn(),
   logout: vi.fn(),
-  exchangeFirebaseTokenForJWT: vi.fn(),
-  completeFirebaseEmailRegistration: vi.fn(),
-  refreshPasswordSession: vi.fn(),
+  refreshPasswordSession: vi.fn().mockRejectedValue(new Error('No refresh session')),
 }));
 
 vi.mock('@vercel/analytics/react', () => ({

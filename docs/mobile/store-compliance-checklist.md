@@ -15,9 +15,9 @@ Apple stay blocked until the Apple Developer Program exists.
 | -------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Required if Google (or other third-party) login ships in the iOS app | Pass / planned | [App Store Review Guideline 4.8](https://developer.apple.com/app-store/review/guidelines/#login-services)                                       |
 | Backend already verifies Apple ID tokens                             | Pass           | Audience reserved as `com.yarba.app` (same as the Capacitor `appId`)                                                                            |
-| Web/native OAuth flags exist                                         | Pass           | `VITE_NATIVE_OAUTH`, `VITE_APPLE_SERVICE_ID`, `VITE_APPLE_REDIRECT_URI`                                                                         |
-| Apple Developer capability and Services ID                           | Fail           | Needs the $99/year Apple Developer Program. Do not start frontend #22 until the account exists                                                  |
-| Implementation approach                                              | Planned        | Use native Sign in with Apple on iOS and the existing backend `/auth/oauth/apple` path. Keep Firebase on until password-user migration finishes |
+| Web Google client ID and Apple web env                          | Pass           | `VITE_GOOGLE_CLIENT_ID` (web client ID for web and Android), `VITE_APPLE_SERVICE_ID`, `VITE_APPLE_REDIRECT_URI` (web only) |
+| Apple Developer capability and Services ID                           | Fail           | Needs the $99/year Apple Developer Program. The native app hides Apple until enrollment                                  |
+| Implementation approach                                              | Partial        | Android Google uses Capgo Credential Manager and `POST /auth/oauth/google`. iOS Sign in with Apple uses `POST /auth/oauth/apple` after enrollment. The native app does not show Apple |
 
 ## Account deletion contract
 
@@ -39,15 +39,14 @@ Map each collected category before filling Apple privacy labels and Google Data 
 
 | Data                                                                        | Collected                    | Purpose               | Linked to identity | Source                      |
 | --------------------------------------------------------------------------- | ---------------------------- | --------------------- | ------------------ | --------------------------- |
-| Account name, email, username, auth provider                                | Yes                          | Auth, account         | Yes                | Firebase and/or native auth |
+| Account name, email, username, auth provider                                | Yes                          | Auth, account         | Yes                | Yarba password accounts and Google or Apple ID tokens |
 | Profile, employment, education, skills, projects, images, signatures        | Yes                          | Product features      | Yes                | User-entered                |
 | Resumes, cover letters, job text, uploads, generated PDFs                   | Yes                          | Generation and export | Yes                | User-entered + AI           |
 | Application preferences, optional demographics, encrypted apply credentials | Yes                          | Autofill / apply      | Yes                | User-entered                |
 | Public-site content, visitor chat, abuse reports                            | Yes                          | Hosting and safety    | Mixed              | Publisher + visitors        |
 | IP, device/browser, logs, session tokens                                    | Yes                          | Security, rate limits | Yes                | Automatic                   |
 | Device network connected/not connected                                      | Yes, on native               | Offline UI            | No                 | Capacitor Network plugin    |
-| Optional product analytics (Vercel Analytics)                               | Yes, opt-in                  | Product usage         | No sale / no ads   | Settings preference         |
-| Firebase Analytics                                                          | No unless separately enabled | —                     | —                  | Not used by default         |
+| Optional product analytics (Vercel Analytics)                               | Yes, opt-in                  | Product usage         | No sale / no ads   | Settings preference; web only |
 
 Yarba does not sell personal information or use it for cross-context advertising. Public portfolio content is public.
 
@@ -71,7 +70,7 @@ Yarba does not sell personal information or use it for cross-context advertising
 
 A thin website wrapper fails [App Store Guideline 4.2](https://developer.apple.com/app-store/review/guidelines/#minimum-functionality). v1 must ship at least these five integrations (tracked as child issues of #18):
 
-1. Native Google sign-in and Sign in with Apple (#22) — blocked on Firebase cutover and Apple Developer enrollment
+1. Android Google sign-in via Capgo is in the app (`/auth/oauth/google`). Sign in with Apple still needs Apple Developer enrollment
 2. Secure native session storage (#23)
 3. Native PDF preview, export, and share sheet (#24)
 4. Document and profile-image picking (#25)
@@ -101,18 +100,18 @@ Release QA (#32) should cover login, onboarding, resume generate/edit, PDF previ
 | Apple Developer Program enrolled                   | Fail   | Operator — enroll before #22/#33/#34                                                                                                   |
 | Google Play Console enrolled                       | Fail   | Operator — individual account, $25; then 12 testers / 14-day closed test. Form answers are ready to paste                              |
 | Capacitor iOS + Android projects                   | Pass   | #20                                                                                                                                    |
-| Staging/production native env documented           | Pass   | #21 — `cap:sync:staging` / `cap:sync:production`; Firebase Console apps and iOS connectivity still operator/Mac                        |
-| Native auth (Google + Apple) against Yarba backend | Fail   | #22; keep Firebase until migration completes                                                                                           |
+| Staging/production native env documented           | Pass   | `cap:sync:staging` / `cap:sync:production`. Google Cloud Android OAuth client (`com.yarba.app` + SHA-1) and iOS connectivity still operator/Mac |
+| Native auth (Google + Apple) against Yarba backend | Fail   | Android Google uses Capgo → `/auth/oauth/google` and still needs the Console SHA-1 plus a device pass. Sign in with Apple is not in the native app |
 | Secure native token storage                        | Pass   | #23 — Keychain / Keystore; iOS Simulator still needs a Mac                                                                             |
 | Native PDF share                                   | Pass   | #24 — Android share sheet; iOS Simulator still needs a Mac                                                                             |
 | Native file/image picking                          | Pass   | #25 — system document and photo pickers; no camera permission; iOS Simulator still needs a Mac                                         |
-| Deep links + system browser                        | Pass   | #26 — Custom Tabs / system browser, mailto, `com.yarba.app://` routes; OAuth token exchange still #22; iOS Simulator still needs a Mac |
+| Deep links + system browser                        | Pass   | #26 — Custom Tabs / system browser, mailto, `com.yarba.app://` routes. Google ID token exchange is in-app via Capgo. iOS Simulator still needs a Mac |
 | Lifecycle + connectivity                           | Pass   | #27 — Network plugin, resume refresh, splash until React is ready; iOS Simulator still needs a Mac                                     |
 | In-app account deletion                            | Pass   | #30 — Settings → Data & privacy; Account & security also links there; iOS Simulator still needs a Mac                                  |
 | App-like shell (splash, icons, safe areas)         | Pass   | #29 — Android emulator verified; iOS Simulator still needs a Mac                                                                       |
 | Phone UX for core flows                            | Pass   | #28 — cards on lists, keyboard inset, stacked view actions, 44px targets; iOS Simulator still needs a Mac                              |
 | Billing decision recorded                          | Pass   | #31 — v1 is free; no StoreKit/Play Billing; paid unlocks would be a later epic                                                         |
-| QA matrix + adapter tests                          | Fail   | #32 — Vitest adapters Pass; Android prior-PR evidence recorded; iOS, TalkBack/VoiceOver, and native Google/Apple still open            |
+| QA matrix + adapter tests                          | Fail   | Vitest adapters Pass; Android prior-PR evidence recorded; iOS, TalkBack/VoiceOver, and a native Google device pass still open. Sign in with Apple is not in the native app |
 | Signed TestFlight / Play testing builds            | Fail   | #33 — debug APK workflow + runbook on main; signed AAB/TestFlight still need store accounts                                            |
 | Store listings and review notes                    | Pass   | #34 — Play answers filled; operator still enrolls, uploads screenshots/AAB, and runs closed testing                                    |
 

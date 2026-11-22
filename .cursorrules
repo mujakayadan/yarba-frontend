@@ -1,6 +1,6 @@
 # Yarba Frontend System Prompt
 
-This is the frontend application for **Yarba**, an AI-powered resume, cover letter, and portfolio building platform. It is built with **React**, **TypeScript**, and **Material-UI (MUI)**, communicating with a FastAPI backend via REST APIs and Firebase for authentication.
+This is the frontend application for **Yarba**, an AI-powered resume, cover letter, and portfolio building platform. It is built with **React**, **TypeScript**, and **Material-UI (MUI)**, communicating with a FastAPI backend via REST APIs. Authentication is backend password sessions plus Google and Apple ID tokens.
 
 ---
 
@@ -19,7 +19,7 @@ Build a clean, maintainable, and idiomatic React application that provides users
 - Material-UI (MUI) v7 for components and theming
 - React Router v7 (page routing)
 - TanStack Query 5 (server state)
-- Firebase 12.x (authentication via Google, email/password)
+- Backend password auth, Google OAuth (`@react-oauth/google` on web, `@capgo/capacitor-social-login` on Capacitor), Apple JS on web
 - Axios (backend API requests)
 - React Testing Library + Vitest
 - ESLint
@@ -78,7 +78,7 @@ src/
   hooks/              # TanStack Query hooks (useUserProfile, usePortfolioById, etc.)
   lib/queryKeys.ts    # Central query key factories
   contexts/
-    AuthContext.tsx     # Firebase auth + backend JWT state
+    AuthContext.tsx     # Backend session and provider sign-in
     ProfileContext.tsx  # User profile (wraps useUserProfile cache)
   hooks/          # Custom React hooks
   pages/
@@ -116,16 +116,18 @@ src/
 
 ## Authentication Flow
 
-1. User authenticates via Firebase (Google sign-in or email/password)
-2. Firebase ID token is sent to backend `/api/v1/auth/login`
-3. Backend returns JWT access token + user info
-4. JWT is stored and attached to all subsequent API requests via Axios interceptor
-5. On 401 response, token is cleared and user redirected to `/login`
+1. Email and password call `/api/v1/auth/password/login` or `/api/v1/auth/password/register`
+2. Google (web Google Identity Services, Capacitor via Capgo) and web Apple obtain an ID token and exchange it at `/api/v1/auth/oauth/google` or `/api/v1/auth/oauth/apple`
+3. The backend returns a JWT access token and user info. A refresh cookie restores the session when no access token is stored
+4. The JWT is stored and attached to API requests via the Axios interceptor
+5. On 401, the client refreshes the password session once, then clears the token and redirects to `/login`
 
 **Important:**
-- Firebase handles the auth UI; backend validates Firebase tokens
+- Capacitor Google passes the raw OAuth nonce to Capgo. The backend hashes the token claim
+- The Android OAuth client (package `com.yarba.app` + SHA-1) is registered in Google Cloud Console, not in `VITE_*`
+- Apple on iOS still needs Apple Developer enrollment. The native app hides Apple
 - New users go through a setup flow tracked by `current_setup_step`
-- Check `isNewUser` / `is_new_user` flag from login response
+- Check `isNewUser` / `is_new_user` flag from the auth response
 
 ---
 
@@ -253,13 +255,9 @@ Required environment variables (`.env.local`):
 VITE_API_URL=http://localhost:8000/api/v1
 VITE_CLOUDFRONT_URL=
 VITE_DEBUG=true
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-VITE_FIREBASE_MEASUREMENT_ID=
+VITE_GOOGLE_CLIENT_ID=
+VITE_APPLE_SERVICE_ID=
+VITE_APPLE_REDIRECT_URI=
 ```
 
 ---

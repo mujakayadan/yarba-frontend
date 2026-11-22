@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import FirebaseAuth from '../components/auth/auth';
+import AuthForm from '../components/auth/auth';
 import Footer from '../components/layout/Footer';
 import BrandedAuthAppBar from '../components/layout/BrandedAuthAppBar';
 import { SAFE_AREA } from '../theme/safeArea';
@@ -42,7 +42,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ authMode = 'login' }) => {
               : 'radial-gradient(circle at 15% 15%, rgba(122, 172, 216, 0.22), transparent 34%)',
         }}
       >
-        <FirebaseAuth initialMode={authMode} />
+        <AuthForm initialMode={authMode} />
       </Box>
       <Footer />
     </Box>

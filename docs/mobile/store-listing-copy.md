@@ -4,7 +4,7 @@ Draft for [#34](https://github.com/mujakayadan/yarba-frontend/issues/34). **v1 i
 
 Google Play answers (individual account, Data safety, IARC): [play-console-answers.md](./play-console-answers.md). Review notes: [app-review-notes.md](./app-review-notes.md).
 
-**Do not claim Sign in with Apple or native Google sign-in until [#22](https://github.com/mujakayadan/yarba-frontend/issues/22).**
+**Google sign-in on Android uses Credential Manager (Capgo) and `/auth/oauth/google`. Do not claim Sign in with Apple.** The native app hides Apple until Apple Developer enrollment and an iOS implementation.
 
 ## Identity
 

@@ -13,9 +13,6 @@ const vendorChunk = (id: string): string | undefined => {
   if (id.includes('react-pdf') || id.includes('pdfjs-dist')) {
     return 'pdf';
   }
-  if (id.includes('firebase')) {
-    return 'firebase';
-  }
   if (id.includes('@mui') || id.includes('@emotion')) {
     return 'mui';
   }

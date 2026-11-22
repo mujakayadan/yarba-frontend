@@ -3,7 +3,6 @@ import { AxiosError } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  nativeAuth: true,
   refresh: vi.fn(),
   removeToken: vi.fn(),
   emitUnauthorized: vi.fn(),
@@ -13,11 +12,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../config/env', () => ({
   env: {
     apiUrl: 'http://localhost/api/v1',
-    get nativeAuth() {
-      return mocks.nativeAuth;
-    },
   },
-  isDev: false,
 }));
 
 vi.mock('./nativeAuthSession', () => ({
@@ -52,10 +47,9 @@ const unauthorizedError = (config: InternalAxiosRequestConfig): AxiosError =>
     config,
   });
 
-describe('native auth response interceptor', () => {
+describe('password session response interceptor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.nativeAuth = true;
   });
 
   it('refreshes, stores through the refresh service, and retries a request once', async () => {
@@ -147,18 +141,5 @@ describe('native auth response interceptor', () => {
 
     expect(mocks.refresh).not.toHaveBeenCalled();
     expect(mocks.removeToken).not.toHaveBeenCalled();
-  });
-
-  it('preserves immediate 401 clearing in legacy Firebase mode', async () => {
-    mocks.nativeAuth = false;
-    api.defaults.adapter = vi.fn(async (config: InternalAxiosRequestConfig) => {
-      throw unauthorizedError(config);
-    });
-
-    await expect(api.get('/profiles/me')).rejects.toBeInstanceOf(AxiosError);
-
-    expect(mocks.refresh).not.toHaveBeenCalled();
-    expect(mocks.removeToken).toHaveBeenCalledTimes(1);
-    expect(mocks.emitUnauthorized).toHaveBeenCalledTimes(1);
   });
 });

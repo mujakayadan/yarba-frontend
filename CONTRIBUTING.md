@@ -8,7 +8,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Use a development Firebase project and never commit populated environment files.
+Use a development Google client ID and never commit populated environment files.
 
 ## Quality checks
 

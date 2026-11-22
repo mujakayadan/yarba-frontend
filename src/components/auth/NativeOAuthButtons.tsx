@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AppleIcon from '@mui/icons-material/Apple';
+import GoogleIcon from '@mui/icons-material/Google';
 import { Alert, Box, Button, CircularProgress, Stack } from '@mui/material';
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { env } from '../../config/env';
 import type { ProviderSignInResult } from '../../contexts/AuthContext';
+import { isNativeRuntime } from '../../platform/nativeRuntime';
 import { ProviderPopupCancelledError, signInWithApple } from '../../services/appleOAuthAdapter';
+import { signInWithGoogleIdToken } from '../../services/googleOAuthAdapter';
 import { issueOAuthNonce } from '../../services/oauthService';
 import { buildLegalAcceptance } from '../../services/legalService';
 import type { LegalAcceptanceRequest } from '../../types/models';
@@ -17,6 +20,7 @@ const OAUTH_UI_TEXT = {
   appleFailure: 'Unable to complete Apple sign-in. Please try again.',
   configurationMissing: 'Direct provider sign-in is not configured for this environment.',
   googleButton: 'Continue with Google',
+  googleCancelled: 'Google sign-in was cancelled.',
   googleFailure: 'Google sign-in was cancelled or could not be completed. Please try again.',
   googlePreparing: 'Preparing Google sign-in…',
   googleRetry: 'Try Google again',
@@ -53,13 +57,14 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
   const operationInFlight = useRef(false);
 
   const googleConfigured = Boolean(env.oauth.googleClientId);
+  const nativeRuntime = isNativeRuntime();
   const appleConfigured = Boolean(
-    env.nativeOAuth && env.oauth.appleServiceId && env.oauth.appleRedirectUri
+    !nativeRuntime && env.oauth.appleServiceId && env.oauth.appleRedirectUri
   );
   const isBusy = disabled || activeProvider !== null;
 
   useEffect(() => {
-    if (!googleConfigured || disabled) {
+    if (!googleConfigured || disabled || nativeRuntime) {
       return;
     }
 
@@ -93,7 +98,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [disabled, googleConfigured, googleNonceEpoch]);
+  }, [disabled, googleConfigured, googleNonceEpoch, nativeRuntime]);
 
   const retryGoogleNonce = () => {
     if (operationInFlight.current) {
@@ -102,6 +107,49 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     setError(null);
     setLinkingRequired(false);
     setGoogleNonceEpoch((current) => current + 1);
+  };
+
+  const completeGoogleToken = async (idToken: string) => {
+    const result = await onGoogleToken(
+      idToken,
+      legalAcceptanceRequired ? buildLegalAcceptance('google_oauth') : undefined
+    );
+    setGoogleNonce(null);
+    onAuthenticated(result);
+  };
+
+  const reportGoogleExchangeError = (exchangeError: unknown) => {
+    setGoogleNonce(null);
+    setLinkingRequired(
+      exchangeError instanceof ApiRequestError &&
+        exchangeError.errorCode === 'account_linking_required'
+    );
+    const message =
+      exchangeError instanceof ProviderPopupCancelledError
+        ? OAUTH_UI_TEXT.googleCancelled
+        : extractApiErrorMessage(exchangeError, OAUTH_UI_TEXT.googleFailure);
+    setError(message);
+  };
+
+  const handleNativeGoogleSignIn = async () => {
+    if (!googleConfigured || operationInFlight.current) {
+      return;
+    }
+
+    operationInFlight.current = true;
+    setActiveProvider('google');
+    setError(null);
+    setLinkingRequired(false);
+    try {
+      const nonceResponse = await issueOAuthNonce('google');
+      const idToken = await signInWithGoogleIdToken(nonceResponse.nonce);
+      await completeGoogleToken(idToken);
+    } catch (providerError: unknown) {
+      reportGoogleExchangeError(providerError);
+    } finally {
+      operationInFlight.current = false;
+      setActiveProvider(null);
+    }
   };
 
   const handleGoogleSuccess = async (response: CredentialResponse) => {
@@ -120,19 +168,9 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
     setError(null);
     setLinkingRequired(false);
     try {
-      const result = await onGoogleToken(
-        response.credential,
-        legalAcceptanceRequired ? buildLegalAcceptance('google_oauth') : undefined
-      );
-      setGoogleNonce(null);
-      onAuthenticated(result);
+      await completeGoogleToken(response.credential);
     } catch (exchangeError: unknown) {
-      setGoogleNonce(null);
-      setLinkingRequired(
-        exchangeError instanceof ApiRequestError &&
-          exchangeError.errorCode === 'account_linking_required'
-      );
-      setError(extractApiErrorMessage(exchangeError, OAUTH_UI_TEXT.providerFailure));
+      reportGoogleExchangeError(exchangeError);
     } finally {
       operationInFlight.current = false;
       setActiveProvider(null);
@@ -212,7 +250,24 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
       >
         {googleConfigured && env.oauth.googleClientId ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: 44, width: '100%' }}>
-            {disabled ? (
+            {nativeRuntime ? (
+              <Button
+                type="button"
+                fullWidth
+                variant="outlined"
+                startIcon={
+                  activeProvider === 'google' ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <GoogleIcon />
+                  )
+                }
+                onClick={() => void handleNativeGoogleSignIn()}
+                disabled={isBusy}
+              >
+                {OAUTH_UI_TEXT.googleButton}
+              </Button>
+            ) : disabled ? (
               <Button type="button" fullWidth variant="outlined" disabled>
                 {OAUTH_UI_TEXT.googleButton}
               </Button>

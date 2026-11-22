@@ -18,31 +18,34 @@ Copy `.env.native-staging.example` → `.env.native-staging.local` and `.env.nat
 
 | Concern                                                           | Owner          | Where                                                                                                                                           |
 | ----------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| API, CloudFront, Firebase web config, OAuth flags                 | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
+| API, CloudFront, Google web client ID, Apple web env | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
 | Capacitor HTTP (skips WebView CORS)                               | Frontend       | `capacitor.config.ts` `plugins.CapacitorHttp`                                                                                                   |
 | WebView CORS if Capacitor HTTP is ever disabled                   | Backend        | `API_CORS_ORIGINS` must include `https://localhost` and `capacitor://localhost` — [yarba-backend](https://github.com/mujakayadan/yarba-backend) |
-| iOS/Android Firebase apps, bundle ID `com.yarba.app`, URL schemes | Operator       | Firebase Console. Do this before [#22](https://github.com/mujakayadan/yarba-frontend/issues/22)                                                 |
+| Android Google OAuth client (`com.yarba.app` + SHA-1)             | Operator       | Google Cloud Console only. Not a `VITE_*` variable. Debug SHA-1 for local builds; Play signing SHA-1 for store builds                            |
 | TLS for API and CloudFront                                        | Backend / CDN  | Native WebViews must load HTTPS images and JSON with valid certificates                                                                         |
 
 No backend CORS change is required while Capacitor HTTP stays enabled.
 
-## Firebase Console (operator)
+## Google sign-in
 
-Create native apps that match Capacitor `appId` `com.yarba.app`:
+`VITE_GOOGLE_CLIENT_ID` is the Google **web** client ID. It must match backend `OAUTH_GOOGLE_WEB_AUDIENCES`.
 
-- Android package name `com.yarba.app`
-- iOS bundle ID `com.yarba.app`
-- Authorized domains / redirect URIs for Google and Apple when #22 starts
-- SHA-1 / SHA-256 of the Play signing cert for Google sign-in on Android
+- **Web** uses Google Identity Services (`@react-oauth/google`) with the raw nonce from `POST /auth/oauth/nonce/google`, then exchanges the ID token at `POST /auth/oauth/google`.
+- **Capacitor** (Android and iOS shell) uses Capgo Social Login (`@capgo/capacitor-social-login`). Android uses Credential Manager. The plugin receives the same web client ID as `webClientId` and the same raw nonce. The backend hashes the nonce claim inside the ID token.
 
-Keep using the existing Firebase **web** app config in `VITE_FIREBASE_*` until Firebase is removed. **Web** Google sign-in uses backend-native OAuth when `VITE_NATIVE_AUTH=true` and `VITE_GOOGLE_CLIENT_ID` matches `OAUTH_GOOGLE_WEB_AUDIENCES`. Capacitor still uses Firebase Google until [#22](https://github.com/mujakayadan/yarba-frontend/issues/22); do not set `VITE_NATIVE_OAUTH=true` on native bundles yet.
+The Android OAuth client is created in Google Cloud Console only. Register package `com.yarba.app` and the SHA-1 of the certificate that signs the APK or AAB. Do not put that client ID in `VITE_*`.
+
+## Apple sign-in
+
+Web Apple sign-in uses `VITE_APPLE_SERVICE_ID` and `VITE_APPLE_REDIRECT_URI` with Apple JS, then `POST /auth/oauth/apple`. The native app does not show Apple. iOS Sign in with Apple still needs Apple Developer Program enrollment.
 
 ## Analytics
 
-Vercel Analytics does not load when `Capacitor.isNativePlatform()` is true. Firebase JS Analytics is also skipped on native so store builds do not initialize a web-only measurement pipeline.
+Vercel Analytics does not load when `Capacitor.isNativePlatform()` is true. The native app does not load a separate analytics SDK.
 
 ## Evidence still required
 
 - iOS Simulator or device API + image load (#32 / a Mac)
-- Firebase native app records in the Console (operator)
+- Google Cloud Android OAuth client for `com.yarba.app` plus the signing SHA-1 (operator)
+- iOS Sign in with Apple after Apple Developer enrollment
 - Authenticated Android already uses Capacitor HTTP against the baked `VITE_API_URL`

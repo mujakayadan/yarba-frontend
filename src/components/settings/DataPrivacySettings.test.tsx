@@ -5,7 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  nativeAuth: true,
   signOut: vi.fn(),
   openUrl: vi.fn(),
   getExport: vi.fn(),
@@ -13,14 +12,6 @@ const mocks = vi.hoisted(() => ({
   getDeletion: vi.fn(),
   requestDeletion: vi.fn(),
   cancelDeletion: vi.fn(),
-}));
-
-vi.mock('../../config/env', () => ({
-  env: {
-    get nativeAuth() {
-      return mocks.nativeAuth;
-    },
-  },
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({
@@ -72,7 +63,6 @@ const renderSettings = () => {
 describe('DataPrivacySettings', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.nativeAuth = true;
     mocks.signOut.mockResolvedValue(undefined);
     mocks.openUrl.mockResolvedValue(undefined);
     mocks.getExport.mockResolvedValue({ status: 'not_requested' });

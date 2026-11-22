@@ -13,15 +13,14 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import { type ProviderSignInResult, useAuth } from '../../contexts/AuthContext';
-import { getAuthErrorMessage, getFirebaseErrorMessage } from '../../utils/errorHandler';
+import { getAuthErrorMessage } from '../../utils/errorHandler';
 import { createDebugger } from '../../utils/debug';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { env, shouldUseNativeOAuth } from '../../config/env';
+import { env, shouldUseProviderOAuth } from '../../config/env';
 import { isNativeRuntime } from '../../platform/nativeRuntime';
 import { locationToPath, resolvePostAuthPath } from '../../utils/openUrl';
 import { NATIVE_PASSWORD_POLICY_MESSAGE, validateNativePassword } from '../../utils/passwordPolicy';
@@ -32,15 +31,15 @@ import LegalAgreementFields from '../legal/LegalAgreementFields';
 import { buildLegalAcceptance } from '../../services/legalService';
 import AuthDocumentPreview from './AuthDocumentPreview';
 
-const debug = createDebugger('FirebaseAuth');
+const debug = createDebugger('AuthForm');
 
 type AuthMode = 'login' | 'register';
 
-interface FirebaseAuthProps {
+interface AuthFormProps {
   initialMode?: AuthMode;
 }
 
-const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ initialMode = 'login' }) => {
   // State management
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState('');
@@ -56,7 +55,6 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const {
     login,
     register,
-    signInWithGoogleFlow,
     completeGoogleProviderSignIn,
     completeAppleProviderSignIn,
     error: contextError,
@@ -74,9 +72,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   const location = useLocation();
   const intendedPath = locationToPath(location.state?.from);
   const isOffline = isOfflineMode || (location.state && location.state.offline);
-  const nativeOAuthEnabled = shouldUseNativeOAuth({
-    nativeAuth: env.nativeAuth,
-    nativeOAuth: env.nativeOAuth,
+  const providerOAuthEnabled = shouldUseProviderOAuth({
     nativeRuntime: isNativeRuntime(),
     googleClientId: env.oauth.googleClientId,
     appleServiceId: env.oauth.appleServiceId,
@@ -155,12 +151,10 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         setLocalError('You must confirm the legal terms before creating an account.');
         return;
       }
-      if (env.nativeAuth) {
-        const passwordError = validateNativePassword(password);
-        if (passwordError) {
-          setLocalError(passwordError);
-          return;
-        }
+      const passwordError = validateNativePassword(password);
+      if (passwordError) {
+        setLocalError(passwordError);
+        return;
       }
       if (password !== confirmPassword) {
         setLocalError('Passwords do not match');
@@ -188,13 +182,10 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         navigate(redirectPath, { replace: true });
       } else {
         debug.log('Attempting to register');
-        const acceptanceSurface = env.nativeAuth
-          ? 'password_registration'
-          : 'firebase_registration';
         const { setupRoute } = await register(
           normalizedEmail,
           password,
-          buildLegalAcceptance(acceptanceSurface)
+          buildLegalAcceptance('password_registration')
         );
         debug.log('Registration successful');
 
@@ -203,10 +194,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
         navigate(setupRoute, { replace: true });
       }
     } catch (error: unknown) {
-      const errorMsg =
-        mode === 'register' || env.nativeAuth
-          ? getAuthErrorMessage(error)
-          : getFirebaseErrorMessage(error);
+      const errorMsg = getAuthErrorMessage(error);
       debug.error(`${mode} error:`, error);
       setLocalError(errorMsg);
     } finally {
@@ -214,49 +202,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
     }
   };
 
-  // Handle Google sign-in
-  const handleGoogleSignIn = async () => {
-    if (mode === 'register' && !legalAgreementConfirmed) {
-      setLegalAgreementError(true);
-      setLocalError('Confirm the legal terms before continuing with Google.');
-      return;
-    }
-    if (isOffline) {
-      setLocalError(
-        'Cannot authenticate with Google while offline. Please check your internet connection.'
-      );
-      return;
-    }
-
-    debug.log('Attempting Google sign-in');
-    setLocalError(null);
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      const { isNewUser, setupRoute } = await signInWithGoogleFlow(
-        mode === 'register' ? buildLegalAcceptance('google_oauth') : undefined
-      );
-      debug.log('Google sign-in successful. isNewUser:', isNewUser);
-
-      // Navigate to the appropriate route
-      const navigateTo = resolvePostAuthPath({
-        setupRoute,
-        intendedPath,
-        fallback: getRedirectPathForUser(),
-      });
-      debug.log(`Navigating to ${navigateTo} after Google sign-in`);
-      navigate(navigateTo, { replace: true });
-    } catch (error: unknown) {
-      const errorMsg = getFirebaseErrorMessage(error);
-      debug.error('Google sign-in error:', error);
-      setLocalError(errorMsg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleNativeProviderAuthenticated = (result: ProviderSignInResult) => {
+  const handleProviderAuthenticated = (result: ProviderSignInResult) => {
     navigate(
       resolvePostAuthPath({
         setupRoute: result.setupRoute,
@@ -432,11 +378,7 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isSubmitting}
-                    helperText={
-                      mode === 'register' && env.nativeAuth
-                        ? NATIVE_PASSWORD_POLICY_MESSAGE
-                        : undefined
-                    }
+                    helperText={mode === 'register' ? NATIVE_PASSWORD_POLICY_MESSAGE : undefined}
                     slotProps={{
                       input: {
                         endAdornment: (
@@ -529,37 +471,27 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
                 </Grid>
               </Grid>
 
-              <Divider sx={{ my: 2 }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'text.secondary',
-                  }}
-                >
-                  OR
-                </Typography>
-              </Divider>
-
-              {nativeOAuthEnabled ? (
-                <NativeOAuthButtons
-                  disabled={isSubmitting || (mode === 'register' && !legalAgreementConfirmed)}
-                  legalAcceptanceRequired={mode === 'register'}
-                  onGoogleToken={completeGoogleProviderSignIn}
-                  onAppleToken={completeAppleProviderSignIn}
-                  onAuthenticated={handleNativeProviderAuthenticated}
-                />
-              ) : (
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<GoogleIcon />}
-                  onClick={handleGoogleSignIn}
-                  disabled={isSubmitting || (mode === 'register' && !legalAgreementConfirmed)}
-                  sx={{ mb: 2 }}
-                >
-                  Continue with Google
-                </Button>
-              )}
+              {providerOAuthEnabled ? (
+                <>
+                  <Divider sx={{ my: 2 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
+                      OR
+                    </Typography>
+                  </Divider>
+                  <NativeOAuthButtons
+                    disabled={isSubmitting || (mode === 'register' && !legalAgreementConfirmed)}
+                    legalAcceptanceRequired={mode === 'register'}
+                    onGoogleToken={completeGoogleProviderSignIn}
+                    onAppleToken={completeAppleProviderSignIn}
+                    onAuthenticated={handleProviderAuthenticated}
+                  />
+                </>
+              ) : null}
 
               <Box sx={{ textAlign: 'center', mt: 1 }}>
                 <Link component="button" variant="body2" onClick={toggleMode} type="button">
@@ -597,4 +529,4 @@ const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ initialMode = 'login' }) =>
   );
 };
 
-export default FirebaseAuth;
+export default AuthForm;

@@ -32,7 +32,6 @@ import { accountKeys } from '../../lib/queryKeys';
 import { usePrivacyPreferences } from '../../contexts/PrivacyPreferencesContext';
 import { extractApiErrorMessage } from '../../utils/apiErrors';
 import { useAuth } from '../../contexts/AuthContext';
-import { env } from '../../config/env';
 import { LEGAL_NAV_ITEMS } from '../../content/legalDocuments';
 import { openUrl } from '../../utils/openUrl';
 import { SAFE_AREA } from '../../theme/safeArea';
@@ -104,7 +103,7 @@ const DataPrivacySettings: React.FC = () => {
     }
   }, [deletionStatus.data?.status, signOut]);
 
-  const requiresPassword = env.nativeAuth && user?.auth_provider === 'password';
+  const requiresPassword = user?.auth_provider === 'password';
   const handleDeletionRequest = () => {
     setDeletionValidationError(null);
     if (confirmation !== 'DELETE') {

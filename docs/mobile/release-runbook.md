@@ -57,4 +57,4 @@ Production promotion stays a separate manual step after those secrets work. Roll
 
 - Signed AAB and TestFlight upload
 - GitHub Environment protection / required reviewers for production
-- Native env Variables on the workflow (`VITE_API_URL` and Firebase web config)
+- Native env variables on the workflow (`VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`, and Apple web vars when used)

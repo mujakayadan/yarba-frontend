@@ -42,7 +42,7 @@ git clone https://github.com/mujakayadan/yarba-backend.git
 - Node.js 24+
 - npm 8+
 - [YARBA backend](https://github.com/mujakayadan/yarba-backend) running locally or deployed
-- A Firebase project with Authentication enabled
+- A Google Cloud OAuth web client ID (`VITE_GOOGLE_CLIENT_ID`) when Google sign-in is enabled
 
 ## Setup
 
@@ -53,9 +53,9 @@ npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your backend URL (e.g. `http://localhost:8000/api/v1`) and Firebase web app config from the Firebase Console. See the [backend README](https://github.com/mujakayadan/yarba-backend) and [Firebase setup guide](https://github.com/mujakayadan/yarba-backend/blob/main/docs/firebase_setup.md) for API and authentication setup.
+Edit `.env.local` with your backend URL (e.g. `http://localhost:8000/api/v1`) and, for Google sign-in, the web client ID. See the [backend README](https://github.com/mujakayadan/yarba-backend) for API setup. Capacitor Google uses that same web client ID through Capgo. The Android OAuth client (package `com.yarba.app` + SHA-1) is created in Google Cloud Console and is not an env var.
 
-See [SECURITY.md](./SECURITY.md) for guidance on credentials and Firebase setup.
+See [SECURITY.md](./SECURITY.md) for guidance on credentials and OAuth client IDs.
 
 ## Mobile (Capacitor)
 
@@ -82,7 +82,7 @@ Android Studio is enough to run an emulator on Windows. A Mac is required for th
 
 ## Stack
 
-YARBA frontend is a **React + TypeScript** SPA built with **Vite**, styled with **MUI**, and wired to a **FastAPI** backend and **Firebase** auth. See [`.cursorrules`](./.cursorrules) for detailed coding conventions.
+YARBA frontend is a **React + TypeScript** SPA built with **Vite**, styled with **MUI**, and wired to a **FastAPI** backend. Sign-in is email/password plus Google (and Apple on the web). See [`.cursorrules`](./.cursorrules) for detailed coding conventions.
 
 ### Architecture overview
 
@@ -99,8 +99,8 @@ flowchart TB
   end
 
   subgraph auth["Authentication"]
-    Firebase["Firebase Auth"]
-    Firebase -->|"ID token"| Services
+    Providers["Password, Google, web Apple"]
+    Providers -->|"credentials or ID token"| Services
     Services -->|"JWT"| Local["Token storage"]
   end
 
@@ -113,7 +113,7 @@ flowchart TB
   end
 
   Services --> API["YARBA backend<br/>FastAPI REST"]
-  client --> Firebase
+  client --> Providers
   client --> Vite
 ```
 
@@ -123,16 +123,19 @@ flowchart TB
 sequenceDiagram
   participant User
   participant App as React app
-  participant FB as Firebase
   participant API as FastAPI backend
 
-  User->>App: Sign in (Google or email/password)
-  App->>FB: Authenticate
-  FB-->>App: Firebase ID token
-  App->>API: POST /api/v1/auth/login
+  User->>App: Sign in (email/password, Google, or web Apple)
+  alt Email and password
+    App->>API: POST /api/v1/auth/password/login or /register
+  else Google or Apple
+    App->>API: POST /api/v1/auth/oauth/nonce/{provider}
+    App->>App: Web GIS, Capgo Google, or Apple JS
+    App->>API: POST /api/v1/auth/oauth/google or /apple
+  end
   API-->>App: JWT + user info
   App->>App: Store JWT and attach on requests
-  Note over App,API: 401 clears token and redirects to /login
+  Note over App,API: 401 refreshes the session once, then clears the token and redirects to /login
 ```
 
 ### Core libraries
@@ -146,7 +149,7 @@ sequenceDiagram
 | Routing        | React Router 7               | Pages under `src/pages/`                                        |
 | Server state   | TanStack Query 5             | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts`           |
 | HTTP           | Axios                        | All API calls via `src/services/` — not raw axios in components |
-| Auth           | Firebase 12                  | Google + email/password; backend validates tokens               |
+| Auth           | Backend password + OAuth     | Google via GIS or Capgo; Apple JS on web; raw nonce to the backend |
 | PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview                                     |
 | Env            | `VITE_*`                     | Loaded via `src/config/env.ts`                                  |
 
@@ -154,7 +157,7 @@ sequenceDiagram
 
 | Piece                                                         | Stack                       | Role                                                |
 | ------------------------------------------------------------- | --------------------------- | --------------------------------------------------- |
-| [yarba-backend](https://github.com/mujakayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after Firebase login |
+| [yarba-backend](https://github.com/mujakayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after password or OAuth sign-in |
 | API contracts                                                 | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas      |
 | Docs                                                          | `docs/api_documentation.md` | Endpoint reference                                  |
 

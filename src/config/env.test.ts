@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveNativeApiUrl, shouldUseNativeOAuth } from './env';
+import { resolveNativeApiUrl, shouldUseProviderOAuth } from './env';
 
 describe('resolveNativeApiUrl', () => {
   it('rewrites localhost to the Android emulator loopback', () => {
@@ -24,46 +24,46 @@ describe('resolveNativeApiUrl', () => {
   });
 });
 
-describe('shouldUseNativeOAuth', () => {
-  const configured = {
-    nativeAuth: true,
-    nativeOAuth: false,
-    googleClientId: 'web-client.apps.googleusercontent.com',
-    appleServiceId: undefined as string | undefined,
-    appleRedirectUri: undefined as string | undefined,
-  };
+describe('shouldUseProviderOAuth', () => {
+  const googleClientId = 'web-client.apps.googleusercontent.com';
 
-  it('uses backend Google on web when native auth and the web client ID are set', () => {
-    expect(shouldUseNativeOAuth({ ...configured, nativeRuntime: false })).toBe(true);
-  });
-
-  it('keeps Firebase Google on Capacitor until the mobile OAuth flag is on', () => {
-    expect(shouldUseNativeOAuth({ ...configured, nativeRuntime: true })).toBe(false);
-    expect(shouldUseNativeOAuth({ ...configured, nativeOAuth: true, nativeRuntime: true })).toBe(
-      true
-    );
-  });
-
-  it('stays on Firebase Google when the web client ID is missing', () => {
+  it('uses Google when the web client ID is set on web or native', () => {
     expect(
-      shouldUseNativeOAuth({
-        ...configured,
-        googleClientId: undefined,
+      shouldUseProviderOAuth({
         nativeRuntime: false,
+        googleClientId,
       })
-    ).toBe(false);
+    ).toBe(true);
+    expect(
+      shouldUseProviderOAuth({
+        nativeRuntime: true,
+        googleClientId,
+      })
+    ).toBe(true);
   });
 
-  it('does not treat Apple placeholders as a web Google cutover', () => {
+  it('uses Apple on the web when Apple env is set and Google is not', () => {
     expect(
-      shouldUseNativeOAuth({
-        nativeAuth: true,
-        nativeOAuth: false,
+      shouldUseProviderOAuth({
         nativeRuntime: false,
-        googleClientId: undefined,
+        appleServiceId: 'com.example.yarba.web',
+        appleRedirectUri: 'https://www.yarba.app/login',
+      })
+    ).toBe(true);
+  });
+
+  it('hides provider buttons on native when only Apple is configured', () => {
+    expect(
+      shouldUseProviderOAuth({
+        nativeRuntime: true,
         appleServiceId: 'com.example.yarba.web',
         appleRedirectUri: 'https://www.yarba.app/login',
       })
     ).toBe(false);
+  });
+
+  it('stays off when neither Google nor Apple is configured', () => {
+    expect(shouldUseProviderOAuth({ nativeRuntime: false })).toBe(false);
+    expect(shouldUseProviderOAuth({ nativeRuntime: true })).toBe(false);
   });
 });

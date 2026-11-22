@@ -1,26 +1,16 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  nativeAuth: true,
   loginWithEmail: vi.fn(),
   registerWithEmail: vi.fn(),
-  completeFirebaseRegistration: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
   googleExchange: vi.fn(),
   appleExchange: vi.fn(),
   apiCommonHeaders: {} as Record<string, string>,
-}));
-
-vi.mock('../config/env', () => ({
-  env: {
-    get nativeAuth() {
-      return mocks.nativeAuth;
-    },
-  },
 }));
 
 vi.mock('../services/api', () => ({
@@ -32,9 +22,7 @@ vi.mock('../services/api', () => ({
 }));
 
 vi.mock('../services/authService', () => ({
-  completeFirebaseEmailRegistration: mocks.completeFirebaseRegistration,
   loginWithEmail: mocks.loginWithEmail,
-  loginWithGoogle: vi.fn(),
   logout: mocks.logout,
   refreshPasswordSession: mocks.refresh,
   registerWithEmail: mocks.registerWithEmail,
@@ -113,11 +101,10 @@ const AuthHarness = () => {
   );
 };
 
-describe('AuthProvider password adapter selection', () => {
+describe('AuthProvider password sessions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    mocks.nativeAuth = true;
     mocks.refresh.mockRejectedValue(new Error('No refresh session'));
     mocks.loginWithEmail.mockResolvedValue(authResponse);
     mocks.registerWithEmail.mockResolvedValue(authResponse);
@@ -129,7 +116,7 @@ describe('AuthProvider password adapter selection', () => {
     }
   });
 
-  it('does not call Firebase after native registration', async () => {
+  it('registers through the password API', async () => {
     const user = userEvent.setup();
     render(
       <AuthProvider>
@@ -146,10 +133,9 @@ describe('AuthProvider password adapter selection', () => {
       password: 'password',
       legal_acceptance: buildLegalAcceptance('password_registration'),
     });
-    expect(mocks.completeFirebaseRegistration).not.toHaveBeenCalled();
   });
 
-  it('uses backend user state for native login', async () => {
+  it('uses backend user state for password login', async () => {
     const user = userEvent.setup();
     render(
       <AuthProvider>
@@ -164,23 +150,7 @@ describe('AuthProvider password adapter selection', () => {
     expect(mocks.loginWithEmail).toHaveBeenCalledWith('user@example.com', 'password');
   });
 
-  it('preserves the Firebase post-registration sign-in in fallback mode', async () => {
-    mocks.nativeAuth = false;
-    const user = userEvent.setup();
-    render(
-      <AuthProvider>
-        <AuthHarness />
-      </AuthProvider>
-    );
-
-    await waitFor(() => expect(screen.getByText('signed-out')).toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: 'Register' }));
-
-    await screen.findByText('authenticated');
-    expect(mocks.completeFirebaseRegistration).toHaveBeenCalledWith('user@example.com', 'password');
-  });
-
-  it('clears native local state even when logout cleanup rejects', async () => {
+  it('clears local state even when logout cleanup rejects', async () => {
     const user = userEvent.setup();
     render(
       <AuthProvider>

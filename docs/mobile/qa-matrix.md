@@ -1,6 +1,6 @@
 # Mobile QA matrix
 
-Evidence log for [#32](https://github.com/mujakayadan/yarba-frontend/issues/32). Update the **Result** column when a row is re-run. Do not mark iOS Pass without a Mac. Do not mark native Google/Apple Pass until [#22](https://github.com/mujakayadan/yarba-frontend/issues/22).
+Evidence log for [#32](https://github.com/mujakayadan/yarba-frontend/issues/32). Update the **Result** column when a row is re-run. Do not mark iOS Pass without a Mac. Do not mark native Google Pass until a device run records it. Do not mark Sign in with Apple Pass until Apple Developer enrollment and an iOS implementation.
 
 **Baseline:** 18 September 2026. Owner: Muja Kayadan.  
 **Android device:** Pixel-class emulator, API 36 (prior native PRs). No emulator was attached when this matrix was written.  
@@ -37,15 +37,15 @@ All required adapters have focused tests. Re-run with `npm test`.
 | Flow                                       | Android                     | iOS                              | Notes                                              |
 | ------------------------------------------ | --------------------------- | -------------------------------- | -------------------------------------------------- |
 | Cold start splash → login or dashboard     | Pass (#29/#27)              | Blocked (Mac)                    | Fallback hide at 8s.                               |
-| Email/password sign-in                     | Not run on device this pass | Blocked (Mac)                    | Web login still the v1 path until #22.             |
-| Native Google sign-in                      | Blocked (#22)               | Blocked (#22)                    |                                                    |
-| Sign in with Apple                         | N/A on Android              | Blocked (#22 + Apple enrollment) |                                                    |
+| Email/password sign-in                     | Not run on device this pass | Blocked (Mac)                    | Password routes `/auth/password/*`.                |
+| Native Google sign-in                      | Not run on device this pass | Blocked (Mac)                    | Capgo Credential Manager → `/auth/oauth/google`. Android client is Google Cloud Console (`com.yarba.app` + SHA-1). |
+| Sign in with Apple                         | N/A on Android              | Blocked (Apple enrollment)       | Not in the native app. Web uses Apple JS when Apple env is set. |
 | Onboarding import / document pick          | Pass (#25)                  | Blocked (Mac)                    | No camera permission.                              |
 | Profile image pick                         | Pass (#25)                  | Blocked (Mac)                    |                                                    |
 | Resume list cards + generate/edit          | Pass phone layouts (#28)    | Blocked (Mac)                    | Full generate/edit not re-run on device this pass. |
 | Resume PDF preview + Share PDF             | Pass (#24)                  | Blocked (Mac)                    |                                                    |
 | Cover letter view + PDF                    | Pass (#24/#28)              | Blocked (Mac)                    |                                                    |
-| Deep link `com.yarba.app://` restore       | Pass (#26)                  | Blocked (Mac)                    | OAuth token exchange still #22.                    |
+| Deep link `com.yarba.app://` restore       | Pass (#26)                  | Blocked (Mac)                    | Google ID token exchange is in-app via Capgo.      |
 | External https / mailto leave WebView      | Pass (#26)                  | Blocked (Mac)                    |                                                    |
 | Background / resume session refresh        | Pass (#27)                  | Blocked (Mac)                    |                                                    |
 | Airplane mode Connection required          | Pass (#27)                  | Blocked (Mac)                    |                                                    |
@@ -73,9 +73,9 @@ Do not submit while these rows are **Not run** / **Blocked** unless a signed wai
 | ------------------------------ | -------- | ------- | -------- | ------------------------------------------------------------------------------ |
 | iOS evidence                   | P1       | Open    | Operator | Needs a Mac. Not a product defect.                                             |
 | TalkBack / VoiceOver           | P1       | Open    | Operator | Not executed.                                                                  |
-| Native Google / Apple          | P1       | Blocked | #22      | Apple Developer + Firebase cutover.                                            |
+| Native Google device pass     | P1       | Open    | Operator | Capgo path is in the app. Needs the Android OAuth client SHA-1 and a device run. |
+| Sign in with Apple             | P1       | Blocked | Operator | Apple Developer enrollment. Not implemented in the native app.                   |
 | ReportAbusePage Vitest timeout | P3       | Open    | Frontend | Intermittent 5s timeout in CI-local runs; public web form, not a native crash. |
-| #21 Firebase native apps       | P2       | Open    | Operator | Console iOS/Android apps for `com.yarba.app`.                                  |
 
 No P0 native crash or blank-screen defect is on this list.
 
