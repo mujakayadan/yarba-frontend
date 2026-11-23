@@ -7,7 +7,10 @@ import { env } from '../../config/env';
 import type { ProviderSignInResult } from '../../contexts/AuthContext';
 import { isNativeRuntime } from '../../platform/nativeRuntime';
 import { ProviderPopupCancelledError, signInWithApple } from '../../services/appleOAuthAdapter';
-import { signInWithGoogleIdToken } from '../../services/googleOAuthAdapter';
+import {
+  GoogleAccountReauthError,
+  signInWithGoogleIdToken,
+} from '../../services/googleOAuthAdapter';
 import { issueOAuthNonce } from '../../services/oauthService';
 import { buildLegalAcceptance } from '../../services/legalService';
 import type { LegalAcceptanceRequest } from '../../types/models';
@@ -26,6 +29,16 @@ const OAUTH_UI_TEXT = {
   googleRetry: 'Try Google again',
   providerFailure: 'Unable to complete provider sign-in. Please try again.',
 } as const;
+
+const resolveGoogleProviderError = (error: unknown): string => {
+  if (error instanceof ProviderPopupCancelledError) {
+    return OAUTH_UI_TEXT.googleCancelled;
+  }
+  if (error instanceof GoogleAccountReauthError) {
+    return error.message;
+  }
+  return extractApiErrorMessage(error, OAUTH_UI_TEXT.googleFailure);
+};
 
 interface NativeOAuthButtonsProps {
   disabled: boolean;
@@ -124,11 +137,7 @@ const NativeOAuthButtons: React.FC<NativeOAuthButtonsProps> = ({
       exchangeError instanceof ApiRequestError &&
         exchangeError.errorCode === 'account_linking_required'
     );
-    const message =
-      exchangeError instanceof ProviderPopupCancelledError
-        ? OAUTH_UI_TEXT.googleCancelled
-        : extractApiErrorMessage(exchangeError, OAUTH_UI_TEXT.googleFailure);
-    setError(message);
+    setError(resolveGoogleProviderError(exchangeError));
   };
 
   const handleNativeGoogleSignIn = async () => {

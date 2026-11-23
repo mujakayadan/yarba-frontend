@@ -33,6 +33,8 @@ Capacitor Google uses Capgo Social Login (Credential Manager) with `VITE_GOOGLE_
 
 The Android OAuth client is not an environment variable. In Google Cloud Console, create an Android client for package `com.yarba.app` and the SHA-1 of the keystore that signed the build (debug SHA-1 for local installs, Play App Signing SHA-1 for store builds).
 
+If the UI shows **Google Sign-In failed: [16] Account reauth failed** after Capgo already retried once, Cloud Console is often already correct (External audience in production, Play App Signing SHA-1 registered). Clear Yarba app storage, confirm the Google account still allows Sign in with Google for Yarba, try another Google account, then retry. Filter Logcat for `GoogleProvider` to confirm `package`, `signingSha1`, and `webClientId`.
+
 ### Login fails
 
 Email and password use `/auth/password/login` and `/auth/password/register`. Google and Apple exchange an ID token at `/auth/oauth/google` or `/auth/oauth/apple`.
