@@ -14,14 +14,14 @@ After changing `.env.local`, restart the dev server. Vite reads `VITE_*` variabl
 
 ## Environment variables
 
-| Variable              | Purpose                                                              |
-| --------------------- | -------------------------------------------------------------------- |
-| `VITE_API_URL`          | Backend REST base URL                                                |
-| `VITE_DEBUG`            | Set to `true` to enable namespaced console logs via `createDebugger` |
-| `VITE_GOOGLE_CLIENT_ID` | Google web client ID for web GIS and Capacitor Google (Capgo)       |
-| `VITE_APPLE_SERVICE_ID` | Apple Services ID for web Apple JS                                   |
-| `VITE_APPLE_REDIRECT_URI` | Apple redirect URI for web Apple JS                                |
-| `VITE_CLOUDFRONT_URL`   | CDN base for uploaded assets (optional locally)                      |
+| Variable                  | Purpose                                                              |
+| ------------------------- | -------------------------------------------------------------------- |
+| `VITE_API_URL`            | Backend REST base URL                                                |
+| `VITE_DEBUG`              | Set to `true` to enable namespaced console logs via `createDebugger` |
+| `VITE_GOOGLE_CLIENT_ID`   | Google web client ID for web GIS and Capacitor Google (Capgo)        |
+| `VITE_APPLE_SERVICE_ID`   | Apple Services ID for web Apple JS                                   |
+| `VITE_APPLE_REDIRECT_URI` | Apple redirect URI for web Apple JS                                  |
+| `VITE_CLOUDFRONT_URL`     | CDN base for uploaded assets (optional locally)                      |
 
 If API calls fail immediately with network errors, confirm `VITE_API_URL` is set and the backend responds at that URL.
 
@@ -81,8 +81,8 @@ VITE_DEBUG=true
 
 Then run `npm run dev` and filter the browser console by namespace:
 
-| Namespace      | Area                                  |
-| -------------- | ------------------------------------- |
+| Namespace     | Area                                  |
+| ------------- | ------------------------------------- |
 | `AuthForm`    | Login / register UI                   |
 | `AuthContext` | Session bootstrap and auth state      |
 | `Auth`        | Password and OAuth auth service calls |
