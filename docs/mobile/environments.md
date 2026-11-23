@@ -16,13 +16,13 @@ Copy `.env.native-staging.example` → `.env.native-staging.local` and `.env.nat
 
 ## Ownership
 
-| Concern                                                           | Owner          | Where                                                                                                                                           |
-| ----------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| API, CloudFront, Google web client ID, Apple web env | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
-| Capacitor HTTP (skips WebView CORS)                               | Frontend       | `capacitor.config.ts` `plugins.CapacitorHttp`                                                                                                   |
-| WebView CORS if Capacitor HTTP is ever disabled                   | Backend        | `API_CORS_ORIGINS` must include `https://localhost` and `capacitor://localhost` — [yarba-backend](https://github.com/mujakayadan/yarba-backend) |
-| Android Google OAuth client (`com.yarba.app` + SHA-1)             | Operator       | Google Cloud Console only. Not a `VITE_*` variable. Debug SHA-1 for local builds; Play signing SHA-1 for store builds                            |
-| TLS for API and CloudFront                                        | Backend / CDN  | Native WebViews must load HTTPS images and JSON with valid certificates                                                                         |
+| Concern                                               | Owner          | Where                                                                                                                                           |
+| ----------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| API, CloudFront, Google web client ID, Apple web env  | Frontend build | `VITE_*` via `src/config/env.ts`                                                                                                                |
+| Capacitor HTTP (skips WebView CORS)                   | Frontend       | `capacitor.config.ts` `plugins.CapacitorHttp`                                                                                                   |
+| WebView CORS if Capacitor HTTP is ever disabled       | Backend        | `API_CORS_ORIGINS` must include `https://localhost` and `capacitor://localhost` — [yarba-backend](https://github.com/mujakayadan/yarba-backend) |
+| Android Google OAuth client (`com.yarba.app` + SHA-1) | Operator       | Google Cloud Console only. Not a `VITE_*` variable. Debug SHA-1 for local builds; Play signing SHA-1 for store builds                           |
+| TLS for API and CloudFront                            | Backend / CDN  | Native WebViews must load HTTPS images and JSON with valid certificates                                                                         |
 
 No backend CORS change is required while Capacitor HTTP stays enabled.
 
@@ -31,7 +31,7 @@ No backend CORS change is required while Capacitor HTTP stays enabled.
 `VITE_GOOGLE_CLIENT_ID` is the Google **web** client ID. It must match backend `OAUTH_GOOGLE_WEB_AUDIENCES`.
 
 - **Web** uses Google Identity Services (`@react-oauth/google`) with the raw nonce from `POST /auth/oauth/nonce/google`, then exchanges the ID token at `POST /auth/oauth/google`.
-- **Capacitor** (Android and iOS shell) uses Capgo Social Login (`@capgo/capacitor-social-login`). Android uses Credential Manager. The plugin receives the same web client ID as `webClientId` and the same raw nonce. The backend hashes the nonce claim inside the ID token.
+- **Capacitor** (Android and iOS shell) uses Capgo Social Login (`@capgo/capacitor-social-login`). Android uses Credential Manager. The plugin receives the same web client ID as `webClientId` and the same raw nonce. Do not pass `scopes` on Android unless `MainActivity` implements Capgo’s social-login hook; default openid/email/profile already cover sign-in. The backend hashes the nonce claim inside the ID token.
 
 The Android OAuth client is created in Google Cloud Console only. Register package `com.yarba.app` and the SHA-1 of the certificate that signs the APK or AAB. Do not put that client ID in `VITE_*`.
 

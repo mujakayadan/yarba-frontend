@@ -44,10 +44,11 @@ export const signInWithGoogleIdToken = async (rawNonce: string): Promise<string>
   await ensureGoogleInitialized();
 
   try {
+    // Capgo already requests openid/email/profile. Passing scopes forces an
+    // Android authorization path that rejects unless MainActivity is modified.
     const response = await SocialLogin.login({
       provider: 'google',
       options: {
-        scopes: ['email', 'profile'],
         nonce: rawNonce,
       },
     });
