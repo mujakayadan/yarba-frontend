@@ -87,11 +87,11 @@ Do not screenshot a desktop browser window.
 
 Overview:
 
-| Question                                                              | Answer                                                                                                                                                                                         |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Question                                                              | Answer                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Does the app collect or share any of the required user data types?    | **Yes, it collects** required data types. **It does not share** data with third parties for their own purposes. Hosting, email, object storage, and Yarba authentication (password accounts and Google ID tokens) process data only for Yarba. |
-| Is all user data collected by your app encrypted in transit?          | **Yes** (HTTPS to `api.yarba.app`)                                                                                                                                                             |
-| Do you provide a way for users to request that their data is deleted? | **Yes** — Settings → Data & privacy, plus https://yarba.app/privacy                                                                                                                            |
+| Is all user data collected by your app encrypted in transit?          | **Yes** (HTTPS to `api.yarba.app`)                                                                                                                                                                                                             |
+| Do you provide a way for users to request that their data is deleted? | **Yes** — Settings → Data & privacy, plus https://yarba.app/privacy                                                                                                                                                                            |
 
 Do **not** declare native analytics collection. Vercel Analytics is web-only and does not load in the Capacitor app. There is no crash SDK in v1.
 

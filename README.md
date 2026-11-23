@@ -140,26 +140,26 @@ sequenceDiagram
 
 ### Core libraries
 
-| Layer          | Technology                   | Notes                                                           |
-| -------------- | ---------------------------- | --------------------------------------------------------------- |
-| UI             | React 19, TypeScript 7       | Functional components; strict typing                            |
-| Build          | Vite 8                       | Dev server on port 3000; `tsc --noEmit` on build                |
-| Mobile         | Capacitor 8                  | `android/` + `ios/`; see `docs/mobile/`                         |
-| Components     | Material UI 7, Emotion       | MUI only for UI; use `Grid` from `src/mui/Grid.tsx`             |
-| Routing        | React Router 7               | Pages under `src/pages/`                                        |
-| Server state   | TanStack Query 5             | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts`           |
-| HTTP           | Axios                        | All API calls via `src/services/` — not raw axios in components |
+| Layer          | Technology                   | Notes                                                              |
+| -------------- | ---------------------------- | ------------------------------------------------------------------ |
+| UI             | React 19, TypeScript 7       | Functional components; strict typing                               |
+| Build          | Vite 8                       | Dev server on port 3000; `tsc --noEmit` on build                   |
+| Mobile         | Capacitor 8                  | `android/` + `ios/`; see `docs/mobile/`                            |
+| Components     | Material UI 7, Emotion       | MUI only for UI; use `Grid` from `src/mui/Grid.tsx`                |
+| Routing        | React Router 7               | Pages under `src/pages/`                                           |
+| Server state   | TanStack Query 5             | Hooks in `src/hooks/`; keys in `src/lib/queryKeys.ts`              |
+| HTTP           | Axios                        | All API calls via `src/services/` — not raw axios in components    |
 | Auth           | Backend password + OAuth     | Google via GIS or Capgo; Apple JS on web; raw nonce to the backend |
-| PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview                                     |
-| Env            | `VITE_*`                     | Loaded via `src/config/env.ts`                                  |
+| PDF / markdown | react-pdf 10, react-markdown | Resume/cover letter preview                                        |
+| Env            | `VITE_*`                     | Loaded via `src/config/env.ts`                                     |
 
 ### Backend & related repos
 
-| Piece                                                         | Stack                       | Role                                                |
-| ------------------------------------------------------------- | --------------------------- | --------------------------------------------------- |
+| Piece                                                         | Stack                       | Role                                                           |
+| ------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------- |
 | [yarba-backend](https://github.com/mujakayadan/yarba-backend) | FastAPI                     | REST API (`VITE_API_URL`); JWT after password or OAuth sign-in |
-| API contracts                                                 | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas      |
-| Docs                                                          | `docs/api_documentation.md` | Endpoint reference                                  |
+| API contracts                                                 | `src/types/models.ts`       | TypeScript shapes aligned with backend schemas                 |
+| Docs                                                          | `docs/api_documentation.md` | Endpoint reference                                             |
 
 ### State management
 

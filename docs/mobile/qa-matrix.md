@@ -34,26 +34,26 @@ All required adapters have focused tests. Re-run with `npm test`.
 
 ## Critical flows
 
-| Flow                                       | Android                     | iOS                              | Notes                                              |
-| ------------------------------------------ | --------------------------- | -------------------------------- | -------------------------------------------------- |
-| Cold start splash → login or dashboard     | Pass (#29/#27)              | Blocked (Mac)                    | Fallback hide at 8s.                               |
-| Email/password sign-in                     | Not run on device this pass | Blocked (Mac)                    | Password routes `/auth/password/*`.                |
-| Native Google sign-in                      | Not run on device this pass | Blocked (Mac)                    | Capgo Credential Manager → `/auth/oauth/google`. Android client is Google Cloud Console (`com.yarba.app` + SHA-1). |
-| Sign in with Apple                         | N/A on Android              | Blocked (Apple enrollment)       | Not in the native app. Web uses Apple JS when Apple env is set. |
-| Onboarding import / document pick          | Pass (#25)                  | Blocked (Mac)                    | No camera permission.                              |
-| Profile image pick                         | Pass (#25)                  | Blocked (Mac)                    |                                                    |
-| Resume list cards + generate/edit          | Pass phone layouts (#28)    | Blocked (Mac)                    | Full generate/edit not re-run on device this pass. |
-| Resume PDF preview + Share PDF             | Pass (#24)                  | Blocked (Mac)                    |                                                    |
-| Cover letter view + PDF                    | Pass (#24/#28)              | Blocked (Mac)                    |                                                    |
-| Deep link `com.yarba.app://` restore       | Pass (#26)                  | Blocked (Mac)                    | Google ID token exchange is in-app via Capgo.      |
-| External https / mailto leave WebView      | Pass (#26)                  | Blocked (Mac)                    |                                                    |
-| Background / resume session refresh        | Pass (#27)                  | Blocked (Mac)                    |                                                    |
-| Airplane mode Connection required          | Pass (#27)                  | Blocked (Mac)                    |                                                    |
-| Logout                                     | Not run on device this pass | Blocked (Mac)                    |                                                    |
-| Account deletion Settings → Data & privacy | Pass UI (#30)               | Blocked (Mac)                    | Type `DELETE`; 7-day grace.                        |
-| Phone stacked actions / 44px targets       | Pass (#28)                  | Blocked (Mac)                    |                                                    |
-| Portrait lock                              | Pass (#29)                  | Blocked (Mac)                    |                                                    |
-| Tablet layout                              | Not a v1 target             | iPad not a v1 target             | Best-effort only.                                  |
+| Flow                                       | Android                     | iOS                        | Notes                                                                                                              |
+| ------------------------------------------ | --------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Cold start splash → login or dashboard     | Pass (#29/#27)              | Blocked (Mac)              | Fallback hide at 8s.                                                                                               |
+| Email/password sign-in                     | Not run on device this pass | Blocked (Mac)              | Password routes `/auth/password/*`.                                                                                |
+| Native Google sign-in                      | Not run on device this pass | Blocked (Mac)              | Capgo Credential Manager → `/auth/oauth/google`. Android client is Google Cloud Console (`com.yarba.app` + SHA-1). |
+| Sign in with Apple                         | N/A on Android              | Blocked (Apple enrollment) | Not in the native app. Web uses Apple JS when Apple env is set.                                                    |
+| Onboarding import / document pick          | Pass (#25)                  | Blocked (Mac)              | No camera permission.                                                                                              |
+| Profile image pick                         | Pass (#25)                  | Blocked (Mac)              |                                                                                                                    |
+| Resume list cards + generate/edit          | Pass phone layouts (#28)    | Blocked (Mac)              | Full generate/edit not re-run on device this pass.                                                                 |
+| Resume PDF preview + Share PDF             | Pass (#24)                  | Blocked (Mac)              |                                                                                                                    |
+| Cover letter view + PDF                    | Pass (#24/#28)              | Blocked (Mac)              |                                                                                                                    |
+| Deep link `com.yarba.app://` restore       | Pass (#26)                  | Blocked (Mac)              | Google ID token exchange is in-app via Capgo.                                                                      |
+| External https / mailto leave WebView      | Pass (#26)                  | Blocked (Mac)              |                                                                                                                    |
+| Background / resume session refresh        | Pass (#27)                  | Blocked (Mac)              |                                                                                                                    |
+| Airplane mode Connection required          | Pass (#27)                  | Blocked (Mac)              |                                                                                                                    |
+| Logout                                     | Not run on device this pass | Blocked (Mac)              |                                                                                                                    |
+| Account deletion Settings → Data & privacy | Pass UI (#30)               | Blocked (Mac)              | Type `DELETE`; 7-day grace.                                                                                        |
+| Phone stacked actions / 44px targets       | Pass (#28)                  | Blocked (Mac)              |                                                                                                                    |
+| Portrait lock                              | Pass (#29)                  | Blocked (Mac)              |                                                                                                                    |
+| Tablet layout                              | Not a v1 target             | iPad not a v1 target       | Best-effort only.                                                                                                  |
 
 ## Accessibility
 
@@ -69,13 +69,13 @@ Do not submit while these rows are **Not run** / **Blocked** unless a signed wai
 
 ## Defects and waivers
 
-| ID                             | Severity | Status  | Owner    | Notes                                                                          |
-| ------------------------------ | -------- | ------- | -------- | ------------------------------------------------------------------------------ |
-| iOS evidence                   | P1       | Open    | Operator | Needs a Mac. Not a product defect.                                             |
-| TalkBack / VoiceOver           | P1       | Open    | Operator | Not executed.                                                                  |
-| Native Google device pass     | P1       | Open    | Operator | Capgo path is in the app. Needs the Android OAuth client SHA-1 and a device run. |
+| ID                             | Severity | Status  | Owner    | Notes                                                                            |
+| ------------------------------ | -------- | ------- | -------- | -------------------------------------------------------------------------------- |
+| iOS evidence                   | P1       | Open    | Operator | Needs a Mac. Not a product defect.                                               |
+| TalkBack / VoiceOver           | P1       | Open    | Operator | Not executed.                                                                    |
+| Native Google device pass      | P1       | Open    | Operator | Capgo path is in the app. Needs the Android OAuth client SHA-1 and a device run. |
 | Sign in with Apple             | P1       | Blocked | Operator | Apple Developer enrollment. Not implemented in the native app.                   |
-| ReportAbusePage Vitest timeout | P3       | Open    | Frontend | Intermittent 5s timeout in CI-local runs; public web form, not a native crash. |
+| ReportAbusePage Vitest timeout | P3       | Open    | Frontend | Intermittent 5s timeout in CI-local runs; public web form, not a native crash.   |
 
 No P0 native crash or blank-screen defect is on this list.
 
