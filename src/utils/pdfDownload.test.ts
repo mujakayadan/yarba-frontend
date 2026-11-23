@@ -35,6 +35,8 @@ import {
 
 describe('pdfDownload', () => {
   beforeEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
     mocks.native = false;
     mocks.writeFile.mockClear();
     mocks.share.mockClear();
@@ -74,6 +76,13 @@ describe('pdfDownload', () => {
 
   it('downloads with an anchor on web', async () => {
     const click = vi.fn();
+    const createObjectURL = vi.fn(() => 'blob:mock-pdf');
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('URL', {
+      ...URL,
+      createObjectURL,
+      revokeObjectURL,
+    });
     const originalCreate = document.createElement.bind(document);
     vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
       const el = originalCreate(tag);
@@ -84,7 +93,9 @@ describe('pdfDownload', () => {
     });
 
     await exportPdfBlob(new Blob(['%PDF'], { type: 'application/pdf' }), 'Resume.pdf');
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
     expect(click).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:mock-pdf');
     expect(mocks.share).not.toHaveBeenCalled();
   });
 
