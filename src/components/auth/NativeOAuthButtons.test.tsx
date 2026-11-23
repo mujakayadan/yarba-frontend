@@ -46,9 +46,13 @@ vi.mock('../../services/appleOAuthAdapter', async (importOriginal) => {
   };
 });
 
-vi.mock('../../services/googleOAuthAdapter', () => ({
-  signInWithGoogleIdToken: mocks.signInWithGoogleIdToken,
-}));
+vi.mock('../../services/googleOAuthAdapter', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../services/googleOAuthAdapter')>();
+  return {
+    ...original,
+    signInWithGoogleIdToken: mocks.signInWithGoogleIdToken,
+  };
+});
 
 vi.mock('@react-oauth/google', () => ({
   GoogleOAuthProvider: ({ children }: { children: React.ReactNode }) => children,
