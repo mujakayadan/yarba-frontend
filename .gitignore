@@ -48,7 +48,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-firebaseConfig.js
-
 # local-only notes
 fix-notes.md
