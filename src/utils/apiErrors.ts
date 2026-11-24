@@ -14,7 +14,6 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   invalid_credentials: 'Incorrect password for this account. Please try again.',
   account_exists_use_login:
     'An account with this email already exists. Sign in with Google or your social provider.',
-  firebase_registration_failed: 'Registration failed. Please try again later.',
   account_linking_required: ACCOUNT_RECOVERY_TEXT.linkingRequired,
   invalid_or_expired_action_token: ACCOUNT_RECOVERY_TEXT.resetExpired,
   invalid_oauth_nonce: 'Google sign-in expired. Please try again.',

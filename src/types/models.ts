@@ -263,11 +263,7 @@ export interface PasswordCredentialsRequest {
 }
 
 export type LegalAcceptanceSurface =
-  | 'password_registration'
-  | 'firebase_registration'
-  | 'google_oauth'
-  | 'apple_oauth'
-  | 'settings_reacceptance';
+  'password_registration' | 'google_oauth' | 'apple_oauth' | 'settings_reacceptance';
 
 export interface LegalAcceptanceRequest {
   terms_version: string;
