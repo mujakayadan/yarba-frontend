@@ -61,7 +61,7 @@ keystore.properties
 .externalNativeBuild
 .cxx/
 
-# Google Services (e.g. APIs or Firebase)
+# Google Services plugin config (FCM / push), if present
 # google-services.json
 
 # Freeline
