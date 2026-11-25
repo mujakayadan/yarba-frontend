@@ -113,7 +113,7 @@
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-eslint": "8.74.0",
     "vite": "8.3.8",
-    "vitest": "4.1.12"
+    "vitest": "5.1.1"
   },
   "overrides": {
     "brace-expansion": "1.1.21",
